@@ -1396,7 +1396,86 @@
     </div>
   </section>
 
-  <!-- ========== § 07 CTA ========== -->
+  <!-- ========== § 07 互动演示 ========== -->
+  <section class="sec" id="demo">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>互动<span class="ital">演示</span></h2>
+        <span class="num">§ 07 · 模拟</span>
+      </div>
+
+      <div class="demo-embed-wrap rise rise-1">
+        <div class="demo-embed-bar">
+          <span class="demo-embed-dot"></span>
+          <span class="demo-embed-dot"></span>
+          <span class="demo-embed-dot"></span>
+          <span class="demo-embed-title">lannook-demo.html · 模拟演示</span>
+          <a class="demo-embed-open" href="demos/lannook-demo.html" target="_blank" rel="noopener">在新标签打开 ↗</a>
+        </div>
+        <iframe class="demo-iframe" src="demos/lannook-demo.html" title="LanNook 交互演示" loading="lazy"></iframe>
+      </div>
+
+      <p class="demo-note">※ 以上为前端模拟演示,所有交互均在浏览器本地完成,不涉及真实网络传输。视觉风格与交互流程基于真实 LanNook 桌面端应用还原。</p>
+    </div>
+  </section>
+
+  <style>
+    .demo-embed-wrap {
+      border: var(--border);
+      background: var(--paper);
+      box-shadow: var(--shadow-hard);
+      overflow: hidden;
+    }
+    .demo-embed-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+    .demo-embed-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--ink-3);
+    }
+    .demo-embed-dot:nth-child(1) { background: #b8341a; }
+    .demo-embed-dot:nth-child(2) { background: #8a6d1e; }
+    .demo-embed-dot:nth-child(3) { background: var(--c); }
+    .demo-embed-title {
+      margin-left: var(--space-3);
+      letter-spacing: 0.05em;
+    }
+    .demo-embed-open {
+      margin-left: auto;
+      color: var(--paper-2);
+      opacity: 0.7;
+      transition: opacity .2s;
+    }
+    .demo-embed-open:hover { opacity: 1; color: var(--c); }
+    .demo-iframe {
+      width: 100%;
+      height: 620px;
+      border: none;
+      display: block;
+      background: #F5F7FA;
+    }
+    .demo-note {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--ink-3);
+      margin-top: var(--space-4);
+      padding-left: var(--space-2);
+      border-left: 2px solid var(--line);
+    }
+    @media (max-width: 768px) {
+      .demo-iframe { height: 500px; }
+    }
+  </style>
+
+  <!-- ========== § 08 CTA ========== -->
   <section class="cta-sec" id="cta">
     <div class="wrap">
       <div class="cta-grid">

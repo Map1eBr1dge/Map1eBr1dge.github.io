@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlueTidy · 软件搬家与清理 · 模拟演示</title>
+<style>
+/* ============ BlueTidy Neo-Brutalism 设计变量 ============ */
+:root{
+  --ink:#081827;
+  --ink-2:#27425e;
+  --ink-3:#667b91;
+  --paper:#eef7ff;
+  --paper-2:#dff0ff;
+  --paper-3:#c7e2ff;
+  --blue:#147cff;
+  --blue-2:#3d93ff;
+  --card:#ffffff;
+  --mint:#57e2b8;
+  --amber:#ffbd35;
+  --rose:#ff6587;
+  --red:#ef3340;
+  --line-soft:#9fb9d6;
+  --shadow:5px 5px 0 #081827;
+  --shadow-sm:3px 3px 0 #081827;
+  --shadow-lg:7px 7px 0 #081827;
+  --border:2.5px solid #081827;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+
+body{
+  font-family:"Segoe UI Variable","Microsoft YaHei",system-ui,sans-serif;
+  font-size:13px;
+  font-weight:560;
+  color:var(--ink);
+  background:var(--paper);
+  overflow:hidden;
+  position:relative;
+}
+/* 点状纹理背景 */
+body::before{
+  content:"";
+  position:fixed;inset:0;
+  background-image:radial-gradient(var(--ink) 1px,transparent 1px);
+  background-size:18px 18px;
+  opacity:.06;
+  pointer-events:none;
+  z-index:0;
+}
+
+button{font-family:inherit;font-weight:560;cursor:pointer;border:var(--border)}
+svg{display:block}
+
+/* ============ 主 Grid 布局 ============ */
+.app{
+  position:relative;z-index:1;
+  height:100vh;
+  display:grid;
+  grid-template-columns:300px 1fr 320px;
+  grid-template-rows:68px 1fr 28px;
+  grid-template-areas:
+    "header header header"
+    "sidebar stage dock"
+    "status status status";
+  gap:0;
+}
+
+/* ============ 顶部 Header ============ */
+.app-header{
+  grid-area:header;
+  background:var(--paper-2);
+  border-bottom:var(--border);
+  display:flex;align-items:center;
+  padding:0 18px;
+  gap:18px;
+  position:relative;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--blue);
+  border:var(--border);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-sm);
+}
+.brand-mark svg{width:22px;height:22px}
+.brand-text h1{font-size:17px;font-weight:800;letter-spacing:-0.2px;line-height:1}
+.brand-text span{font-size:11px;color:var(--ink-3);font-weight:560}
+.brand-divider{width:2.5px;height:34px;background:var(--ink);border-radius:2px;opacity:.25}
+
+.header-stats{display:flex;align-items:center;gap:14px;margin-left:4px}
+.stat-chip{
+  background:var(--card);
+  border:var(--border);
+  border-radius:8px;
+  padding:5px 10px;
+  font-size:11px;
+  box-shadow:var(--shadow-sm);
+  display:flex;align-items:center;gap:6px;
+}
+.stat-chip b{font-size:13px;font-weight:800}
+.stat-chip .dot{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--ink)}
+
+.header-spacer{flex:1}
+
+.demo-tag{
+  background:var(--amber);
+  color:var(--ink);
+  border:var(--border);
+  border-radius:999px;
+  padding:4px 12px;
+  font-size:11px;font-weight:800;
+  box-shadow:var(--shadow-sm);
+  transform:rotate(-1.5deg);
+  display:flex;align-items:center;gap:5px;
+}
+
+.header-actions{display:flex;gap:8px}
+
+/* ============ 通用按钮 ============ */
+.btn{
+  background:var(--card);
+  border:var(--border);
+  border-radius:8px;
+  padding:8px 14px;
+  font-size:12.5px;
+  color:var(--ink);
+  box-shadow:var(--shadow-sm);
+  transition:transform .12s ease, box-shadow .12s ease;
+  display:inline-flex;align-items:center;gap:7px;
+  white-space:nowrap;
+}
+.btn svg{width:15px;height:15px}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.btn:active{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink)}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{box-shadow:5px 5px 0 var(--ink)}
+.btn-ghost{background:transparent;box-shadow:none;border-color:transparent}
+.btn-ghost:hover{background:var(--paper-3);box-shadow:none;transform:none}
+.btn-danger{background:var(--red);color:#fff}
+.btn-sm{padding:5px 9px;font-size:11px}
+.btn-icon{padding:7px}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+/* ============ 左侧 Sidebar ============ */
+.task-sidebar{
+  grid-area:sidebar;
+  background:var(--paper-2);
+  border-right:var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.sidebar-top{
+  padding:14px 14px 10px;
+  border-bottom:2px solid var(--ink);
+}
+.sidebar-title{font-size:11px;font-weight:800;letter-spacing:.5px;color:var(--ink-2);margin-bottom:8px}
+
+.mode-switch{
+  display:flex;
+  background:var(--card);
+  border:var(--border);
+  border-radius:8px;
+  box-shadow:var(--shadow-sm);
+  overflow:hidden;
+}
+.mode-switch button{
+  flex:1;border:none;background:transparent;padding:8px;font-size:11.5px;font-weight:700;color:var(--ink-2);
+  cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.mode-switch button svg{width:13px;height:13px}
+.mode-switch button.active{background:var(--blue);color:#fff}
+
+/* 任务导航 */
+.task-nav{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  padding:12px 14px;
+  border-bottom:2px solid var(--ink);
+}
+.task-item{
+  background:var(--card);
+  border:var(--border);
+  border-radius:10px;
+  padding:9px 10px;
+  box-shadow:var(--shadow-sm);
+  text-align:left;
+  display:flex;flex-direction:column;gap:4px;
+  transition:transform .12s ease, box-shadow .12s ease;
+  font-family:inherit;
+}
+.task-item:nth-child(odd){transform:rotate(-0.25deg)}
+.task-item:nth-child(even){transform:rotate(0.35deg)}
+.task-item:hover{transform:translate(-1px,-1px) rotate(0);box-shadow:5px 5px 0 var(--ink)}
+.task-item.active{background:var(--ink);color:#fff}
+.task-item.active .ti-desc{color:var(--paper-3)}
+.task-item .ti-head{display:flex;align-items:center;gap:6px}
+.task-item .ti-head svg{width:15px;height:15px}
+.task-item .ti-title{font-size:12px;font-weight:800}
+.task-item .ti-desc{font-size:10px;color:var(--ink-3);line-height:1.25}
+
+/* 资产库区 */
+.asset-lib{flex:1;display:flex;flex-direction:column;min-height:0;padding:12px 14px}
+.al-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.al-head .t{font-size:11px;font-weight:800;letter-spacing:.5px;color:var(--ink-2)}
+.al-head .c{font-size:10px;color:var(--ink-3)}
+
+.search-box{
+  position:relative;margin-bottom:8px;
+}
+.search-box input{
+  width:100%;border:var(--border);border-radius:8px;
+  padding:8px 8px 8px 30px;font-family:inherit;font-size:12px;font-weight:560;
+  background:var(--card);box-shadow:var(--shadow-sm);outline:none;color:var(--ink);
+}
+.search-box input:focus{border-color:var(--blue)}
+.search-box svg{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--ink-3)}
+
+.filter-row{display:flex;gap:5px;margin-bottom:6px;flex-wrap:wrap}
+.seg{
+  display:flex;background:var(--card);border:var(--border);border-radius:8px;overflow:hidden;box-shadow:var(--shadow-sm);
+}
+.seg button{
+  border:none;background:transparent;padding:4px 8px;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--ink-2);
+}
+.seg button.active{background:var(--blue);color:#fff}
+.seg button:hover:not(.active){background:var(--paper-3)}
+
+.asset-mini-list{flex:1;overflow-y:auto;margin-top:6px;display:flex;flex-direction:column;gap:5px}
+.mini-asset{
+  background:var(--card);border:var(--border);border-radius:8px;padding:7px 9px;box-shadow:var(--shadow-sm);
+  cursor:pointer;transition:transform .1s, box-shadow .1s;
+}
+.mini-asset:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.mini-asset.active{background:var(--blue);color:#fff}
+.mini-asset.active .ma-sub{color:var(--paper-3)}
+.mini-asset .ma-name{font-size:11.5px;font-weight:800;display:flex;align-items:center;gap:5px}
+.mini-asset .ma-sub{font-size:10px;color:var(--ink-3);margin-top:2px}
+
+/* ============ 中间 Stage ============ */
+.stage-shell{
+  grid-area:stage;
+  background:var(--paper);
+  overflow-y:auto;
+  position:relative;
+}
+.stage{padding:24px 26px;max-width:100%}
+
+.stage-head{margin-bottom:20px}
+.eyebrow{
+  display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:1.5px;color:var(--blue);
+  background:var(--card);border:var(--border);border-radius:999px;padding:3px 10px;box-shadow:var(--shadow-sm);margin-bottom:12px;
+}
+.stage-head h2{font-size:26px;font-weight:800;letter-spacing:-0.5px;line-height:1.1}
+.stage-head p{color:var(--ink-2);margin-top:8px;max-width:560px;line-height:1.5}
+
+.entry-actions{display:flex;gap:12px;margin-top:18px}
+.entry-note{margin-top:14px;font-size:11px;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+.entry-note svg{width:13px;height:13px}
+
+/* Dashboard 空状态卡片 */
+.dash-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:6px}
+.dash-card{
+  background:var(--card);border:var(--border);border-radius:10px;box-shadow:var(--shadow);padding:18px;
+}
+.dash-card h3{font-size:14px;font-weight:800;margin-bottom:4px}
+.dash-card .dc-sub{font-size:11px;color:var(--ink-3);margin-bottom:14px}
+.dash-big-num{font-size:42px;font-weight:800;line-height:1;letter-spacing:-1px}
+.dash-big-num small{font-size:14px;font-weight:700;color:var(--ink-3);margin-left:4px}
+.dash-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1.5px dashed var(--line-soft)}
+.dash-row:last-child{border:none}
+.dash-row .l{font-size:11.5px;color:var(--ink-2)}
+.dash-row .r{font-size:12px;font-weight:800}
+
+/* 扫描中状态 */
+.scan-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center}
+.scan-spinner{
+  width:64px;height:64px;border:5px solid var(--paper-3);border-top-color:var(--blue);border-radius:50%;
+  animation:spin 0.9s linear infinite;margin-bottom:20px;
+  box-shadow:var(--shadow);
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.scan-panel h3{font-size:18px;font-weight:800;margin-bottom:6px}
+.scan-panel p{color:var(--ink-2);margin-bottom:4px}
+.scan-progress-wrap{width:320px;margin-top:18px}
+.scan-bar{height:14px;background:var(--card);border:var(--border);border-radius:8px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.scan-bar-fill{height:100%;background:var(--blue);width:0;transition:width .25s ease}
+.scan-log{margin-top:14px;font-family:"Cascadia Mono","JetBrains Mono",Consolas,monospace;font-size:11px;color:var(--ink-3);text-align:left;width:320px;min-height:60px}
+
+/* 扫描完成统计 */
+.scan-done{display:flex;gap:18px;justify-content:center;margin-top:8px}
+.scan-stat{
+  background:var(--card);border:var(--border);border-radius:10px;box-shadow:var(--shadow);padding:18px 26px;text-align:center;min-width:130px;
+}
+.scan-stat .n{font-size:30px;font-weight:800;line-height:1}
+.scan-stat .l{font-size:11px;color:var(--ink-3);margin-top:5px}
+
+/* ============ 资产列表 ============ */
+.list-toolbar{
+  background:var(--paper-3);
+  border:var(--border);
+  border-radius:10px;
+  box-shadow:var(--shadow-sm);
+  padding:10px 12px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.lt-stats{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--ink-2)}
+.lt-stats b{font-weight:800;color:var(--ink)}
+.lt-divider{width:2px;height:18px;background:var(--ink);opacity:.2}
+.lt-spacer{flex:1}
+
+.asset-list{display:flex;flex-direction:column;gap:8px}
+.asset-row{
+  background:var(--card);border:var(--border);border-radius:10px;box-shadow:var(--shadow-sm);
+  padding:11px 14px;display:grid;grid-template-columns:24px 40px 1fr auto;gap:12px;align-items:center;
+  cursor:pointer;transition:transform .1s, box-shadow .1s, background .1s;position:relative;overflow:hidden;
+}
+.asset-row:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.asset-row.selected{background:#e7f1ff}
+.asset-row.selected::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--ink);box-shadow:inset -2px 0 0 var(--blue)}
+.asset-row .ar-check{width:18px;height:18px}
+.asset-row .ar-icon{
+  width:40px;height:40px;border-radius:9px;border:var(--border);display:flex;align-items:center;justify-content:center;
+  background:var(--paper-2);box-shadow:var(--shadow-sm);
+}
+.asset-row .ar-icon svg{width:22px;height:22px}
+.asset-row .ar-main{min-width:0}
+.asset-row .ar-line1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.asset-row .ar-name{font-size:13.5px;font-weight:800}
+.asset-row .ar-vendor{font-size:10.5px;color:var(--ink-3)}
+.asset-row .ar-line2{font-size:10.5px;color:var(--ink-3);margin-top:3px;font-family:"Cascadia Mono","JetBrains Mono",Consolas,monospace}
+.asset-row .ar-meta{display:flex;align-items:center;gap:10px}
+.asset-row .ar-size{font-size:14px;font-weight:800;font-family:"Cascadia Mono","JetBrains Mono",Consolas,monospace;text-align:right;min-width:70px}
+
+/* 状态药丸 */
+.pill{
+  display:inline-flex;align-items:center;gap:4px;
+  border:var(--border);border-radius:999px;padding:2px 9px;font-size:10px;font-weight:800;
+  box-shadow:2px 2px 0 var(--ink);
+}
+.pill-mint{background:var(--mint)}
+.pill-amber{background:var(--amber)}
+.pill-rose{background:var(--rose);color:#fff}
+.risk{font-size:10px;font-weight:800;border:var(--border);border-radius:6px;padding:1px 6px;box-shadow:1.5px 1.5px 0 var(--ink)}
+.risk-low{background:var(--mint)}
+.risk-mid{background:var(--amber)}
+.risk-high{background:var(--rose);color:#fff}
+
+/* ============ 迁移执行面板 ============ */
+.migrate-panel{max-width:680px}
+.flow-arrow{
+  display:flex;align-items:center;gap:14px;background:var(--card);border:var(--border);border-radius:10px;box-shadow:var(--shadow);
+  padding:16px 20px;margin-bottom:18px;
+}
+.flow-path{font-family:"Cascadia Mono","JetBrains Mono",Consolas,monospace;font-size:15px;font-weight:800}
+.flow-arrow .arr{flex:1;height:4px;background:var(--ink);position:relative;border-radius:2px}
+.flow-arrow .arr::after{content:"";position:absolute;right:-2px;top:-7px;border:9px solid transparent;border-left-color:var(--ink)}
+
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.metric{
+  background:var(--card);border:var(--border);border-radius:10px;box-shadow:var(--shadow-sm);padding:12px 14px;
+}
+.metric .ml{font-size:10px;color:var(--ink-3);font-weight:700;letter-spacing:.3px}
+.metric .mv{font-size:18px;font-weight:800;margin-top:4px;font-family:"Cascadia Mono","JetBrains Mono",Consolas,monospace}
+
+.plan-card{
+  background:var(--card);border:var(--border);border-radius:10px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:18px;
+}
+.plan-card h3{font-size:13px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.plan-row{display:flex;gap:10px;padding:8px 0;border-bottom:1.5px dashed var(--line-soft);font-size:11.5px}
+.plan-row:last-child{border:none}
+.plan-row .pl{width:90px;color:var(--ink-3);font-weight:700;flex-shrink:0}
+.plan-row .pv{font-weight:700;font-family:"Cascadia Mono","JetBrains Mono",Consolas,monospace;word-break:break-all}
+.plan-warn{color:var(--ink);background:var(--amber);border:var(--border);border-radius:6px;padding:4px 8px;display:inline-block;box-shadow:var(--shadow-sm);font-weight:800;font-size:10.5px}
+
+.exec-progress{margin-top:14px;display:none}
+.exec-progress.show{display:block}
+.exec-bar{height:16px;background:var(--card);border:var(--border);border-radius:8px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.exec-bar-fill{height:100%;background:var(--blue);width:0;transition:width .3s}
+.exec-status{font-size:11px;color:var(--ink-2);margin-top:8px;font-family:"Cascadia Mono","JetBrains Mono",Consolas,monospace}
+
+/* ============ 事务中心 ============ */
+.tx-list{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.tx-row{
+  background:var(--card);border:var(--border);border-radius:10px;box-shadow:var(--shadow-sm);padding:13px 16px;
+  display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;
+}
+.tx-row .tx-main{min-width:0}
+.tx-row .tx-line1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tx-row .tx-name{font-size:13px;font-weight:800}
+.tx-row .tx-time{font-size:10.5px;color:var(--ink-3);font-family:"Cascadia Mono","JetBrains Mono",Consolas,monospace}
+.tx-row .tx-path{font-size:10.5px;color:var(--ink-3);margin-top:4px;font-family:"Cascadia Mono","JetBrains Mono",Consolas,monospace}
+
+/* ============ 右侧 Governance Dock ============ */
+.governance-dock{
+  grid-area:dock;
+  background:var(--paper-2);
+  border-left:var(--border);
+  overflow-y:auto;
+  padding:18px 16px;
+}
+.dock-eyebrow{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--blue)}
+.dock-title{font-size:18px;font-weight:800;margin-top:4px;display:flex;align-items:center;gap:8px}
+.dock-support{
+  display:inline-flex;align-items:center;gap:5px;margin-top:10px;
+  background:var(--card);border:var(--border);border-radius:999px;padding:3px 10px;font-size:10.5px;font-weight:800;box-shadow:var(--shadow-sm);
+}
+.dock-confidence{font-size:11px;color:var(--ink-3);margin-top:8px}
+.dock-conf-bar{height:8px;background:var(--card);border:var(--border);border-radius:6px;overflow:hidden;margin-top:5px;box-shadow:1.5px 1.5px 0 var(--ink)}
+.dock-conf-fill{height:100%;background:var(--mint);width:92%}
+
+.dock-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.dm{
+  background:var(--card);border:var(--border);border-radius:8px;box-shadow:var(--shadow-sm);padding:9px 11px;
+}
+.dm .l{font-size:9.5px;color:var(--ink-3);font-weight:700}
+.dm .v{font-size:14px;font-weight:800;margin-top:2px;font-family:"Cascadia Mono","JetBrains Mono",Consolas,monospace}
+
+.readiness{margin-top:16px;background:var(--card);border:var(--border);border-radius:10px;box-shadow:var(--shadow);padding:14px}
+.readiness h4{font-size:12px;font-weight:800;margin-bottom:10px}
+.ri{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:11.5px}
+.ri .ri-ic{width:18px;height:18px;border-radius:50%;border:var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ri-ok .ri-ic{background:var(--mint)}
+.ri-warn .ri-ic{background:var(--amber)}
+.ri-bad .ri-ic{background:var(--rose)}
+.ri .ri-ic svg{width:11px;height:11px}
+.ri .ri-t{flex:1}
+.ri .ri-s{font-size:10px;color:var(--ink-3)}
+
+.dock-actions{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.dock-actions .btn{justify-content:center;width:100%}
+
+.dock-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;color:var(--ink-3);gap:10px;padding:30px 10px;
+}
+.dock-empty svg{width:48px;height:48px;opacity:.4}
+
+/* ============ 底部状态栏 ============ */
+.statusbar{
+  grid-area:status;background:var(--ink);color:var(--paper);
+  display:flex;align-items:center;padding:0 14px;gap:14px;font-size:10.5px;font-family:"Cascadia Mono","JetBrains Mono",Consolas,monospace;
+}
+.statusbar .sb-dot{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 6px var(--mint)}
+.statusbar .sb-spacer{flex:1}
+
+/* ============ 模态框 ============ */
+.modal-mask{
+  position:fixed;inset:0;background:rgba(8,24,39,.55);z-index:100;
+  display:none;align-items:center;justify-content:center;
+  animation:fadeIn .15s ease;
+}
+.modal-mask.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--card);border:var(--border);border-radius:12px;box-shadow:var(--shadow-lg);
+  padding:22px 24px;max-width:440px;width:90%;
+  animation:popIn .2s ease;
+}
+@keyframes popIn{from{transform:translateY(12px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.modal h3{font-size:16px;font-weight:800;margin-bottom:10px}
+.modal p{font-size:12.5px;color:var(--ink-2);line-height:1.6}
+.modal .modal-path{font-family:"Cascadia Mono","JetBrains Mono",Consolas,monospace;font-size:11.5px;background:var(--paper);border:var(--border);border-radius:8px;padding:10px 12px;margin:12px 0;box-shadow:var(--shadow-sm)}
+.modal .modal-path .arrow{color:var(--blue);font-weight:800}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+
+/* ============ Toast ============ */
+.toast-wrap{position:fixed;right:20px;bottom:46px;z-index:200;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+.toast{
+  background:var(--card);border:var(--border);border-radius:10px;box-shadow:var(--shadow);
+  padding:11px 16px 11px 13px;display:flex;align-items:center;gap:10px;min-width:240px;
+  animation:toastIn .25s ease;
+}
+@keyframes toastIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.toast.out{animation:toastOut .25s ease forwards}
+@keyframes toastOut{to{transform:translateX(40px);opacity:0}}
+.toast .ti-icon{width:24px;height:24px;border-radius:7px;border:var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:1.5px 1.5px 0 var(--ink)}
+.toast.success .ti-icon{background:var(--mint)}
+.toast.info .ti-icon{background:var(--blue);color:#fff}
+.toast.warn .ti-icon{background:var(--amber)}
+.toast .ti-body .t{font-size:12px;font-weight:800}
+.toast .ti-body .s{font-size:10.5px;color:var(--ink-3);margin-top:1px}
+
+/* 滚动条 */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line-soft);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--ink-3)}
+
+/* 文件夹模式隐藏右侧 dock */
+.app.folder-mode{grid-template-columns:300px 1fr 0}
+.app.folder-mode .governance-dock{display:none}
+
+.hidden{display:none !important}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ============ Header ============ -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(1px 1px 0 #081827)">
+          <path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>BlueTidy</h1>
+        <span>软件搬家与清理</span>
+      </div>
+    </div>
+    <div class="brand-divider"></div>
+    <div class="header-stats">
+      <div class="stat-chip"><span class="dot" style="background:var(--mint)"></span>资产 <b id="hdrAssets">0</b></div>
+      <div class="stat-chip"><span class="dot" style="background:var(--mint)"></span>可迁移 <b id="hdrMovable">0</b></div>
+      <div class="stat-chip"><span class="dot" style="background:var(--rose)"></span>受限 <b id="hdrBlocked">0</b></div>
+    </div>
+    <div class="header-spacer"></div>
+    <div class="demo-tag">
+      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#081827" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+      模拟演示
+    </div>
+    <div class="header-actions">
+      <button class="btn" id="btnScanAssets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>扫描资产</button>
+      <button class="btn" id="btnSelectTarget"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>选择目标</button>
+      <button class="btn btn-icon" id="btnSettings" title="设置"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    </div>
+  </header>
+
+  <!-- ============ Sidebar ============ -->
+  <aside class="task-sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-title">工作模式</div>
+      <div class="mode-switch">
+        <button class="active" id="modeApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>应用模式</button>
+        <button id="modeFolder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>文件夹模式</button>
+      </div>
+    </div>
+
+    <nav class="task-nav" id="taskNav">
+      <button class="task-item active" data-task="home"><div class="ti-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span class="ti-title">首页</span></div><div class="ti-desc">磁盘概览与入口</div></button>
+      <button class="task-item" data-task="library"><div class="ti-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg><span class="ti-title">资产库</span></div><div class="ti-desc">已识别软件资产</div></button>
+      <button class="task-item" data-task="slim"><div class="ti-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 3h6l4 6-7 11L5 9z"/><path d="M5 9h14"/></svg><span class="ti-title">瘦身</span></div><div class="ti-desc">清理冗余与缓存</div></button>
+      <button class="task-item" data-task="migrate"><div class="ti-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M6 16V8a4 4 0 0 1 4-4h4M9 7l-3 1M18 8v5a4 4 0 0 1-4 4h-3"/></svg><span class="ti-title">应用迁移</span></div><div class="ti-desc">C 盘软件搬至 D 盘</div></button>
+      <button class="task-item" data-task="queue"><div class="ti-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="ti-title">批量队列</span></div><div class="ti-desc">多任务迁移队列</div></button>
+      <button class="task-item" data-task="history"><div class="ti-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg><span class="ti-title">事务中心</span></div><div class="ti-desc">回滚与历史记录</div></button>
+    </nav>
+
+    <div class="asset-lib">
+      <div class="al-head">
+        <span class="t">软件资产库</span>
+        <span class="c" id="alCount">未扫描</span>
+      </div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" id="libSearch" placeholder="搜索软件、厂商、版本、路径…">
+      </div>
+      <div class="filter-row">
+        <div class="seg" id="libFilter">
+          <button class="active" data-f="all">全部</button>
+          <button data-f="movable">可迁移</button>
+          <button data-f="caution">需谨慎</button>
+          <button data-f="blocked">已阻止</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <div class="seg" id="libSort">
+          <button class="active" data-s="name">名称</button>
+          <button data-s="size">体积</button>
+          <button data-s="risk">风险</button>
+          <button data-s="migrate">迁移</button>
+        </div>
+      </div>
+      <div class="asset-mini-list" id="miniList">
+        <div style="font-size:11px;color:var(--ink-3);text-align:center;padding:20px 8px">点击「扫描资产」开始分析</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ Stage ============ -->
+  <main class="stage-shell">
+    <div class="stage" id="stage"><!-- 由 JS 渲染 --></div>
+  </main>
+
+  <!-- ============ Governance Dock ============ -->
+  <aside class="governance-dock" id="dock">
+    <div class="dock-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div style="font-size:12px;font-weight:700;color:var(--ink-2)">选择一个资产</div>
+      <div style="font-size:11px">点击左侧资产查看治理决策看板</div>
+    </div>
+  </aside>
+
+  <!-- ============ Statusbar ============ -->
+  <footer class="statusbar">
+    <span class="sb-dot"></span>
+    <span id="sbStatus">就绪 · 核心扫描仅读取路径与容量元数据</span>
+    <span class="sb-spacer"></span>
+    <span id="sbMode">应用模式</span>
+    <span>·</span>
+    <span>BlueTidy v0.9.0-demo</span>
+  </footer>
+</div>
+
+<!-- 模态框 -->
+<div class="modal-mask" id="modalMask">
+  <div class="modal" id="modalBox"><!-- 由 JS 注入 --></div>
+</div>
+
+<!-- Toast 容器 -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ============ 数据 ============ */
+const ASSETS = [
+  {id:1, name:"Steam", vendor:"Valve Corporation", support:"movable", risk:"low", size:42.8, unit:"GB", source:"Steam", type:"MSI", path:"C:\\Program Files (x86)\\Steam", icon:"game"},
+  {id:2, name:"Docker Desktop", vendor:"Docker Inc.", support:"caution", risk:"mid", size:6.4, unit:"GB", source:"Winget", type:"Winget", path:"C:\\Program Files\\Docker", icon:"box"},
+  {id:3, name:"Adobe Photoshop", vendor:"Adobe Inc.", support:"movable", risk:"low", size:3.2, unit:"GB", source:"注册表", type:"注册表", path:"C:\\Program Files\\Adobe", icon:"image"},
+  {id:4, name:"Visual Studio Code", vendor:"Microsoft", support:"movable", risk:"low", size:0.38, unit:"GB", source:"Winget", type:"Winget", path:"C:\\Users\\user\\AppData\\Local\\Programs", icon:"code"},
+  {id:5, name:"NVIDIA Driver", vendor:"NVIDIA", support:"blocked", risk:"high", size:2.1, unit:"GB", source:"注册表", type:"注册表", path:"C:\\Windows\\System32", icon:"chip"},
+  {id:6, name:"Spotify", vendor:"Spotify AB", support:"movable", risk:"low", size:0.18, unit:"GB", source:"Scoop", type:"Scoop", path:"C:\\Users\\user\\AppData\\Roaming", icon:"music"},
+  {id:7, name:"Blender", vendor:"Blender Foundation", support:"movable", risk:"low", size:1.6, unit:"GB", source:"Winget", type:"Winget", path:"C:\\Program Files\\Blender Foundation", icon:"cube"},
+  {id:8, name:"Epic Games Launcher", vendor:"Epic Games", support:"caution", risk:"mid", size:2.4, unit:"GB", source:"MSI", type:"MSI", path:"C:\\Program Files (x86)\\Epic Games", icon:"rocket"},
+];
+
+const TRANSACTIONS = [
+  {id:1, name:"Blender", time:"2026-07-27 09:42:11", status:"rollback", src:"C:\\Program Files\\Blender Foundation", dst:"D:\\Program Files\\Blender Foundation"},
+  {id:2, name:"Spotify", time:"2026-07-27 10:15:33", status:"done", src:"C:\\Users\\user\\AppData\\Roaming", dst:"D:\\Users\\user\\AppData\\Roaming"},
+  {id:3, name:"Visual Studio Code", time:"2026-07-27 11:02:08", status:"done", src:"C:\\Users\\user\\AppData\\Local\\Programs", dst:"D:\\Users\\user\\AppData\\Local\\Programs"},
+];
+
+/* ============ 状态 ============ */
+const state = {
+  mode:"app",          // app / folder
+  task:"home",         // home / library / slim / migrate / queue / history
+  scanned:false,
+  scanning:false,
+  selectedId:null,
+  filter:"all",
+  sort:"name",
+  search:"",
+  view:"default",      // default / migrate  (library 子视图)
+};
+
+/* ============ 工具：SVG 图标 ============ */
+const ICONS = {
+  game:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h4M8 10v4"/><circle cx="15" cy="11" r="1"/><circle cx="18" cy="13" r="1"/><rect x="2" y="6" width="20" height="12" rx="4"/></svg>',
+  box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>',
+  image:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>',
+  code:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+  chip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></svg>',
+  music:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  cube:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>',
+  rocket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91 0z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>',
+  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+  arrowRight:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+  folder:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  hdd:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 12H2M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><path d="M6 16h.01M10 16h.01"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  undo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>',
+};
+
+function iconSvg(name){return ICONS[name]||ICONS.box;}
+
+/* ============ Toast ============ */
+function toast(title, sub, type="info"){
+  const wrap=document.getElementById("toastWrap");
+  const el=document.createElement("div");
+  el.className="toast "+type;
+  const ic = type==="success"?"check":type==="warn"?"alert":"info";
+  el.innerHTML=`<div class="ti-icon">${ICONS[ic]}</div><div class="ti-body"><div class="t">${title}</div>${sub?`<div class="s">${sub}</div>`:""}</div>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{el.classList.add("out");setTimeout(()=>el.remove(),250);},2600);
+}
+
+/* ============ 模态框 ============ */
+function showModal(html){
+  document.getElementById("modalBox").innerHTML=html;
+  document.getElementById("modalMask").classList.add("show");
+}
+function hideModal(){document.getElementById("modalMask").classList.remove("show");}
+
+/* ============ 状态栏 ============ */
+function setStatus(text){document.getElementById("sbStatus").textContent=text;}
+
+/* ============ 渲染：Header 统计 ============ */
+function renderHeaderStats(){
+  if(!state.scanned){
+    document.getElementById("hdrAssets").textContent="0";
+    document.getElementById("hdrMovable").textContent="0";
+    document.getElementById("hdrBlocked").textContent="0";
+    return;
+  }
+  const movable=ASSETS.filter(a=>a.support==="movable").length;
+  const blocked=ASSETS.filter(a=>a.support==="blocked").length;
+  document.getElementById("hdrAssets").textContent=ASSETS.length;
+  document.getElementById("hdrMovable").textContent=movable;
+  document.getElementById("hdrBlocked").textContent=blocked;
+}
+
+/* ============ 渲染：侧栏迷你列表 ============ */
+function filteredAssets(){
+  let list=ASSETS.slice();
+  if(state.filter!=="all") list=list.filter(a=>a.support===state.filter);
+  if(state.search){
+    const q=state.search.toLowerCase();
+    list=list.filter(a=>a.name.toLowerCase().includes(q)||a.vendor.toLowerCase().includes(q)||a.path.toLowerCase().includes(q)||a.source.toLowerCase().includes(q));
+  }
+  if(state.sort==="name") list.sort((a,b)=>a.name.localeCompare(b.name));
+  if(state.sort==="size") list.sort((a,b)=>b.size-a.size);
+  if(state.sort==="risk"){const r={low:1,mid:2,high:3};list.sort((a,b)=>r[b.risk]-r[a.risk]);}
+  if(state.sort==="migrate"){const o={movable:1,caution:2,blocked:3};list.sort((a,b)=>o[a.support]-o[b.support]);}
+  return list;
+}
+
+function renderMiniList(){
+  const el=document.getElementById("miniList");
+  document.getElementById("alCount").textContent = state.scanned? `${ASSETS.length} 项` : "未扫描";
+  if(!state.scanned){
+    el.innerHTML='<div style="font-size:11px;color:var(--ink-3);text-align:center;padding:20px 8px">点击「扫描资产」开始分析</div>';
+    return;
+  }
+  const list=filteredAssets();
+  if(!list.length){el.innerHTML='<div style="font-size:11px;color:var(--ink-3);text-align:center;padding:20px 8px">无匹配资产</div>';return;}
+  el.innerHTML=list.map(a=>`
+    <div class="mini-asset ${state.selectedId===a.id?'active':''}" data-id="${a.id}">
+      <div class="ma-name">${a.name}</div>
+      <div class="ma-sub">${a.vendor} · ${a.size} ${a.unit}</div>
+    </div>`).join("");
+  el.querySelectorAll(".mini-asset").forEach(n=>{
+    n.onclick=()=>{selectAsset(parseInt(n.dataset.id));};
+  });
+}
+
+/* ============ 渲染：Stage 主区 ============ */
+function renderStage(){
+  const stage=document.getElementById("stage");
+  if(state.scanning){stage.innerHTML=renderScanPanel();return;}
+  if(state.task==="home") stage.innerHTML=renderHome();
+  else if(state.task==="library") stage.innerHTML=renderLibrary();
+  else if(state.task==="slim") stage.innerHTML=renderSlim();
+  else if(state.task==="migrate") stage.innerHTML=renderMigrateHelp();
+  else if(state.task==="queue") stage.innerHTML=renderQueue();
+  else if(state.task==="history") stage.innerHTML=renderHistory();
+  bindStageEvents();
+}
+
+/* ---- 流程1：首页 Dashboard ---- */
+function renderHome(){
+  if(!state.scanned){
+    return `
+    <div class="stage-head">
+      <span class="eyebrow">BLUE TIDY · 当前目标</span>
+      <h2>释放 C 盘空间</h2>
+      <p>先分析磁盘空间去哪了，或扫描软件资产并判断哪些软件可以安全治理。</p>
+      <div class="entry-actions">
+        <button class="btn btn-primary" id="actAnalyzeDisk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>分析磁盘空间</button>
+        <button class="btn" id="actGovernAssets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>治理软件资产</button>
+      </div>
+      <div class="entry-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>核心扫描只读取路径与容量元数据，不会移动或删除文件。</div>
+    </div>
+    <div class="dash-grid">
+      <div class="dash-card">
+        <h3>C 盘空间分布</h3>
+        <div class="dc-sub">尚未扫描，点击上方按钮开始分析</div>
+        <div class="dash-row"><span class="l">已用容量</span><span class="r" style="color:var(--ink-3)">— —</span></div>
+        <div class="dash-row"><span class="l">可用容量</span><span class="r" style="color:var(--ink-3)">— —</span></div>
+        <div class="dash-row"><span class="l">软件资产</span><span class="r" style="color:var(--ink-3)">0 项</span></div>
+        <div class="dash-row"><span class="l">可迁移容量</span><span class="r" style="color:var(--ink-3)">— —</span></div>
+      </div>
+      <div class="dash-card">
+        <h3>快速入口</h3>
+        <div class="dc-sub">常用治理操作</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn" style="justify-content:flex-start" onclick="goTask('library')">${ICONS.box}<span>浏览资产库</span><span style="margin-left:auto;color:var(--ink-3);font-size:10px">→</span></button>
+          <button class="btn" style="justify-content:flex-start" onclick="goTask('migrate')">${ICONS.arrowRight}<span>应用迁移</span><span style="margin-left:auto;color:var(--ink-3);font-size:10px">→</span></button>
+          <button class="btn" style="justify-content:flex-start" onclick="goTask('history')">${ICONS.clock}<span>事务中心</span><span style="margin-left:auto;color:var(--ink-3);font-size:10px">→</span></button>
+        </div>
+      </div>
+    </div>`;
+  }
+  // 已扫描
+  const total=ASSETS.reduce((s,a)=>s+a.size,0).toFixed(1);
+  const movable=ASSETS.filter(a=>a.support==="movable");
+  const movableSize=movable.reduce((s,a)=>s+a.size,0).toFixed(1);
+  return `
+  <div class="stage-head">
+    <span class="eyebrow">BLUE TIDY · 当前目标</span>
+    <h2>释放 C 盘空间</h2>
+    <p>扫描完成。已识别 ${ASSETS.length} 个软件资产，其中 ${movable.length} 个可安全迁移至其他盘符。</p>
+    <div class="entry-actions">
+      <button class="btn btn-primary" onclick="goTask('library')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>浏览资产库</button>
+      <button class="btn" onclick="goTask('migrate')">${ICONS.arrowRight}应用迁移</button>
+    </div>
+    <div class="entry-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>核心扫描只读取路径与容量元数据，不会移动或删除文件。</div>
+  </div>
+  <div class="dash-grid">
+    <div class="dash-card">
+      <h3>C 盘空间分布</h3>
+      <div class="dc-sub">基于本次扫描结果</div>
+      <div class="dash-big-num">${total}<small>GB 已用</small></div>
+      <div style="margin-top:14px">
+        <div class="dash-row"><span class="l">可迁移软件</span><span class="r" style="color:var(--blue)">${movable.length} 项</span></div>
+        <div class="dash-row"><span class="l">可迁移容量</span><span class="r" style="color:var(--blue)">${movableSize} GB</span></div>
+        <div class="dash-row"><span class="l">受限软件</span><span class="r" style="color:var(--rose)">${ASSETS.filter(a=>a.support==="blocked").length} 项</span></div>
+        <div class="dash-row"><span class="l">需谨慎</span><span class="r" style="color:var(--amber)">${ASSETS.filter(a=>a.support==="caution").length} 项</span></div>
+      </div>
+    </div>
+    <div class="dash-card">
+      <h3>建议优先迁移</h3>
+      <div class="dc-sub">体积大且风险低的资产</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${movable.sort((a,b)=>b.size-a.size).slice(0,3).map(a=>`
+          <button class="btn" style="justify-content:flex-start" onclick="selectAsset(${a.id});goTask('library')">
+            ${ICONS[a.icon]||ICONS.box}
+            <span>${a.name}</span>
+            <span style="margin-left:auto;font-family:'Cascadia Mono',monospace;font-size:11px">${a.size} ${a.unit}</span>
+          </button>`).join("")}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---- 流程2：扫描面板 ---- */
+function renderScanPanel(){
+  return `
+  <div class="scan-panel">
+    <div class="scan-spinner"></div>
+    <h3 id="scanTitle">正在扫描软件资产…</h3>
+    <p id="scanSub">读取安装路径与容量元数据</p>
+    <div class="scan-progress-wrap">
+      <div class="scan-bar"><div class="scan-bar-fill" id="scanFill"></div></div>
+      <div class="scan-log" id="scanLog">> 初始化扫描引擎…</div>
+    </div>
+  </div>`;
+}
+
+/* ---- 流程3：资产列表 ---- */
+function renderLibrary(){
+  if(state.view==="migrate" && state.selectedId){
+    return renderMigratePanel();
+  }
+  if(!state.scanned){
+    return `<div class="stage-head">
+      <span class="eyebrow">ASSET LIBRARY</span>
+      <h2>资产库</h2>
+      <p>尚未扫描。请先点击「扫描资产」识别已安装软件。</p>
+      <div class="entry-actions"><button class="btn btn-primary" onclick="startScan()">${ICONS.box}开始扫描</button></div>
+    </div>`;
+  }
+  const list=filteredAssets();
+  const total=ASSETS.reduce((s,a)=>s+a.size,0).toFixed(1);
+  const movable=ASSETS.filter(a=>a.support==="movable").length;
+  const blocked=ASSETS.filter(a=>a.support==="blocked").length;
+  return `
+  <div class="stage-head">
+    <span class="eyebrow">ASSET LIBRARY</span>
+    <h2>资产库</h2>
+    <p>已识别 ${ASSETS.length} 项软件资产。点击任一行查看治理决策。</p>
+  </div>
+  <div class="list-toolbar">
+    <div class="lt-stats"><b>${ASSETS.length}</b> 项</div>
+    <div class="lt-divider"></div>
+    <div class="lt-stats">总容量 <b>${total} GB</b></div>
+    <div class="lt-divider"></div>
+    <div class="lt-stats" style="color:var(--blue)"><b>${movable}</b> 可迁移</div>
+    <div class="lt-divider"></div>
+    <div class="lt-stats" style="color:var(--rose)"><b>${blocked}</b> 阻止</div>
+    <div class="lt-spacer"></div>
+    <div class="seg" id="stageFilter">
+      <button class="${state.filter==='all'?'active':''}" data-f="all">全部</button>
+      <button class="${state.filter==='movable'?'active':''}" data-f="movable">可迁移</button>
+      <button class="${state.filter==='caution'?'active':''}" data-f="caution">需谨慎</button>
+      <button class="${state.filter==='blocked'?'active':''}" data-f="blocked">已阻止</button>
+    </div>
+  </div>
+  <div class="asset-list">
+    ${list.map(a=>renderAssetRow(a)).join("")}
+  </div>`;
+}
+
+function renderAssetRow(a){
+  const supMap={movable:['pill-mint','可迁移'],caution:['pill-amber','需谨慎'],blocked:['pill-rose','已阻止']};
+  const riskMap={low:['risk-low','低'],mid:['risk-mid','中'],high:['risk-high','高']};
+  const [pc,pt]=supMap[a.support];
+  const [rc,rt]=riskMap[a.risk];
+  return `
+  <div class="asset-row ${state.selectedId===a.id?'selected':''}" data-id="${a.id}">
+    <div class="ar-check">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="${state.selectedId===a.id?'#147cff':'#9fb9d6'}" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/>${state.selectedId===a.id?'<polyline points="9 12 11 14 15 9"/>':''}</svg>
+    </div>
+    <div class="ar-icon">${ICONS[a.icon]||ICONS.box}</div>
+    <div class="ar-main">
+      <div class="ar-line1">
+        <span class="ar-name">${a.name}</span>
+        <span class="ar-vendor">${a.vendor}</span>
+        <span class="pill ${pc}">${pt}</span>
+        <span class="risk ${rc}">${rt}</span>
+      </div>
+      <div class="ar-line2">${a.type} · ${a.source}　　${a.path}</div>
+    </div>
+    <div class="ar-meta">
+      <span class="ar-size">${a.size} ${a.unit}</span>
+    </div>
+  </div>`;
+}
+
+/* ---- 流程4 & 5：迁移执行面板 ---- */
+function renderMigratePanel(){
+  const a=ASSETS.find(x=>x.id===state.selectedId);
+  if(!a) return "<p>未选择资产</p>";
+  return `
+  <div class="migrate-panel">
+    <div class="stage-head">
+      <span class="eyebrow">MIGRATION PLAN</span>
+      <h2>迁移 · ${a.name}</h2>
+      <p>将以下软件从 C 盘迁移至 D 盘。BlueTidy 会重定向注册表与快捷方式，保证迁移后可正常运行。</p>
+    </div>
+    <div class="flow-arrow">
+      <div class="flow-path" style="color:var(--rose)">C:\\</div>
+      <div class="arr"></div>
+      <div class="flow-path" style="color:var(--blue)">D:\\</div>
+    </div>
+    <div class="metric-grid">
+      <div class="metric"><div class="ml">预计释放</div><div class="mv" style="color:var(--blue)">${a.size} ${a.unit}</div></div>
+      <div class="metric"><div class="ml">软件体积</div><div class="mv">${a.size} ${a.unit}</div></div>
+      <div class="metric"><div class="ml">支持状态</div><div class="mv" style="font-size:14px">${a.support==='movable'?'可迁移':a.support==='caution'?'需谨慎':'已阻止'}</div></div>
+      <div class="metric"><div class="ml">目标盘</div><div class="mv">D:\\</div></div>
+    </div>
+    <div class="plan-card">
+      <h3>${ICONS.folder}迁移计划</h3>
+      <div class="plan-row"><span class="pl">源路径</span><span class="pv">${a.path}</span></div>
+      <div class="plan-row"><span class="pl">目标路径</span><span class="pv" style="color:var(--blue)">${a.path.replace("C:\\","D:\\")}</span></div>
+      <div class="plan-row"><span class="pl">体积</span><span class="pv">${a.size} ${a.unit}</span></div>
+      <div class="plan-row"><span class="pl">权限</span><span class="pv">管理员（已就绪）</span></div>
+      <div class="plan-row"><span class="pl">警告</span><span class="pv"><span class="plan-warn">${a.support==='caution'?'需保留注册表快照':'无'}</span></span></div>
+      <div class="plan-row"><span class="pl">阻断项</span><span class="pv" style="color:var(--mint)">0 项</span></div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn btn-danger" id="btnExecMigrate" ${a.support==='blocked'?'disabled':''}>${ICONS.arrowRight}执行迁移</button>
+      <button class="btn" onclick="state.view='default';renderAll();">返回资产库</button>
+      ${a.support==='blocked'?'<span style="font-size:11px;color:var(--rose);font-weight:700">该资产已阻止迁移</span>':''}
+    </div>
+    <div class="exec-progress" id="execProgress">
+      <div class="exec-bar"><div class="exec-bar-fill" id="execFill"></div></div>
+      <div class="exec-status" id="execStatus">> 准备迁移…</div>
+    </div>
+  </div>`;
+}
+
+function renderMigrateHelp(){
+  return `<div class="stage-head">
+    <span class="eyebrow">APP MIGRATION</span>
+    <h2>应用迁移</h2>
+    <p>选择一个可迁移的软件资产，制定迁移计划。BlueTidy 会安全地将软件从 C 盘搬迁至其他盘符。</p>
+    <div class="entry-actions"><button class="btn btn-primary" onclick="goTask('library')">${ICONS.box}前往资产库选择</button></div>
+  </div>`;
+}
+
+/* ---- 瘦身 ---- */
+function renderSlim(){
+  return `<div class="stage-head">
+    <span class="eyebrow">SLIM DOWN</span>
+    <h2>瘦身分析</h2>
+    <p>扫描软件产生的缓存、日志与冗余文件，安全清理以释放空间。</p>
+  </div>
+  <div class="dash-grid">
+    <div class="dash-card">
+      <h3>可清理项</h3>
+      <div class="dc-sub">模拟数据</div>
+      <div class="dash-row"><span class="l">浏览器缓存</span><span class="r">1.8 GB</span></div>
+      <div class="dash-row"><span class="l">软件日志</span><span class="r">640 MB</span></div>
+      <div class="dash-row"><span class="l">回收站</span><span class="r">320 MB</span></div>
+      <div class="dash-row"><span class="l">临时文件</span><span class="r">210 MB</span></div>
+      <div style="margin-top:14px"><button class="btn btn-primary" onclick="toast('清理完成','已释放 2.97 GB','success')">${ICONS.shield}执行清理</button></div>
+    </div>
+    <div class="dash-card">
+      <h3>瘦身建议</h3>
+      <div class="dc-sub">基于扫描结果</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn" style="justify-content:flex-start" onclick="toast('已加入队列','将在下次清理时处理','info')">${ICONS.box}<span>清理 Steam 下载缓存</span></button>
+        <button class="btn" style="justify-content:flex-start" onclick="toast('已加入队列','将在下次清理时处理','info')">${ICONS.image}<span>清理 Photoshop 临时文件</span></button>
+        <button class="btn" style="justify-content:flex-start" onclick="toast('已加入队列','将在下次清理时处理','info')">${ICONS.code}<span>清理 VS Code 扩展缓存</span></button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---- 批量队列 ---- */
+function renderQueue(){
+  return `<div class="stage-head">
+    <span class="eyebrow">BATCH QUEUE</span>
+    <h2>批量队列</h2>
+    <p>将多个迁移任务加入队列，依次执行。适合一次性搬迁多个大型软件。</p>
+  </div>
+  <div class="dash-card" style="max-width:600px">
+    <h3>当前队列</h3>
+    <div class="dc-sub">队列为空</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${ASSETS.filter(a=>a.support==="movable").slice(0,3).map(a=>`
+        <div class="dash-row" style="border:none;background:var(--paper);border:var(--border);border-radius:8px;padding:10px 12px;box-shadow:var(--shadow-sm)">
+          <span class="l" style="font-weight:700;color:var(--ink)">${a.name}</span>
+          <span class="r" style="font-family:'Cascadia Mono',monospace">${a.size} ${a.unit}</span>
+        </div>`).join("")}
+    </div>
+    <div style="margin-top:14px;display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="toast('队列已启动','3 个任务排队中','info')">${ICONS.arrowRight}开始执行队列</button>
+      <button class="btn" onclick="toast('队列已清空','','warn')">清空队列</button>
+    </div>
+  </div>`;
+}
+
+/* ---- 流程6：事务中心 ---- */
+function renderHistory(){
+  const rollback=TRANSACTIONS.filter(t=>t.status==="rollback").length;
+  const done=TRANSACTIONS.filter(t=>t.status==="done").length;
+  return `
+  <div class="stage-head">
+    <span class="eyebrow">ROLLBACK CENTER</span>
+    <h2>回滚中心</h2>
+    <p>查看所有迁移事务。可对已完成的迁移执行回滚，恢复至源路径。</p>
+  </div>
+  <div class="metric-grid" style="max-width:600px">
+    <div class="metric"><div class="ml">全部事务</div><div class="mv">${TRANSACTIONS.length}</div></div>
+    <div class="metric"><div class="ml">可回滚</div><div class="mv" style="color:var(--amber)">${done}</div></div>
+    <div class="metric"><div class="ml">已回滚</div><div class="mv" style="color:var(--mint)">${rollback}</div></div>
+    <div class="metric"><div class="ml">失败</div><div class="mv" style="color:var(--rose)">0</div></div>
+  </div>
+  <div class="tx-list">
+    ${TRANSACTIONS.map(t=>renderTxRow(t)).join("")}
+  </div>`;
+}
+
+function renderTxRow(t){
+  const statusInfo = t.status==="rollback"
+    ? '<span class="pill pill-mint">已回滚</span>'
+    : '<span class="pill pill-amber">可回滚</span>';
+  return `
+  <div class="tx-row" data-id="${t.id}">
+    <div class="tx-main">
+      <div class="tx-line1">
+        <span class="tx-name">${t.name}</span>
+        ${statusInfo}
+        <span class="tx-time">${ICONS.clock}<span style="vertical-align:middle">${t.time}</span></span>
+      </div>
+      <div class="tx-path">${t.src} &nbsp;→&nbsp; ${t.dst}</div>
+    </div>
+    <div>
+      ${t.status==="done"
+        ? `<button class="btn btn-sm" data-rollback="${t.id}">${ICONS.undo}回滚</button>`
+        : `<button class="btn btn-sm" disabled>${ICONS.check}已完成</button>`}
+    </div>
+  </div>`;
+}
+
+/* ============ 渲染：右侧 Dock ============ */
+function renderDock(){
+  const dock=document.getElementById("dock");
+  if(state.mode==="folder"){
+    dock.innerHTML="";
+    return;
+  }
+  if(!state.selectedId || !state.scanned){
+    dock.innerHTML=`<div class="dock-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div style="font-size:12px;font-weight:700;color:var(--ink-2)">选择一个资产</div>
+      <div style="font-size:11px">点击左侧资产查看治理决策看板</div>
+    </div>`;
+    return;
+  }
+  const a=ASSETS.find(x=>x.id===state.selectedId);
+  const supMap={movable:['可治理','#3a8'],caution:['需谨慎',undefined],blocked:['已阻止',undefined]};
+  const conf = a.support==="movable"?92:a.support==="caution"?64:28;
+  const confColor = a.support==="movable"?"var(--mint)":a.support==="caution"?"var(--amber)":"var(--rose)";
+  dock.innerHTML=`
+    <div class="dock-eyebrow">LOCAL DECISION</div>
+    <div class="dock-title">${a.name}</div>
+    <div class="dock-support">
+      ${ICONS.shield}
+      <span>SUPPORT: ${a.support==='movable'?'MOVABLE':a.support==='caution'?'CAUTION':'BLOCKED'}</span>
+    </div>
+    <div class="dock-confidence">可信度 ${conf}%</div>
+    <div class="dock-conf-bar"><div class="dock-conf-fill" style="width:${conf}%;background:${confColor}"></div></div>
+
+    <div class="dock-metrics">
+      <div class="dm"><div class="l">体积</div><div class="v">${a.size} ${a.unit}</div></div>
+      <div class="dm"><div class="l">风险</div><div class="v" style="font-size:13px">${a.risk==='low'?'低':a.risk==='mid'?'中':'高'}</div></div>
+      <div class="dm"><div class="l">类型</div><div class="v" style="font-size:13px">${a.type}</div></div>
+      <div class="dm"><div class="l">来源</div><div class="v" style="font-size:13px">${a.source}</div></div>
+    </div>
+
+    <div class="readiness">
+      <h4>${ICONS.shield}治理就绪度</h4>
+      <div class="ri ri-ok"><div class="ri-ic">${ICONS.check}</div><div class="ri-t">安装目录可访问</div><div class="ri-s">OK</div></div>
+      <div class="ri ri-${a.support==='blocked'?'bad':'ok'}"><div class="ri-ic">${a.support==='blocked'?ICONS.x:ICONS.check}</div><div class="ri-t">迁移入口${a.support==='blocked'?'不可用':'可用'}</div><div class="ri-s">${a.support==='blocked'?'BLOCK':'OK'}</div></div>
+      <div class="ri ri-ok"><div class="ri-ic">${ICONS.check}</div><div class="ri-t">阻断项</div><div class="ri-s">0 项</div></div>
+      ${a.support==='caution'?`<div class="ri ri-warn"><div class="ri-ic">${ICONS.alert}</div><div class="ri-t">注册表依赖</div><div class="ri-s">需快照</div></div>`:''}
+    </div>
+
+    <div class="dock-actions">
+      <button class="btn btn-primary" ${a.support==='blocked'?'disabled':''} onclick="enterMigrate(${a.id})">${ICONS.arrowRight}迁移计划 →</button>
+      <button class="btn" onclick="toast('瘦身分析','已生成 '+${JSON.stringify(a.name)}+' 的清理建议','info')">${ICONS.folder}瘦身分析</button>
+    </div>`;
+}
+
+/* ============ 事件绑定 ============ */
+function bindStageEvents(){
+  // 资产行点击
+  document.querySelectorAll(".asset-row").forEach(r=>{
+    r.onclick=()=>selectAsset(parseInt(r.dataset.id));
+  });
+  // 首页按钮
+  const aa=document.getElementById("actAnalyzeDisk");
+  if(aa) aa.onclick=()=>{toast("磁盘分析","模拟：C 盘已用 128.4 GB","info");};
+  const ag=document.getElementById("actGovernAssets");
+  if(ag) ag.onclick=startScan;
+  // stage 内筛选器
+  const sf=document.getElementById("stageFilter");
+  if(sf) sf.querySelectorAll("button").forEach(b=>{
+    b.onclick=()=>{state.filter=b.dataset.f;syncFilterSegs();renderAll();};
+  });
+  // 迁移执行
+  const em=document.getElementById("btnExecMigrate");
+  if(em) em.onclick=confirmMigrate;
+  // 事务回滚
+  document.querySelectorAll("[data-rollback]").forEach(b=>{
+    b.onclick=()=>confirmRollback(parseInt(b.dataset.rollback));
+  });
+}
+
+function syncFilterSegs(){
+  document.querySelectorAll("#libFilter button").forEach(b=>{
+    b.classList.toggle("active",b.dataset.f===state.filter);
+  });
+}
+
+/* ============ 交互动作 ============ */
+function goTask(task){
+  state.task=task;
+  state.view="default";
+  document.querySelectorAll(".task-item").forEach(t=>{
+    t.classList.toggle("active",t.dataset.task===task);
+  });
+  renderAll();
+}
+
+function selectAsset(id){
+  state.selectedId=id;
+  state.view="default";
+  renderAll();
+}
+
+function enterMigrate(id){
+  state.selectedId=id;
+  state.view="migrate";
+  state.task="library";
+  document.querySelectorAll(".task-item").forEach(t=>{
+    t.classList.toggle("active",t.dataset.task==="library");
+  });
+  renderAll();
+}
+
+/* ---- 流程2：启动扫描 ---- */
+function startScan(){
+  if(state.scanning||state.scanned) return;
+  state.scanning=true;
+  state.task="home";
+  renderAll();
+  setStatus("扫描中 · 读取安装路径与容量元数据…");
+
+  const logs=[
+    "> 初始化扫描引擎…",
+    "> 枚举注册表卸载项…",
+    "> 扫描 C:\\Program Files…",
+    "> 扫描 C:\\Program Files (x86)…",
+    "> 扫描 C:\\Users\\…\\AppData…",
+    "> 解析 Winget / Scoop / Steam 来源…",
+    "> 计算体积与风险等级…",
+    "> 扫描完成。"
+  ];
+  let prog=0, li=0;
+  const fill=document.getElementById("scanFill");
+  const log=document.getElementById("scanLog");
+  const title=document.getElementById("scanTitle");
+  const sub=document.getElementById("scanSub");
+
+  const tick=setInterval(()=>{
+    prog+=Math.random()*16+6;
+    if(prog>100) prog=100;
+    fill.style.width=prog+"%";
+    if(li<logs.length && Math.random()>0.35){
+      log.textContent=logs[li];li++;
+    }
+    if(prog>=100){
+      clearInterval(tick);
+      title.textContent="扫描完成";
+      sub.textContent=`已识别 ${ASSETS.length} 个软件资产`;
+      log.textContent=logs[logs.length-1];
+      setTimeout(()=>{
+        state.scanning=false;
+        state.scanned=true;
+        renderHeaderStats();
+        renderAll();
+        toast("扫描完成",`${ASSETS.length} 资产 · ${ASSETS.filter(a=>a.support==="movable").length} 可迁移 · ${ASSETS.filter(a=>a.support==="blocked").length} 受限`,"success");
+        setStatus("扫描完成 · 双击资产查看治理决策");
+      },700);
+    }
+  },280);
+}
+
+/* ---- 流程5：确认迁移 ---- */
+function confirmMigrate(){
+  const a=ASSETS.find(x=>x.id===state.selectedId);
+  if(!a) return;
+  const dst=a.path.replace("C:\\","D:\\");
+  showModal(`
+    <h3>确认迁移 ${a.name}？</h3>
+    <p>此操作将把软件从 C 盘迁移至 D 盘，并重定向注册表与快捷方式。</p>
+    <div class="modal-path">
+      ${a.path}<br>
+      <span class="arrow">-></span><br>
+      ${dst}
+    </div>
+    <p style="font-size:11px;color:var(--ink-3)">迁移期间请勿使用该软件。可在事务中心回滚。</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="hideModal()">取消</button>
+      <button class="btn btn-primary" id="modalConfirm">确认迁移</button>
+    </div>`);
+  document.getElementById("modalConfirm").onclick=()=>{
+    hideModal();
+    executeMigrate(a);
+  };
+}
+
+function executeMigrate(a){
+  const prog=document.getElementById("execProgress");
+  const fill=document.getElementById("execFill");
+  const status=document.getElementById("execStatus");
+  prog.classList.add("show");
+  const btn=document.getElementById("btnExecMigrate");
+  if(btn) btn.disabled=true;
+  const steps=[
+    `> 创建事务快照 [${a.name}]…`,
+    `> 关闭运行中的进程…`,
+    `> 复制文件 ${a.path} → D:\\…`,
+    `> 重定向注册表项…`,
+    `> 修正快捷方式…`,
+    `> 校验完整性…`,
+    `> 迁移完成。`
+  ];
+  let p=0,si=0;
+  const tick=setInterval(()=>{
+    p+=Math.random()*14+8;
+    if(p>100)p=100;
+    fill.style.width=p+"%";
+    if(si<steps.length && Math.random()>0.3){status.textContent=steps[si];si++;}
+    if(p>=100){
+      clearInterval(tick);
+      status.textContent=steps[steps.length-1];
+      // 加入事务记录
+      const newTx={id:Date.now(),name:a.name,time:new Date().toLocaleString("zh-CN",{hour12:false}).replace(/\//g,"-"),status:"done",src:a.path,dst:a.path.replace("C:\\","D:\\")};
+      TRANSACTIONS.unshift(newTx);
+      setTimeout(()=>{
+        toast("迁移完成",`${a.name} 已迁移至 D 盘`,"success");
+        setStatus(`迁移完成 · ${a.name} → D:\\`);
+        state.view="default";
+        renderAll();
+      },600);
+    }
+  },320);
+}
+
+/* ---- 流程6：确认回滚 ---- */
+function confirmRollback(id){
+  const t=TRANSACTIONS.find(x=>x.id===id);
+  if(!t) return;
+  showModal(`
+    <h3>确认回滚 ${t.name}？</h3>
+    <p>此操作将把软件从目标路径恢复至源路径。</p>
+    <div class="modal-path">
+      ${t.dst}<br>
+      <span class="arrow">-></span><br>
+      ${t.src}
+    </div>
+    <p style="font-size:11px;color:var(--ink-3)">回滚后软件将恢复至迁移前的位置。</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="hideModal()">取消</button>
+      <button class="btn btn-primary" id="modalConfirmRollback">确认回滚</button>
+    </div>`);
+  document.getElementById("modalConfirmRollback").onclick=()=>{
+    hideModal();
+    executeRollback(t);
+  };
+}
+
+function executeRollback(t){
+  setStatus(`回滚中 · ${t.name}…`);
+  const btn=document.querySelector(`[data-rollback="${t.id}"]`);
+  if(btn){btn.disabled=true;btn.innerHTML=ICONS.clock+" 回滚中…";}
+  setTimeout(()=>{
+    t.status="rollback";
+    toast("回滚完成",`${t.name} 已恢复至源路径`,"success");
+    setStatus(`回滚完成 · ${t.name}`);
+    renderAll();
+  },1600);
+}
+
+/* ============ 统一渲染 ============ */
+function renderAll(){
+  renderStage();
+  renderMiniList();
+  renderDock();
+}
+
+/* ============ 初始化绑定 ============ */
+function init(){
+  // 任务导航
+  document.querySelectorAll(".task-item").forEach(t=>{
+    t.onclick=()=>goTask(t.dataset.task);
+  });
+  // 模式切换
+  document.getElementById("modeApp").onclick=()=>{
+    state.mode="app";
+    document.getElementById("modeApp").classList.add("active");
+    document.getElementById("modeFolder").classList.remove("active");
+    document.getElementById("app").classList.remove("folder-mode");
+    document.getElementById("sbMode").textContent="应用模式";
+    renderDock();
+  };
+  document.getElementById("modeFolder").onclick=()=>{
+    state.mode="folder";
+    document.getElementById("modeFolder").classList.add("active");
+    document.getElementById("modeApp").classList.remove("active");
+    document.getElementById("app").classList.add("folder-mode");
+    document.getElementById("sbMode").textContent="文件夹模式";
+    toast("已切换至文件夹模式","右侧治理坞已隐藏","info");
+  };
+  // 顶部扫描按钮
+  document.getElementById("btnScanAssets").onclick=startScan;
+  document.getElementById("btnSelectTarget").onclick=()=>toast("选择目标盘","模拟：已选择 D:\\ 作为默认目标","info");
+  document.getElementById("btnSettings").onclick=()=>toast("设置","模拟：打开设置面板","info");
+  // 侧栏搜索
+  document.getElementById("libSearch").oninput=(e)=>{
+    state.search=e.target.value;
+    renderMiniList();
+  };
+  // 侧栏筛选/排序
+  document.querySelectorAll("#libFilter button").forEach(b=>{
+    b.onclick=()=>{state.filter=b.dataset.f;syncFilterSegs();renderAll();};
+  });
+  document.querySelectorAll("#libSort button").forEach(b=>{
+    b.onclick=()=>{
+      state.sort=b.dataset.s;
+      document.querySelectorAll("#libSort button").forEach(x=>x.classList.toggle("active",x===b));
+      renderMiniList();
+      if(state.task==="library") renderStage();
+    };
+  });
+  // 模态遮罩点击关闭
+  document.getElementById("modalMask").onclick=(e)=>{
+    if(e.target.id==="modalMask") hideModal();
+  };
+  // 键盘 ESC
+  document.addEventListener("keydown",(e)=>{
+    if(e.key==="Escape") hideModal();
+  });
+
+  renderHeaderStats();
+  renderAll();
+}
+
+window.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>

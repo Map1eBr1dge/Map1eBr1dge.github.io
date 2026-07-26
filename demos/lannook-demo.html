@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LanNook · 局域网文件传输 · 模拟演示</title>
+<style>
+/* ============================================================
+   LanNook Demo - 模拟演示
+   自包含 HTML，无外部依赖
+   ============================================================ */
+
+/* ---------- 设计变量 ---------- */
+:root{
+  --brand:#246BFF;
+  --brand-dark:#1A56DB;
+  --brand-hover:#1E5FE8;
+  --brand-soft:rgba(36,107,255,0.10);
+  --brand-soft-2:rgba(36,107,255,0.14);
+
+  --bg:#F5F7FA;
+  --card:#FFFFFF;
+  --inset:#EDF0F4;
+
+  --text-1:#1F2328;
+  --text-2:#656D76;
+  --text-3:#8C959F;
+
+  --success:#2DA44E;
+  --success-soft:rgba(45,164,78,0.12);
+  --warning:#D4A72C;
+  --warning-soft:rgba(212,167,44,0.14);
+  --error:#CF222E;
+  --error-soft:rgba(207,34,46,0.10);
+  --info:#0969DA;
+  --info-soft:rgba(9,105,218,0.10);
+
+  --border:#E1E4E8;
+  --border-soft:#EBEDF0;
+
+  --r-sm:4px;
+  --r-md:8px;
+  --r-lg:12px;
+  --r-full:9999px;
+
+  --shadow-card:0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-pop:0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.08);
+  --shadow-modal:0 16px 48px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.10);
+
+  --topbar-h:56px;
+  --sidebar-w:240px;
+
+  --font:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono:"JetBrains Mono", "SF Mono", "Cascadia Code", Consolas, monospace;
+}
+
+/* ---------- 基础重置 ---------- */
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:var(--font);
+  font-size:14px;
+  line-height:1.5;
+  color:var(--text-1);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select{font-family:inherit;font-size:inherit;}
+svg{display:block;}
+
+/* ---------- 模拟演示标签 ---------- */
+.demo-banner{
+  position:fixed;top:0;left:0;right:0;
+  height:26px;
+  background:linear-gradient(90deg,#FFF4E5,#FFE9D6);
+  border-bottom:1px solid #FFD9A8;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:#9A6700;font-weight:600;
+  letter-spacing:.2px;z-index:2000;
+}
+.demo-banner .dot{width:6px;height:6px;border-radius:50%;background:#D4A72C;margin-right:8px;animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* ---------- 应用骨架 ---------- */
+.app{padding-top:26px;height:100vh;display:flex;flex-direction:column;}
+
+/* ---------- 顶栏 ---------- */
+.topbar{
+  height:var(--topbar-h);
+  background:rgba(255,255,255,0.82);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+  position:relative;z-index:100;
+  flex-shrink:0;
+}
+.topbar-left{display:flex;align-items:center;gap:14px;}
+.logo{
+  width:30px;height:30px;border-radius:var(--r-md);
+  background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;
+  box-shadow:0 2px 6px rgba(36,107,255,0.35);
+}
+.brand-name{font-size:16px;font-weight:700;color:var(--text-1);letter-spacing:-.2px;}
+.net-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;color:var(--text-2);
+  background:var(--inset);border:1px solid var(--border-soft);
+  padding:3px 8px;border-radius:var(--r-full);font-weight:500;
+}
+.net-badge .ring{width:6px;height:6px;border-radius:50%;background:var(--success);}
+
+.topbar-right{display:flex;align-items:center;gap:14px;}
+.status-pill{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:13px;color:var(--text-2);font-weight:500;
+}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 0 3px var(--success-soft);}
+
+/* ---------- 按钮 ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:7px 14px;border-radius:var(--r-md);
+  font-size:13px;font-weight:600;
+  transition:all .15s ease;
+  border:1px solid transparent;white-space:nowrap;
+}
+.btn svg{width:15px;height:15px;}
+.btn-primary{background:var(--brand);color:#fff;}
+.btn-primary:hover{background:var(--brand-hover);}
+.btn-secondary{background:var(--card);color:var(--text-1);border-color:var(--border);}
+.btn-secondary:hover{background:var(--inset);}
+.btn-ghost{color:var(--text-2);}
+.btn-ghost:hover{background:var(--inset);color:var(--text-1);}
+.btn-danger{background:var(--error-soft);color:var(--error);}
+.btn-danger:hover{background:rgba(207,34,46,0.16);}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.btn-lg{padding:10px 18px;font-size:14px;}
+
+/* ---------- 主体布局 ---------- */
+.body{flex:1;display:flex;min-height:0;}
+
+/* ---------- 侧边栏 ---------- */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--card);
+  border-right:1px solid var(--border);
+  padding:16px 12px;
+  display:flex;flex-direction:column;gap:4px;
+}
+.nav-section-label{
+  font-size:11px;font-weight:600;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:.6px;
+  padding:12px 12px 6px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;border-radius:var(--r-md);
+  color:var(--text-2);font-size:13px;font-weight:500;
+  cursor:pointer;transition:all .12s ease;
+  position:relative;
+}
+.nav-item svg{width:17px;height:17px;flex-shrink:0;}
+.nav-item:hover{background:var(--inset);color:var(--text-1);}
+.nav-item.active{
+  color:var(--brand);background:var(--brand-soft);
+  font-weight:600;
+}
+.nav-item.active::before{
+  content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:2.5px;height:18px;background:var(--brand);border-radius:2px;
+}
+.nav-item .count{
+  margin-left:auto;font-size:11px;font-weight:600;
+  background:var(--inset);color:var(--text-2);
+  padding:1px 7px;border-radius:var(--r-full);
+}
+.nav-item.active .count{background:var(--brand);color:#fff;}
+
+.sidebar-foot{
+  margin-top:auto;padding:12px;
+  border-top:1px solid var(--border-soft);
+  font-size:11px;color:var(--text-3);
+}
+.sidebar-foot .me{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.sidebar-foot .avatar{width:24px;height:24px;border-radius:var(--r-full);background:linear-gradient(135deg,#7B61FF,#246BFF);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+
+/* ---------- 主内容区 ---------- */
+.main{
+  flex:1;min-width:0;overflow-y:auto;
+  padding:24px 32px;
+}
+.page{max-width:1100px;margin:0 auto;}
+.page-head{margin-bottom:20px;}
+.page-title{font-size:22px;font-weight:700;color:var(--text-1);letter-spacing:-.3px;}
+.page-sub{font-size:13px;color:var(--text-2);margin-top:4px;}
+
+/* ---------- 卡片 ---------- */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r-lg);box-shadow:var(--shadow-card);
+}
+.card-pad{padding:20px;}
+.card-head{
+  padding:16px 20px;border-bottom:1px solid var(--border-soft);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-head h3{font-size:14px;font-weight:600;}
+
+/* ---------- 设备表格 ---------- */
+.device-table{width:100%;border-collapse:collapse;}
+.device-table th{
+  text-align:left;font-size:11px;font-weight:600;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:.5px;
+  padding:10px 16px;border-bottom:1px solid var(--border-soft);
+  background:var(--inset);
+}
+.device-table td{
+  padding:12px 16px;border-bottom:1px solid var(--border-soft);
+  font-size:13px;vertical-align:middle;
+}
+.device-table tr:last-child td{border-bottom:none;}
+.device-table tbody tr{cursor:pointer;transition:background .12s;}
+.device-table tbody tr:hover{background:var(--inset);}
+.device-table tr.selected{background:var(--brand-soft);}
+.device-table tr.selected td:first-child{box-shadow:inset 3px 0 0 var(--brand);}
+
+.dev-cell{display:flex;align-items:center;gap:10px;}
+.dev-icon{
+  width:32px;height:32px;border-radius:var(--r-md);
+  background:var(--inset);display:flex;align-items:center;justify-content:center;
+  color:var(--text-2);flex-shrink:0;
+}
+.dev-icon svg{width:18px;height:18px;}
+.dev-name{font-weight:600;color:var(--text-1);}
+.dev-sub{font-size:11px;color:var(--text-3);}
+.platform-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:12px;color:var(--text-2);
+}
+.status-cell{display:flex;align-items:center;gap:6px;font-size:12px;}
+.status-cell.online{color:var(--success);}
+.status-cell.online .sd{background:var(--success);}
+.status-cell .sd{width:7px;height:7px;border-radius:50%;background:var(--text-3);}
+
+/* ---------- 拖放区 ---------- */
+.dropzone{
+  margin-top:18px;
+  border:2px dashed var(--border);
+  border-radius:var(--r-lg);
+  padding:36px 20px;text-align:center;
+  background:var(--card);transition:all .2s ease;
+  cursor:pointer;
+}
+.dropzone:hover,.dropzone.drag{
+  border-color:var(--brand);background:var(--brand-soft);
+}
+.dropzone .dz-icon{
+  width:52px;height:52px;border-radius:var(--r-lg);
+  background:var(--brand-soft);color:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 12px;
+}
+.dropzone .dz-icon svg{width:26px;height:26px;}
+.dropzone h4{font-size:15px;font-weight:600;margin-bottom:4px;}
+.dropzone h4 .target{color:var(--brand);}
+.dropzone p{font-size:12px;color:var(--text-3);}
+.dropzone .or-link{color:var(--brand);font-weight:600;margin-top:8px;display:inline-block;font-size:13px;}
+
+/* ---------- 文件列表 ---------- */
+.file-list{margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+.file-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;border:1px solid var(--border-soft);
+  border-radius:var(--r-md);background:var(--card);
+  transition:all .12s;
+}
+.file-row:hover{border-color:var(--brand);background:var(--brand-soft);}
+.file-icon{
+  width:34px;height:34px;border-radius:var(--r-md);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:10px;font-weight:700;color:#fff;
+}
+.file-icon.img{background:#0AA1FF;}
+.file-icon.pdf{background:#E53935;}
+.file-icon.vid{background:#8E44AD;}
+.file-icon.doc{background:#2DA44E;}
+.file-icon.zip{background:#D4A72C;}
+.file-info{flex:1;min-width:0;}
+.file-name{font-size:13px;font-weight:500;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-meta{font-size:11px;color:var(--text-3);font-family:var(--mono);}
+.file-remove{
+  width:26px;height:26px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);transition:all .12s;
+}
+.file-remove:hover{background:var(--error-soft);color:var(--error);}
+.file-remove svg{width:14px;height:14px;}
+
+.send-bar{
+  margin-top:16px;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-card);
+}
+.send-bar .summary{font-size:13px;color:var(--text-2);}
+.send-bar .summary b{color:var(--text-1);}
+
+/* ---------- 滑出面板 ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(31,35,40,0.4);
+  opacity:0;pointer-events:none;transition:opacity .25s ease;
+  z-index:500;
+}
+.overlay.show{opacity:1;pointer-events:auto;}
+
+.slide-panel{
+  position:fixed;top:26px;right:0;bottom:0;
+  width:420px;max-width:92vw;
+  background:var(--card);
+  box-shadow:var(--shadow-pop);
+  z-index:600;
+  transform:translateX(100%);
+  transition:transform .3s cubic-bezier(.22,.61,.36,1);
+  display:flex;flex-direction:column;
+}
+.slide-panel.show{transform:translateX(0);}
+.panel-head{
+  padding:16px 20px;border-bottom:1px solid var(--border-soft);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.panel-head h3{font-size:15px;font-weight:700;}
+.panel-body{flex:1;overflow-y:auto;padding:20px;}
+.panel-close{
+  width:30px;height:30px;border-radius:var(--r-md);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-2);transition:all .12s;
+}
+.panel-close:hover{background:var(--inset);color:var(--text-1);}
+.panel-close svg{width:16px;height:16px;}
+
+/* ---------- 二维码 ---------- */
+.qr-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px;background:var(--inset);border-radius:var(--r-md);
+  margin-bottom:14px;
+}
+.qr-box{
+  width:160px;height:160px;background:#fff;
+  border-radius:var(--r-md);padding:10px;
+  box-shadow:var(--shadow-card);position:relative;
+  cursor:pointer;
+}
+.qr-box::after{
+  content:"点击模拟扫码";position:absolute;inset:0;
+  background:rgba(36,107,255,0.0);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;border-radius:var(--r-md);
+  transition:background .2s;opacity:0;
+}
+.qr-box:hover::after{background:rgba(36,107,255,0.55);opacity:1;}
+.qr-grid{
+  width:100%;height:100%;
+  display:grid;
+  grid-template-columns:repeat(21,1fr);
+  grid-template-rows:repeat(21,1fr);
+  gap:1px;
+}
+.qr-grid .cell{background:#fff;}
+.qr-grid .cell.on{background:#1F2328;}
+.qr-hint{font-size:12px;color:var(--text-2);margin-top:12px;text-align:center;}
+
+/* ---------- 面板通用 ---------- */
+.field{margin-bottom:16px;}
+.field-label{font-size:12px;font-weight:600;color:var(--text-1);margin-bottom:6px;display:block;}
+.field-desc{font-size:11px;color:var(--text-3);margin-top:4px;}
+.select{
+  width:100%;padding:8px 10px;border:1px solid var(--border);
+  border-radius:var(--r-md);background:var(--card);
+  font-size:13px;color:var(--text-1);outline:none;
+  appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23656D76' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 10px center;
+  padding-right:30px;
+}
+.select:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft);}
+
+.addr-box{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;background:var(--inset);
+  border:1px solid var(--border-soft);border-radius:var(--r-md);
+}
+.addr-box .addr{flex:1;font-family:var(--mono);font-size:12px;color:var(--text-1);word-break:break-all;}
+.addr-box .copy-btn{
+  flex-shrink:0;padding:5px 10px;font-size:11px;font-weight:600;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r-sm);color:var(--text-2);transition:all .12s;
+}
+.addr-box .copy-btn:hover{border-color:var(--brand);color:var(--brand);}
+
+.toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 0;
+}
+.toggle-row .tl{font-size:13px;font-weight:500;}
+.toggle-row .td{font-size:11px;color:var(--text-3);margin-top:2px;}
+.switch{position:relative;width:38px;height:22px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.switch .slider{
+  position:absolute;inset:0;background:var(--border);
+  border-radius:var(--r-full);transition:.2s;cursor:pointer;
+}
+.switch .slider::before{
+  content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;
+  background:#fff;border-radius:50%;transition:.2s;
+  box-shadow:0 1px 2px rgba(0,0,0,0.2);
+}
+.switch input:checked + .slider{background:var(--brand);}
+.switch input:checked + .slider::before{transform:translateX(16px);}
+
+.path-input{
+  width:100%;padding:8px 10px;border:1px solid var(--border);
+  border-radius:var(--r-md);background:var(--card);
+  font-size:12px;font-family:var(--mono);color:var(--text-1);outline:none;
+}
+.path-input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft);}
+
+.diag-section{
+  margin-top:20px;padding-top:16px;border-top:1px solid var(--border-soft);
+}
+.diag-title{font-size:12px;font-weight:600;color:var(--text-1);margin-bottom:10px;}
+.diag-list{display:flex;flex-direction:column;gap:8px;}
+.diag-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;background:var(--inset);border-radius:var(--r-md);
+  font-size:12px;
+}
+.diag-item .check{
+  width:18px;height:18px;border-radius:50%;
+  background:var(--success);color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.diag-item .check svg{width:11px;height:11px;}
+.diag-item .dl{flex:1;color:var(--text-1);}
+.diag-item .ds{font-size:11px;color:var(--success);font-weight:600;}
+
+/* ---------- 模态框 ---------- */
+.modal-wrap{
+  position:fixed;inset:0;z-index:700;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s ease;
+}
+.modal-wrap.show{opacity:1;pointer-events:auto;}
+.modal-overlay{position:absolute;inset:0;background:rgba(31,35,40,0.5);backdrop-filter:blur(2px);}
+.modal{
+  position:relative;width:420px;max-width:92vw;
+  background:var(--card);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-modal);
+  transform:translateY(20px) scale(.96);
+  transition:transform .3s cubic-bezier(.22,.61,.36,1);
+  overflow:hidden;
+}
+.modal-wrap.show .modal{transform:translateY(0) scale(1);}
+.modal-body{padding:28px 24px 20px;}
+.modal-icon{
+  width:56px;height:56px;border-radius:50%;
+  background:var(--brand-soft);color:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;
+}
+.modal-icon svg{width:28px;height:28px;}
+.modal-title{font-size:18px;font-weight:700;text-align:center;margin-bottom:8px;}
+.modal-desc{font-size:13px;color:var(--text-2);text-align:center;margin-bottom:18px;}
+
+.dev-detail{
+  background:var(--inset);border-radius:var(--r-md);padding:12px 14px;
+  margin-bottom:16px;display:flex;flex-direction:column;gap:8px;
+}
+.dev-detail .row{display:flex;justify-content:space-between;font-size:12px;}
+.dev-detail .row .k{color:var(--text-3);}
+.dev-detail .row .v{color:var(--text-1);font-weight:500;font-family:var(--mono);}
+
+.trust-card{
+  background:var(--brand-soft);border:1px solid rgba(36,107,255,0.2);
+  border-radius:var(--r-md);padding:12px 14px;
+  display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;
+}
+.trust-card .ck{
+  margin-top:1px;width:16px;height:16px;accent-color:var(--brand);
+}
+.trust-card .tt{font-size:13px;font-weight:600;color:var(--text-1);}
+.trust-card .td{font-size:11px;color:var(--text-2);margin-top:2px;}
+
+.modal-foot{
+  padding:14px 24px;background:var(--inset);border-top:1px solid var(--border-soft);
+  display:flex;gap:10px;justify-content:flex-end;
+}
+
+/* ---------- 传输中心 ---------- */
+.filter-bar{
+  display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;
+}
+.filter-tab{
+  padding:6px 12px;border-radius:var(--r-full);
+  font-size:12px;font-weight:600;color:var(--text-2);
+  background:var(--card);border:1px solid var(--border);
+  cursor:pointer;transition:all .12s;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.filter-tab:hover{background:var(--inset);}
+.filter-tab.active{background:var(--brand);color:#fff;border-color:var(--brand);}
+.filter-tab .fc{
+  font-size:10px;font-weight:700;padding:1px 6px;border-radius:var(--r-full);
+  background:var(--inset);color:var(--text-2);
+}
+.filter-tab.active .fc{background:rgba(255,255,255,0.25);color:#fff;}
+
+.transfer-table{width:100%;border-collapse:collapse;}
+.transfer-table th{
+  text-align:left;font-size:11px;font-weight:600;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:.5px;
+  padding:10px 12px;border-bottom:1px solid var(--border-soft);
+  background:var(--inset);white-space:nowrap;
+}
+.transfer-table td{
+  padding:12px;border-bottom:1px solid var(--border-soft);
+  font-size:12px;vertical-align:middle;
+}
+.transfer-table tr:last-child td{border-bottom:none;}
+.transfer-table tbody tr{transition:background .12s;}
+.transfer-table tbody tr:hover{background:var(--inset);}
+
+.t-file{display:flex;align-items:center;gap:8px;}
+.t-file .fi{
+  width:28px;height:28px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.t-file .fn{font-weight:500;color:var(--text-1);font-size:12px;}
+.src-cell{display:flex;align-items:center;gap:5px;color:var(--text-2);}
+.src-cell .arrow{color:var(--brand);}
+
+.progress-cell{min-width:130px;}
+.progress-track{
+  height:6px;background:var(--inset);border-radius:var(--r-full);overflow:hidden;
+  margin-bottom:4px;
+}
+.progress-fill{
+  height:100%;background:var(--brand);border-radius:var(--r-full);
+  transition:width .3s ease;width:0%;
+}
+.progress-fill.done{background:var(--success);}
+.progress-meta{display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);font-family:var(--mono);}
+
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 9px;border-radius:var(--r-full);
+  font-size:11px;font-weight:600;
+}
+.badge .bd{width:6px;height:6px;border-radius:50%;}
+.badge.blue{background:var(--brand-soft);color:var(--brand);}
+.badge.blue .bd{background:var(--brand);}
+.badge.green{background:var(--success-soft);color:var(--success);}
+.badge.green .bd{background:var(--success);}
+.badge.gray{background:var(--inset);color:var(--text-3);}
+.badge.gray .bd{background:var(--text-3);}
+
+.expand-row{display:none;}
+.expand-row.open{display:table-row;}
+.expand-row td{padding:14px 12px;background:var(--inset);}
+.expand-inner{display:flex;flex-direction:column;gap:8px;font-size:12px;}
+.expand-inner .ei-row{display:flex;gap:8px;}
+.expand-inner .ei-k{color:var(--text-3);width:90px;flex-shrink:0;}
+.expand-inner .ei-v{color:var(--text-1);font-family:var(--mono);}
+.expand-inner .ei-v.hash{color:var(--brand);font-weight:600;}
+
+.chevron{
+  width:16px;height:16px;color:var(--text-3);transition:transform .2s;cursor:pointer;
+}
+.chevron.open{transform:rotate(90deg);}
+
+/* ---------- Toast ---------- */
+.toast-stack{
+  position:fixed;top:38px;right:20px;z-index:900;
+  display:flex;flex-direction:column;gap:10px;
+  pointer-events:none;
+}
+.toast{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r-md);box-shadow:var(--shadow-pop);
+  padding:12px 16px;display:flex;align-items:center;gap:10px;
+  min-width:260px;max-width:360px;
+  transform:translateX(120%);opacity:0;
+  transition:transform .35s cubic-bezier(.22,.61,.36,1),opacity .35s;
+  pointer-events:auto;
+}
+.toast.show{transform:translateX(0);opacity:1;}
+.toast .ti{
+  width:24px;height:24px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.toast.success .ti{background:var(--success-soft);color:var(--success);}
+.toast.info .ti{background:var(--brand-soft);color:var(--brand);}
+.toast .tt{font-size:13px;font-weight:600;color:var(--text-1);}
+.toast .ts{font-size:11px;color:var(--text-3);}
+
+/* ---------- 页面切换 ---------- */
+.page-view{display:none;}
+.page-view.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ---------- 成功横幅 ---------- */
+.success-banner{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;background:var(--success-soft);
+  border:1px solid rgba(45,164,78,0.25);border-radius:var(--r-md);
+  margin-bottom:16px;
+}
+.success-banner .si{
+  width:22px;height:22px;border-radius:50%;background:var(--success);color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.success-banner .si svg{width:13px;height:13px;}
+.success-banner .st{font-size:13px;font-weight:600;color:var(--success);}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:760px){
+  .sidebar{display:none;}
+  .main{padding:16px;}
+  .slide-panel{width:100vw;}
+  .topbar{padding:0 12px;}
+  .net-badge{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- 模拟演示标签 -->
+<div class="demo-banner"><span class="dot"></span>模拟演示 · LanNook 交互流程原型 · 非真实应用</div>
+
+<div class="app">
+
+  <!-- ============ 顶栏 ============ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="logo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 16 0"/><path d="M4 12a8 8 0 0 0 16 0"/><path d="M12 4v16"/><circle cx="12" cy="12" r="2"/></svg>
+      </div>
+      <span class="brand-name">LanNook</span>
+      <span class="net-badge"><span class="ring"></span>HOME-5G · 192.168.1.0/24</span>
+    </div>
+    <div class="topbar-right">
+      <div class="status-pill"><span class="status-dot"></span>运行中</div>
+      <button class="btn btn-primary" onclick="openConnectPanel()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h.01M10 12h.01M14 12h.01M18 12h.01"/></svg>
+        连接设备
+      </button>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <!-- ============ 侧边栏 ============ -->
+    <aside class="sidebar">
+      <div class="nav-section-label">工作区</div>
+      <div class="nav-item active" data-page="home" onclick="navigate('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5Z"/></svg>
+        首页
+      </div>
+      <div class="nav-item" data-page="transfer" onclick="navigate('transfer')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+        传输中心
+        <span class="count" id="navTransferCount">0</span>
+      </div>
+      <div class="nav-item" data-page="device" onclick="navigate('device')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        设备
+      </div>
+      <div class="nav-item" data-page="settings" onclick="navigate('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        设置
+      </div>
+
+      <div class="sidebar-foot">
+        <div class="me">
+          <div class="avatar">FQ</div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--text-1);">FengQiao-PC</div>
+            <div style="font-size:10px;">本机 · Windows 11</div>
+          </div>
+        </div>
+        <div>LanNook v2.4.1 · 模拟环境</div>
+      </div>
+    </aside>
+
+    <!-- ============ 主内容区 ============ -->
+    <main class="main">
+
+      <!-- ===== 首页 ===== -->
+      <section class="page-view active" id="page-home">
+        <div class="page">
+          <div class="page-head">
+            <h1 class="page-title">发送文件</h1>
+            <p class="page-sub">选择附近设备，或将文件拖入页面开始传输。</p>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>附近设备 · 2 台已连接</h3>
+              <button class="btn btn-ghost btn-sm" onclick="openConnectPanel()">+ 添加设备</button>
+            </div>
+            <table class="device-table">
+              <thead>
+                <tr>
+                  <th>设备</th><th>平台</th><th>IP 地址</th><th>状态</th>
+                </tr>
+              </thead>
+              <tbody id="deviceTbody">
+                <tr data-dev="iphone" onclick="selectDevice(this,'iPhone 15 Pro')">
+                  <td>
+                    <div class="dev-cell">
+                      <div class="dev-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg></div>
+                      <div><div class="dev-name">iPhone 15 Pro</div><div class="dev-sub">Feng 的 iPhone</div></div>
+                    </div>
+                  </td>
+                  <td><span class="platform-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.03-2.6 2.12-3.85 2.22-3.91-1.21-1.77-3.09-2.01-3.76-2.04-1.6-.16-3.12.94-3.93.94-.81 0-2.06-.92-3.39-.89-1.74.03-3.35 1.01-4.25 2.57-1.81 3.14-.46 7.79 1.3 10.34.86 1.25 1.89 2.65 3.23 2.6 1.3-.05 1.79-.84 3.36-.84 1.57 0 2.01.84 3.39.81 1.4-.02 2.28-1.27 3.13-2.53.99-1.45 1.4-2.85 1.42-2.93-.03-.01-2.72-1.04-2.75-4.13zM14.6 4.59c.72-.87 1.2-2.08 1.07-3.29-1.03.04-2.28.69-3.02 1.56-.66.77-1.24 2-1.08 3.18 1.15.09 2.31-.58 3.03-1.45z"/></svg>iOS</span></td>
+                  <td style="font-family:var(--mono);">192.168.1.108</td>
+                  <td><div class="status-cell online"><span class="sd"></span>在线</div></td>
+                </tr>
+                <tr data-dev="ipad" onclick="selectDevice(this,'iPad Air')">
+                  <td>
+                    <div class="dev-cell">
+                      <div class="dev-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M11 18h2"/></svg></div>
+                      <div><div class="dev-name">iPad Air</div><div class="dev-sub">办公平板</div></div>
+                    </div>
+                  </td>
+                  <td><span class="platform-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.03-2.6 2.12-3.85 2.22-3.91-1.21-1.77-3.09-2.01-3.76-2.04-1.6-.16-3.12.94-3.93.94-.81 0-2.06-.92-3.39-.89-1.74.03-3.35 1.01-4.25 2.57-1.81 3.14-.46 7.79 1.3 10.34.86 1.25 1.89 2.65 3.23 2.6 1.3-.05 1.79-.84 3.36-.84 1.57 0 2.01.84 3.39.81 1.4-.02 2.28-1.27 3.13-2.53.99-1.45 1.4-2.85 1.42-2.93-.03-.01-2.72-1.04-2.75-4.13z"/></svg>iPadOS</span></td>
+                  <td style="font-family:var(--mono);">192.168.1.112</td>
+                  <td><div class="status-cell online"><span class="sd"></span>在线</div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 拖放区 -->
+          <div class="dropzone" id="dropzone" onclick="pickFiles()">
+            <div class="dz-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+            </div>
+            <h4>拖入文件发送到 <span class="target" id="dzTarget">iPhone 15 Pro</span></h4>
+            <p>支持照片、视频、文档、压缩包和文件夹。</p>
+            <span class="or-link">或点击选择文件</span>
+          </div>
+
+          <!-- 待发送文件列表 -->
+          <div class="file-list" id="fileList"></div>
+
+          <!-- 发送栏 -->
+          <div class="send-bar" id="sendBar" style="display:none;">
+            <div class="summary">共 <b id="fileCount">0</b> 个文件 · 总计 <b id="totalSize">0 MB</b></div>
+            <button class="btn btn-primary btn-lg" id="sendBtn" onclick="startTransfer()">发送 0 个文件</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 传输中心 ===== -->
+      <section class="page-view" id="page-transfer">
+        <div class="page">
+          <div class="page-head">
+            <h1 class="page-title">传输中心</h1>
+            <p class="page-sub" id="transferSub">暂无活跃传输</p>
+          </div>
+
+          <div id="successBannerWrap"></div>
+
+          <div class="filter-bar">
+            <button class="filter-tab active" data-filter="all" onclick="setFilter('all')">全部 <span class="fc" id="fc-all">0</span></button>
+            <button class="filter-tab" data-filter="active" onclick="setFilter('active')">进行中 <span class="fc" id="fc-active">0</span></button>
+            <button class="filter-tab" data-filter="done" onclick="setFilter('done')">已完成 <span class="fc" id="fc-done">0</span></button>
+            <button class="filter-tab" data-filter="issue" onclick="setFilter('issue')">需处理 <span class="fc" id="fc-issue">0</span></button>
+          </div>
+
+          <div class="card">
+            <table class="transfer-table">
+              <thead>
+                <tr>
+                  <th style="width:24px;"></th>
+                  <th>文件</th>
+                  <th>来源</th>
+                  <th>目标</th>
+                  <th>大小</th>
+                  <th>进度</th>
+                  <th>速度</th>
+                  <th>剩余</th>
+                  <th>状态</th>
+                </tr>
+              </thead>
+              <tbody id="transferTbody">
+                <tr id="emptyRow">
+                  <td colspan="9" style="text-align:center;padding:48px;color:var(--text-3);font-size:13px;">
+                    暂无传输记录。从首页发送文件后将在此显示。
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 设备页 ===== -->
+      <section class="page-view" id="page-device">
+        <div class="page">
+          <div class="page-head">
+            <h1 class="page-title">设备</h1>
+            <p class="page-sub">管理局域网内已信任的设备。</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>已信任设备 · 2 台</h3><button class="btn btn-secondary btn-sm" onclick="openConnectPanel()">+ 连接新设备</button></div>
+            <table class="device-table">
+              <thead><tr><th>设备</th><th>平台</th><th>IP 地址</th><th>信任时间</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><div class="dev-cell"><div class="dev-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg></div><div><div class="dev-name">iPhone 15 Pro</div><div class="dev-sub">Feng 的 iPhone</div></div></div></td>
+                  <td><span class="platform-tag">iOS 17.4</span></td>
+                  <td style="font-family:var(--mono);">192.168.1.108</td>
+                  <td style="color:var(--text-2);">刚刚</td>
+                  <td><button class="btn btn-ghost btn-sm">撤销信任</button></td>
+                </tr>
+                <tr>
+                  <td><div class="dev-cell"><div class="dev-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M11 18h2"/></svg></div><div><div class="dev-name">iPad Air</div><div class="dev-sub">办公平板</div></div></div></td>
+                  <td><span class="platform-tag">iPadOS 17.4</span></td>
+                  <td style="font-family:var(--mono);">192.168.1.112</td>
+                  <td style="color:var(--text-2);">2 小时前</td>
+                  <td><button class="btn btn-ghost btn-sm">撤销信任</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 设置页 ===== -->
+      <section class="page-view" id="page-settings">
+        <div class="page">
+          <div class="page-head">
+            <h1 class="page-title">设置</h1>
+            <p class="page-sub">配置 LanNook 的传输与安全选项。</p>
+          </div>
+          <div class="card card-pad" style="max-width:640px;">
+            <div class="toggle-row" style="border-bottom:1px solid var(--border-soft);">
+              <div><div class="tl">新设备需要电脑授权</div><div class="td">未信任设备连接时弹出审批窗口</div></div>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row" style="border-bottom:1px solid var(--border-soft);">
+              <div><div class="tl">接收后自动打开文件夹</div><div class="td">传输完成后在资源管理器中显示文件</div></div>
+              <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row" style="border-bottom:1px solid var(--border-soft);">
+              <div><div class="tl">传输完成播放提示音</div><div class="td">所有文件发送完毕后通知</div></div>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="field" style="margin-top:16px;">
+              <label class="field-label">接收文件夹</label>
+              <input class="path-input" value="C:\Users\FengQiao\Downloads\LanNook" readonly>
+              <div class="field-desc">手机发送到本机的文件将保存到此目录。</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ============ 连接设备 滑出面板 ============ -->
+<div class="overlay" id="panelOverlay" onclick="closeConnectPanel()"></div>
+<aside class="slide-panel" id="connectPanel">
+  <div class="panel-head">
+    <h3>连接设备</h3>
+    <button class="panel-close" onclick="closeConnectPanel()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="panel-body">
+
+    <div class="qr-wrap">
+      <div class="qr-box" onclick="simulateScan()" title="点击模拟手机扫码">
+        <div class="qr-grid" id="qrGrid"></div>
+      </div>
+      <div class="qr-hint">用手机扫描，或复制下方完整地址。</div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">选择手机所在网络</label>
+      <select class="select" id="netSelect" onchange="updateAddress()">
+        <option value="home">HOME-5G (192.168.1.0/24)</option>
+        <option value="office">OFFICE-LAN (10.0.0.0/24)</option>
+        <option value="direct">直连热点 (172.20.10.0/28)</option>
+      </select>
+      <div class="field-desc">二维码会随选择更新</div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">完整连接地址</label>
+      <div class="addr-box">
+        <span class="addr" id="fullAddr">http://192.168.1.100:53317/mobile?token=aB3xK9</span>
+        <button class="copy-btn" onclick="copyText(document.getElementById('fullAddr').innerText,'连接地址已复制')">复制</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">.local 备用地址</label>
+      <div class="addr-box">
+        <span class="addr">lannook.local</span>
+        <button class="copy-btn" onclick="copyText('lannook.local','.local 地址已复制')">复制</button>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--border-soft);margin:8px 0 0;"></div>
+
+    <div class="toggle-row">
+      <div><div class="tl">新设备需要电脑授权</div><div class="td">扫码后需在此电脑确认</div></div>
+      <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+    </div>
+
+    <div class="field">
+      <label class="field-label">接收文件夹</label>
+      <input class="path-input" value="C:\Users\FengQiao\Downloads\LanNook" readonly>
+    </div>
+
+    <div class="diag-section">
+      <div class="diag-title">连接诊断</div>
+      <div class="diag-list">
+        <div class="diag-item"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="dl">局域网服务</span><span class="ds">运行中</span></div>
+        <div class="diag-item"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="dl">本机监听 :53317</span><span class="ds">正常</span></div>
+        <div class="diag-item"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="dl">mDNS 广播</span><span class="ds">已发现 2 设备</span></div>
+        <div class="diag-item"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="dl">系统防火墙</span><span class="ds">已放行</span></div>
+      </div>
+    </div>
+
+  </div>
+</aside>
+
+<!-- ============ 设备审批 模态框 ============ -->
+<div class="modal-wrap" id="approveModal">
+  <div class="modal-overlay" onclick="closeApprove()"></div>
+  <div class="modal">
+    <div class="modal-body">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>
+      </div>
+      <div class="modal-title">允许新设备接入？</div>
+      <div class="modal-desc">iPhone 15 Pro 正在请求加入当前局域网。</div>
+
+      <div class="dev-detail">
+        <div class="row"><span class="k">设备</span><span class="v">iPhone 15 Pro</span></div>
+        <div class="row"><span class="k">系统</span><span class="v">iOS 17.4</span></div>
+        <div class="row"><span class="k">IP 地址</span><span class="v">192.168.1.108</span></div>
+      </div>
+
+      <div class="trust-card">
+        <input type="checkbox" class="ck" id="trustCk" checked>
+        <div>
+          <div class="tt">信任此设备</div>
+          <div class="td">以后连接时自动允许，可随时在设备页撤销。</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeApprove()">拒绝</button>
+      <button class="btn btn-primary" onclick="confirmApprove()">允许接入</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Toast 容器 ============ -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+/* ============================================================
+   LanNook Demo - 交互逻辑
+   ============================================================ */
+
+/* ---------- 状态 ---------- */
+const state = {
+  selectedDevice: 'iPhone 15 Pro',
+  pendingFiles: [],          // 待发送文件
+  transfers: [],             // 传输任务
+  filter: 'all',
+  transferRunning: false,
+  networkMap:{
+    home:'http://192.168.1.100:53317/mobile?token=aB3xK9',
+    office:'http://10.0.0.5:53317/mobile?token=OfF2cE',
+    direct:'http://172.20.10.2:53317/mobile?token=HoT7nD'
+  }
+};
+
+const mockFiles = [
+  {name:'screenshot_2026.png', size:'2.4 MB', sizeBytes:2.4, type:'img', ext:'PNG'},
+  {name:'report_Q3.pdf',       size:'8.7 MB', sizeBytes:8.7, type:'pdf', ext:'PDF'},
+  {name:'demo-video.mp4',      size:'45.2 MB',sizeBytes:45.2,type:'vid', ext:'MP4'}
+];
+
+/* ---------- 页面导航 ---------- */
+function navigate(page){
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active', el.dataset.page===page));
+  document.querySelectorAll('.page-view').forEach(el=>el.classList.toggle('active', el.id==='page-'+page));
+}
+
+/* ---------- 设备选择 ---------- */
+function selectDevice(row, name){
+  document.querySelectorAll('#deviceTbody tr').forEach(r=>r.classList.remove('selected'));
+  row.classList.add('selected');
+  state.selectedDevice = name;
+  document.getElementById('dzTarget').innerText = name;
+}
+
+/* ---------- 文件选择 ---------- */
+function pickFiles(){
+  // 模拟一次性加入三个预设文件
+  state.pendingFiles = mockFiles.map(f=>({...f, id:Math.random().toString(36).slice(2,8)}));
+  renderFileList();
+}
+
+function renderFileList(){
+  const wrap = document.getElementById('fileList');
+  wrap.innerHTML = '';
+  state.pendingFiles.forEach(f=>{
+    const row = document.createElement('div');
+    row.className = 'file-row';
+    row.innerHTML = `
+      <div class="file-icon ${f.type}">${f.ext}</div>
+      <div class="file-info">
+        <div class="file-name">${f.name}</div>
+        <div class="file-meta">${f.size}</div>
+      </div>
+      <button class="file-remove" onclick="removeFile('${f.id}')" title="移除">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>`;
+    wrap.appendChild(row);
+  });
+  const bar = document.getElementById('sendBar');
+  if(state.pendingFiles.length>0){
+    bar.style.display='flex';
+    const total = state.pendingFiles.reduce((s,f)=>s+f.sizeBytes,0);
+    document.getElementById('fileCount').innerText = state.pendingFiles.length;
+    document.getElementById('totalSize').innerText = total.toFixed(1)+' MB';
+    document.getElementById('sendBtn').innerText = `发送 ${state.pendingFiles.length} 个文件`;
+  }else{
+    bar.style.display='none';
+  }
+}
+
+function removeFile(id){
+  state.pendingFiles = state.pendingFiles.filter(f=>f.id!==id);
+  renderFileList();
+}
+
+/* ---------- 拖放区事件 ---------- */
+const dz = document.getElementById('dropzone');
+['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag');}));
+dz.addEventListener('drop',e=>{pickFiles();});
+
+/* ---------- 开始传输 ---------- */
+function startTransfer(){
+  if(state.pendingFiles.length===0) return;
+  // 构造传输任务
+  state.transfers = state.pendingFiles.map((f,i)=>({
+    id:'t'+i,
+    name:f.name,
+    size:f.size,
+    sizeBytes:f.sizeBytes,
+    type:f.type,
+    ext:f.ext,
+    target:state.selectedDevice,
+    progress:0,
+    speed:0,
+    eta:'--',
+    status:'pending',     // pending / active / done
+    hash:genHash(),
+    elapsed:'',
+    savePath:'C:\\Users\\FengQiao\\Downloads\\LanNook\\'+f.name
+  }));
+  state.pendingFiles = [];
+  renderFileList();
+  navigate('transfer');
+  renderTransfers();
+  runTransferLoop();
+}
+
+/* ---------- 传输循环 ---------- */
+function runTransferLoop(){
+  if(state.transferRunning) return;
+  state.transferRunning = true;
+  let idx = 0;
+
+  function next(){
+    if(idx>=state.transfers.length){
+      state.transferRunning=false;
+      showSuccessBanner();
+      toast('success','全部传输完成','3 个文件已成功送达 iPhone 15 Pro');
+      return;
+    }
+    const t = state.transfers[idx];
+    t.status='active';
+    // 不同文件不同速度
+    const speedMBs = t.sizeBytes>30 ? 8.5 : (t.sizeBytes>5?14.2:22.0);
+    const durationMs = (t.sizeBytes / speedMBs) * 1000; // 缩放：实际约2-6秒
+    const stepMs = 120;
+    const totalSteps = Math.max(20, Math.ceil(durationMs/stepMs));
+    const incPerStep = 100/totalSteps;
+    let step = 0;
+
+    const timer = setInterval(()=>{
+      step++;
+      t.progress = Math.min(100, step*incPerStep);
+      t.speed = (speedMBs * (0.85 + Math.random()*0.3)).toFixed(1);
+      const remainMB = t.sizeBytes*(1-t.progress/100);
+      t.eta = remainMB>0.1 ? (remainMB/t.speed).toFixed(0)+'s' : '0s';
+      if(t.progress>=100){
+        clearInterval(timer);
+        t.progress=100; t.status='done'; t.speed='—'; t.eta='0s';
+        t.elapsed = (totalSteps*stepMs/1000).toFixed(1)+'s';
+        renderTransfers();
+        toast('info','文件已送达', `${t.name} → ${t.target}`);
+        idx++;
+        setTimeout(next, 500);
+      }else{
+        renderTransfers(true); // 仅更新数据，不重建结构
+      }
+    }, stepMs);
+  }
+  next();
+}
+
+/* ---------- 渲染传输表 ---------- */
+let transferRowsBuilt = false;
+function renderTransfers(updateOnly){
+  const tbody = document.getElementById('transferTbody');
+
+  // 计数与副标题
+  const active = state.transfers.filter(t=>t.status==='active').length;
+  const done = state.transfers.filter(t=>t.status==='done').length;
+  const total = state.transfers.length;
+  const totalSpeed = state.transfers.filter(t=>t.status==='active')
+    .reduce((s,t)=>s+parseFloat(t.speed||0),0);
+
+  document.getElementById('fc-all').innerText = total;
+  document.getElementById('fc-active').innerText = active;
+  document.getElementById('fc-done').innerText = done;
+  document.getElementById('fc-issue').innerText = 0;
+  document.getElementById('navTransferCount').innerText = active;
+
+  if(total===0){
+    document.getElementById('transferSub').innerText='暂无活跃传输';
+    tbody.innerHTML = `<tr id="emptyRow"><td colspan="9" style="text-align:center;padding:48px;color:var(--text-3);font-size:13px;">暂无传输记录。从首页发送文件后将在此显示。</td></tr>`;
+    return;
+  }
+
+  document.getElementById('transferSub').innerText =
+    active>0 ? `${active} 个活跃传输 · 总速度 ${totalSpeed.toFixed(1)} MB/s`
+             : `已完成 ${done} 个传输`;
+
+  // 仅更新进度数据（动画进行中频繁调用）
+  if(updateOnly && transferRowsBuilt){
+    state.transfers.forEach(t=>{
+      const row = document.getElementById('row-'+t.id);
+      if(!row) return;
+      const fill = row.querySelector('.progress-fill');
+      const meta = row.querySelector('.progress-meta');
+      const sp = row.querySelector('.spd');
+      const et = row.querySelector('.eta');
+      const badge = row.querySelector('.status-badge');
+      if(fill) fill.style.width = t.progress.toFixed(1)+'%';
+      if(meta) meta.innerHTML = `<span>${t.progress.toFixed(0)}%</span><span>${t.size}</span>`;
+      if(sp) sp.innerText = t.speed+' MB/s';
+      if(et) et.innerText = t.eta;
+      if(badge){
+        if(t.status==='done'){
+          badge.className='badge green status-badge';
+          badge.innerHTML='<span class="bd"></span>已完成';
+          if(fill){fill.classList.add('done');}
+        }else{
+          badge.className='badge blue status-badge';
+          badge.innerHTML='<span class="bd"></span>传输中';
+        }
+      }
+    });
+    return;
+  }
+
+  // 完整重建
+  tbody.innerHTML = '';
+  const visible = state.transfers.filter(t=>{
+    if(state.filter==='all') return true;
+    if(state.filter==='active') return t.status==='active';
+    if(state.filter==='done') return t.status==='done';
+    if(state.filter==='issue') return false;
+    return true;
+  });
+
+  if(visible.length===0){
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:48px;color:var(--text-3);font-size:13px;">当前筛选下无记录。</td></tr>`;
+    transferRowsBuilt=false;
+    return;
+  }
+
+  visible.forEach(t=>{
+    const tr = document.createElement('tr');
+    tr.id='row-'+t.id;
+    const doneCls = t.status==='done'?'done':'';
+    const badgeCls = t.status==='done'?'green':'blue';
+    const badgeTxt = t.status==='done'?'已完成':'传输中';
+    tr.innerHTML = `
+      <td><svg class="chevron ${t.status==='done'?'open':''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="toggleExpand('${t.id}')"><polyline points="9 18 15 12 9 6"/></svg></td>
+      <td><div class="t-file"><div class="file-icon ${t.type}" style="width:28px;height:28px;font-size:9px;">${t.ext}</div><div class="fn">${t.name}</div></div></td>
+      <td><div class="src-cell"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span class="arrow">本机</span></div></td>
+      <td style="color:var(--text-2);">${t.target}</td>
+      <td style="font-family:var(--mono);color:var(--text-2);">${t.size}</td>
+      <td class="progress-cell">
+        <div class="progress-track"><div class="progress-fill ${doneCls}" style="width:${t.progress}%;"></div></div>
+        <div class="progress-meta"><span>${t.progress.toFixed(0)}%</span><span>${t.size}</span></div>
+      </td>
+      <td class="spd" style="font-family:var(--mono);color:var(--text-2);">${t.speed}${t.speed==='—'?'':' MB/s'}</td>
+      <td class="eta" style="font-family:var(--mono);color:var(--text-2);">${t.eta}</td>
+      <td><span class="badge ${badgeCls} status-badge"><span class="bd"></span>${badgeTxt}</span></td>
+    `;
+    tbody.appendChild(tr);
+
+    // 展开行（详情）
+    const ex = document.createElement('tr');
+    ex.className='expand-row';
+    ex.id='expand-'+t.id;
+    ex.innerHTML = `<td colspan="9">
+      <div class="expand-inner">
+        <div class="ei-row"><span class="ei-k">SHA-256</span><span class="ei-v hash">${t.hash}</span></div>
+        <div class="ei-row"><span class="ei-k">已用时间</span><span class="ei-v">${t.elapsed||'传输中…'}</span></div>
+        <div class="ei-row"><span class="ei-k">保存路径</span><span class="ei-v">${t.savePath}</span></div>
+        <div class="ei-row"><span class="ei-k">来源</span><span class="ei-v">FengQiao-PC (192.168.1.100)</span></div>
+      </div>
+    </td>`;
+    tbody.appendChild(ex);
+  });
+  transferRowsBuilt = true;
+}
+
+function toggleExpand(id){
+  const row = document.getElementById('expand-'+id);
+  const chev = document.querySelector('#row-'+id+' .chevron');
+  if(!row) return;
+  row.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
+/* ---------- 筛选 ---------- */
+function setFilter(f){
+  state.filter=f;
+  document.querySelectorAll('.filter-tab').forEach(el=>el.classList.toggle('active', el.dataset.filter===f));
+  transferRowsBuilt=false;
+  renderTransfers();
+}
+
+/* ---------- 成功横幅 ---------- */
+function showSuccessBanner(){
+  const allDone = state.transfers.every(t=>t.status==='done');
+  if(!allDone) return;
+  document.getElementById('successBannerWrap').innerHTML = `
+    <div class="success-banner">
+      <div class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="st">全部 ${state.transfers.length} 个文件已成功传输并通过 SHA-256 校验。</div>
+    </div>`;
+}
+
+/* ---------- 连接面板 ---------- */
+function openConnectPanel(){
+  document.getElementById('panelOverlay').classList.add('show');
+  document.getElementById('connectPanel').classList.add('show');
+  buildQR();
+}
+function closeConnectPanel(){
+  document.getElementById('panelOverlay').classList.remove('show');
+  document.getElementById('connectPanel').classList.remove('show');
+}
+function updateAddress(){
+  const v = document.getElementById('netSelect').value;
+  document.getElementById('fullAddr').innerText = state.networkMap[v];
+  buildQR(); // 二维码"更新"
+}
+
+/* ---------- 二维码生成（伪随机点阵） ---------- */
+function buildQR(){
+  const grid = document.getElementById('qrGrid');
+  grid.innerHTML='';
+  // 用确定性伪随机，模拟二维码图案
+  const N = 21;
+  const seed = document.getElementById('netSelect').value;
+  let s = 0;
+  for(let i=0;i<seed.length;i++) s = (s*31 + seed.charCodeAt(i)) & 0xffffffff;
+  function rng(){ s = (s*1103515245+12345) & 0x7fffffff; return s/0x7fffffff; }
+
+  const on = (r,c)=>{
+    // 三个定位角
+    if(r<7 && c<7) return finder(r,c);
+    if(r<7 && c>=N-7) return finder(r,c-(N-7));
+    if(r>=N-7 && c<7) return finder(r-(N-7),c);
+    // 时序线
+    if(r===6 || c===6) return (r+c)%2===0;
+    return rng()>0.55;
+  };
+  function finder(r,c){
+    if(r===0||r===6||c===0||c===6) return true;
+    if(r>=2&&r<=4&&c>=2&&c<=4) return true;
+    return false;
+  }
+  for(let r=0;r<N;r++){
+    for(let c=0;c<N;c++){
+      const cell=document.createElement('div');
+      cell.className='cell'+(on(r,c)?' on':'');
+      grid.appendChild(cell);
+    }
+  }
+}
+
+/* ---------- 模拟扫码 → 审批 ---------- */
+function simulateScan(){
+  closeConnectPanel();
+  setTimeout(()=>{
+    document.getElementById('approveModal').classList.add('show');
+  },200);
+}
+function closeApprove(){
+  document.getElementById('approveModal').classList.remove('show');
+}
+function confirmApprove(){
+  const trust = document.getElementById('trustCk').checked;
+  closeApprove();
+  toast('success','设备已信任','iPhone 15 Pro 现在可以收发文件。');
+  // 若首页设备表中尚未高亮，自动选中 iPhone
+  setTimeout(()=>{
+    const first = document.querySelector('#deviceTbody tr');
+    if(first) selectDevice(first,'iPhone 15 Pro');
+    navigate('home');
+  },300);
+}
+
+/* ---------- Toast ---------- */
+function toast(type, title, sub){
+  const stack = document.getElementById('toastStack');
+  const el = document.createElement('div');
+  el.className='toast '+type;
+  const iconSvg = type==='success'
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>';
+  el.innerHTML = `
+    <div class="ti">${iconSvg}</div>
+    <div><div class="tt">${title}</div>${sub?`<div class="ts">${sub}</div>`:''}</div>`;
+  stack.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=>el.remove(),400);
+  },3000);
+}
+
+/* ---------- 复制 ---------- */
+function copyText(text, msg){
+  // 兼容性复制
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>toast('success',msg||'已复制',''));
+  }else{
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');toast('success',msg||'已复制','');}catch(e){toast('info','复制失败','请手动复制');}
+    document.body.removeChild(ta);
+  }
+}
+
+/* ---------- 工具 ---------- */
+function genHash(){
+  const hex='0123456789ABCDEF';
+  let s='';
+  for(let i=0;i<16;i++) s+=hex[Math.floor(Math.random()*16)];
+  return s.slice(0,8)+' · '+s.slice(8);
+}
+
+/* ---------- ESC 关闭 ---------- */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeConnectPanel();closeApprove();}
+});
+
+/* ---------- 初始化 ---------- */
+buildQR();
+renderFileList();
+renderTransfers();
+</script>
+</body>
+</html>

@@ -1,0 +1,2149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2563eb">
+<title>CTF 乾坤袋 · 模拟演示</title>
+<style>
+/* ============================================================
+   CTF 乾坤袋 模拟演示 — 还原 shadcn/ui 浅色主题
+   ============================================================ */
+:root {
+  --background: #F5F7F9;
+  --foreground: #3D4350;
+  --card: #FFFFFF;
+  --card-foreground: #3D4350;
+  --primary: #2E8BE6;
+  --primary-foreground: #FFFFFF;
+  --secondary: #D6E8F7;
+  --secondary-foreground: #2670B3;
+  --muted: #EFF2F4;
+  --muted-foreground: #7B848E;
+  --accent: #D6E8F7;
+  --accent-foreground: #2670B3;
+  --destructive: #D45757;
+  --success: #4DBE7A;
+  --warning: #E29A3B;
+  --border: #DDE2E6;
+  --input: #DDE2E6;
+  --ring: #2E8BE6;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --sidebar: #FFFFFF;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Source Code Pro', 'SF Mono', Menlo, Consolas, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 14px;
+  line-height: 1.5;
+  height: 100vh;
+  overflow: hidden;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+input, textarea { font-family: inherit; }
+a { color: inherit; text-decoration: none; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
+
+/* ---------- App Layout ---------- */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ---------- TopNav ---------- */
+.topnav {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.topnav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--foreground);
+  white-space: nowrap;
+}
+
+.topnav-brand svg { width: 20px; height: 20px; color: var(--primary); }
+
+.demo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.demo-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--warning);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.view-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--muted);
+  border-radius: var(--radius-md);
+  padding: 2px;
+}
+
+.view-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+
+.view-tab:hover { color: var(--foreground); }
+
+.view-tab.active {
+  background: var(--card);
+  color: var(--primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.view-tab svg { width: 15px; height: 15px; }
+
+.search-box {
+  flex: 1;
+  max-width: 320px;
+  margin-left: auto;
+  position: relative;
+}
+
+.search-box svg {
+  position: absolute;
+  left: 10px; top: 50%;
+  transform: translateY(-50%);
+  width: 15px; height: 15px;
+  color: var(--muted-foreground);
+}
+
+.search-box input {
+  width: 100%;
+  height: 34px;
+  padding: 0 12px 0 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--muted);
+  color: var(--foreground);
+  font-size: 13px;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.search-box input:focus {
+  border-color: var(--primary);
+  background: var(--card);
+  box-shadow: 0 0 0 3px rgba(46,139,230,0.12);
+}
+
+.search-box input::placeholder { color: var(--muted-foreground); }
+
+.topnav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+
+.topnav-right a {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+
+.topnav-right a:hover { background: var(--muted); color: var(--foreground); }
+.topnav-right a svg { width: 15px; height: 15px; }
+
+/* ---------- Body Layout ---------- */
+.body-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  width: 224px;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.sidebar-section {
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-section:last-child { border-bottom: none; }
+
+.sidebar-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
+  padding: 4px 8px;
+  margin-bottom: 4px;
+}
+
+.sidebar-title svg { width: 13px; height: 13px; }
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  font-size: 13px;
+  color: var(--foreground);
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.sidebar-item:hover { background: var(--muted); }
+
+.sidebar-item.active {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  font-weight: 500;
+}
+
+.sidebar-item .count {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--muted-foreground);
+  background: var(--muted);
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+.sidebar-item.active .count {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Category tree */
+.cat-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cat-node:hover { background: var(--muted); }
+
+.cat-node.active {
+  background: var(--accent);
+}
+
+.cat-icon {
+  width: 28px; height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cat-icon svg { width: 15px; height: 15px; }
+
+.cat-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  flex: 1;
+}
+
+.cat-count {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+.cat-chevron {
+  width: 14px; height: 14px;
+  color: var(--muted-foreground);
+  transition: transform 0.2s ease;
+}
+
+.cat-chevron.open { transform: rotate(90deg); }
+
+.cat-children {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.25s ease;
+}
+
+.cat-children.open { max-height: 500px; }
+
+.cat-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 44px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cat-child:hover { background: var(--muted); color: var(--foreground); }
+.cat-child.active { color: var(--primary); font-weight: 500; }
+
+/* ---------- Work Area ---------- */
+.workarea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--background);
+}
+
+/* Tool Grid */
+.tool-grid-view {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+.tool-grid-header {
+  margin-bottom: 16px;
+}
+
+.tool-grid-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.tool-grid-header p {
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.tool-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.tool-card:hover {
+  border-color: rgba(46,139,230,0.3);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  transform: translateY(-2px);
+}
+
+.tool-card-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tool-card-icon svg { width: 20px; height: 20px; }
+
+.tool-card-info { flex: 1; min-width: 0; }
+
+.tool-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 2px;
+}
+
+.tool-card-desc {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-card-fav {
+  width: 16px; height: 16px;
+  color: var(--border);
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.tool-card-fav.active { color: var(--warning); }
+.tool-card:hover .tool-card-fav { color: var(--muted-foreground); }
+.tool-card-fav.active:hover { color: var(--warning); }
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted-foreground);
+}
+
+.empty-state svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.4; }
+.empty-state h3 { font-size: 15px; font-weight: 500; margin-bottom: 4px; color: var(--foreground); }
+.empty-state p { font-size: 13px; }
+
+/* Tool Workspace */
+.tool-workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Tool Tabs */
+.tool-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.tool-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--muted-foreground);
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tool-tab:hover { color: var(--foreground); }
+
+.tool-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 500;
+}
+
+.tool-tab .close-btn {
+  width: 16px; height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  opacity: 0;
+  transition: all 0.15s ease;
+}
+
+.tool-tab:hover .close-btn { opacity: 0.6; }
+.tool-tab .close-btn:hover { opacity: 1; background: var(--muted); }
+.tool-tab .close-btn svg { width: 13px; height: 13px; }
+
+/* IO Panels */
+.io-container {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.io-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.io-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.io-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.io-header-left svg { width: 15px; height: 15px; color: var(--muted-foreground); }
+
+.io-stats {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+}
+
+.io-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.io-action-btn {
+  width: 28px; height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--muted-foreground);
+  transition: all 0.15s ease;
+}
+
+.io-action-btn:hover { background: var(--muted); color: var(--foreground); }
+.io-action-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.io-action-btn svg { width: 15px; height: 15px; }
+
+.io-textarea {
+  flex: 1;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--foreground);
+  background: var(--card);
+}
+
+.io-textarea::placeholder { color: var(--muted-foreground); }
+
+.io-output {
+  flex: 1;
+  padding: 12px;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--foreground);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.io-output-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+
+.io-output-empty svg { width: 40px; height: 40px; margin-bottom: 8px; opacity: 0.3; }
+
+/* File Drop Zone */
+.file-drop {
+  margin: 8px 12px;
+  padding: 16px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.file-drop:hover { border-color: var(--primary); color: var(--primary); background: rgba(46,139,230,0.04); }
+.file-drop.dragover { border-color: var(--primary); background: rgba(46,139,230,0.08); }
+
+/* Tool Control Bar */
+.tool-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.tool-params {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.param-select, .param-input {
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 13px;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.param-select { padding-right: 28px; appearance: none; cursor: pointer; }
+
+.param-input { width: 80px; }
+
+.param-select:focus, .param-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(46,139,230,0.12);
+}
+
+.param-label {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.btn-execute {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 16px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all 0.15s ease;
+}
+
+.btn-execute:hover { background: #2578cc; }
+.btn-execute:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-execute svg { width: 15px; height: 15px; }
+
+.tool-actions-right {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.tool-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 12px;
+  transition: all 0.15s ease;
+}
+
+.tool-action-btn:hover { background: var(--muted); }
+.tool-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.tool-action-btn svg { width: 14px; height: 14px; }
+
+.tool-action-btn.ai {
+  background: var(--secondary);
+  border-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.tool-action-btn.ai:hover { background: #c1dbf5; }
+
+/* Smart Codec View */
+.smart-codec-view {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.sc-header { margin-bottom: 16px; }
+
+.sc-header h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.sc-header p { font-size: 13px; color: var(--muted-foreground); }
+
+.sc-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.sc-mode-toggle {
+  display: flex;
+  gap: 2px;
+  background: var(--muted);
+  border-radius: var(--radius-md);
+  padding: 2px;
+}
+
+.sc-mode-btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+
+.sc-mode-btn.active {
+  background: var(--card);
+  color: var(--primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.sc-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.sc-card-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sc-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--foreground);
+  background: var(--card);
+  outline: none;
+  resize: vertical;
+  transition: all 0.15s ease;
+}
+
+.sc-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(46,139,230,0.12);
+}
+
+.sc-params {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.sc-param-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sc-param-label {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.sc-param-input {
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 13px;
+  outline: none;
+  width: 150px;
+}
+
+.sc-param-input:focus { border-color: var(--primary); }
+
+.sc-preset-select {
+  height: 32px;
+  padding: 0 28px 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+}
+
+.sc-results { margin-top: 12px; }
+
+.sc-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
+  transition: all 0.15s ease;
+}
+
+.sc-result-item:hover { background: var(--muted); }
+
+.sc-result-info { flex: 1; min-width: 0; }
+
+.sc-result-type {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 2px;
+}
+
+.sc-result-text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sc-result-use {
+  height: 28px;
+  padding: 0 12px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.sc-result-use:hover { background: #2578cc; }
+
+/* Operation Chain View */
+.chain-view {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.chain-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+.chain-sidebar {
+  width: 280px;
+  border-left: 1px solid var(--border);
+  background: var(--card);
+  padding: 16px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.chain-header h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.chain-header p { font-size: 13px; color: var(--muted-foreground); margin-bottom: 16px; }
+
+.chain-input {
+  width: 100%;
+  min-height: 60px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--foreground);
+  background: var(--card);
+  outline: none;
+  resize: vertical;
+  margin-bottom: 12px;
+}
+
+.chain-input:focus { border-color: var(--primary); }
+
+.chain-add {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.chain-select {
+  flex: 1;
+  height: 34px;
+  padding: 0 28px 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+}
+
+.chain-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 34px;
+  padding: 0 12px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all 0.15s ease;
+}
+
+.chain-add-btn:hover { background: #2578cc; }
+.chain-add-btn svg { width: 14px; height: 14px; }
+
+.chain-steps { margin-bottom: 16px; }
+
+.chain-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
+  transition: all 0.15s ease;
+}
+
+.chain-step-num {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+}
+
+.chain-step-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.chain-step-preview {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted-foreground);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chain-step-remove {
+  width: 24px; height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--muted-foreground);
+  transition: all 0.15s ease;
+}
+
+.chain-step-remove:hover { background: var(--destructive); color: white; }
+.chain-step-remove svg { width: 13px; height: 13px; }
+
+.chain-empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.chain-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.chain-sidebar h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--foreground);
+}
+
+.chain-preset {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chain-preset:hover { background: var(--muted); }
+.chain-preset svg { width: 14px; height: 14px; color: var(--primary); }
+
+/* ---------- Toast ---------- */
+.toast-container {
+  position: fixed;
+  top: 60px; right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--foreground);
+  color: var(--card);
+  font-size: 13px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  animation: toastIn 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.toast.success { background: var(--success); color: white; }
+.toast.error { background: var(--destructive); color: white; }
+
+.toast svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toastOut {
+  to { opacity: 0; transform: translateX(20px); }
+}
+
+/* ---------- Category Colors ---------- */
+.cat-encoding { background: #eff6ff; color: #2563eb; }
+.cat-text { background: #f9fafb; color: #6b7280; }
+.cat-classical { background: #fffbeb; color: #d97706; }
+.cat-hash { background: #faf5ff; color: #9333ea; }
+.cat-web { background: #ecfeff; color: #0891b2; }
+.cat-file { background: #fff7ed; color: #ea580c; }
+.cat-image { background: #f0fdf4; color: #16a34a; }
+.cat-pwn { background: #fff1f2; color: #e11d48; }
+.cat-forensics { background: #f0fdfa; color: #0d9488; }
+.cat-osint { background: #f0f9ff; color: #0284c7; }
+.cat-stego { background: #f7fee7; color: #4d7c0f; }
+.cat-misc { background: #f5f5f4; color: #57534e; }
+.cat-general { background: #ecfdf5; color: #059669; }
+.cat-esoteric { background: #f5f3ff; color: #7c3aed; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .io-container { grid-template-columns: 1fr; }
+  .search-box { max-width: 160px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- TopNav -->
+  <header class="topnav">
+    <div class="topnav-brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><circle cx="12" cy="14" r="3"/></svg>
+      <span>CTF 乾坤袋</span>
+    </div>
+    <span class="demo-badge">模拟演示</span>
+    <div class="view-tabs">
+      <button class="view-tab active" data-view="tool" onclick="switchView('tool')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        工具
+      </button>
+      <button class="view-tab" data-view="smart-codec" onclick="switchView('smart-codec')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+        智能编解码
+      </button>
+      <button class="view-tab" data-view="chain" onclick="switchView('chain')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        操作链
+      </button>
+    </div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="搜索工具…" id="searchInput" oninput="handleSearch(this.value)">
+    </div>
+    <div class="topnav-right">
+      <a href="#" onclick="showToast('说明文档为模拟演示','info'); return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        说明文档
+      </a>
+      <span>开源版</span>
+    </div>
+  </header>
+
+  <div class="body-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section" id="favSection" style="display:none;">
+        <div class="sidebar-title">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          收藏
+        </div>
+        <div id="favList"></div>
+      </div>
+      <div class="sidebar-section" id="recentSection" style="display:none;">
+        <div class="sidebar-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          最近使用
+        </div>
+        <div id="recentList"></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          工具分类
+        </div>
+        <div id="categoryTree"></div>
+      </div>
+    </aside>
+
+    <!-- WorkArea -->
+    <main class="workarea" id="workarea">
+      <!-- Content rendered by JS -->
+    </main>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ============================================================
+   Data: Categories & Tools
+   ============================================================ */
+const CATEGORIES = [
+  { id: 'encoding', name: '编码与文本转换', icon: 'binary', color: 'cat-encoding', desc: 'Base 系列、URL 编解码、进制转换等' },
+  { id: 'classical', name: '古典密码', icon: 'lock', color: 'cat-classical', desc: '凯撒、维吉尼亚、摩斯等古典密码' },
+  { id: 'hash', name: '哈希与密码学辅助', icon: 'fingerprint', color: 'cat-hash', desc: 'MD5、SHA、CRC、HMAC 等' },
+  { id: 'web', name: 'Web与网络数据', icon: 'globe', color: 'cat-web', desc: 'Cookie、HTTP、IP、时间戳等' },
+  { id: 'file', name: '文件与二进制分析', icon: 'filecode', color: 'cat-file', desc: 'Hex 查看、字符串提取等' },
+  { id: 'image', name: '图片音频与隐写', icon: 'image', color: 'cat-image', desc: '通道拆分、LSB、二维码等' },
+  { id: 'pwn', name: 'PWN与逆向', icon: 'bug', color: 'cat-pwn', desc: 'ELF/PE 解析、反汇编等' },
+  { id: 'forensics', name: '取证', icon: 'search', color: 'cat-forensics', desc: 'PCAP、内存提取等' },
+  { id: 'osint', name: 'OSINT', icon: 'radar', color: 'cat-osint', desc: '邮件头、EXIF 定位等' },
+];
+
+const ICONS = {
+  binary: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="6"/><rect x="15" y="15" width="6" height="6"/><path d="M9 6h6"/><path d="M15 18H9"/><path d="M6 9v6"/><path d="M18 15V9"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+  fingerprint: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M9 6.8a6 6 0 0 1 9 5.2c0 .47 0 1.17-.02 2"/></svg>',
+  globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+  filecode: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="m9 13 2 2-2 2"/><path d="m13 17 2-2-2-2"/></svg>',
+  image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>',
+  bug: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 2 1.88 1.88"/><path d="M14.12 3.88 16 2"/><path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"/><path d="M12 20v-9"/><path d="M6.53 9C4.6 8.8 3 7.1 3 5"/><path d="M6 13H2"/><path d="M3 21c0-2.1 1.7-3.9 3.8-4"/><path d="M20.97 5c0 2.1-1.6 3.8-3.5 4"/><path d="M22 13h-4"/><path d="M17.2 17c2.1.1 3.8 1.9 3.8 4"/></svg>',
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+  radar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19.07 4.93A10 10 0 0 0 6.99 3.34"/><path d="M4 6h.01"/><path d="M2.29 9.62A10 10 0 1 0 21.31 8.35"/><path d="M16.24 7.76A6 6 0 1 0 8.23 16.67"/><path d="M12 18h.01"/><path d="M17.99 11.66A6 6 0 0 1 15.77 16.67"/><circle cx="12" cy="12" r="2"/><path d="m13.41 10.59 5.66-5.66"/></svg>',
+};
+
+const TOOLS = [
+  // 编码与文本转换
+  { id: 'base64', name: 'Base64', category: 'encoding', group: 'Base族', desc: 'Base64 编解码', modes: [{value:'encode',label:'编码'},{value:'decode',label:'解码'}] },
+  { id: 'base32', name: 'Base32', category: 'encoding', group: 'Base族', desc: 'Base32 编解码', modes: [{value:'encode',label:'编码'},{value:'decode',label:'解码'}] },
+  { id: 'url-encode', name: 'URL编码', category: 'encoding', group: '文本变换', desc: 'URL 编解码', modes: [{value:'encode',label:'编码'},{value:'decode',label:'解码'}] },
+  { id: 'hex-convert', name: 'Hex转换', category: 'encoding', group: 'Hex/进制', desc: '文本与十六进制互转', modes: [{value:'encode',label:'文本→Hex'},{value:'decode',label:'Hex→文本'}] },
+  // 古典密码
+  { id: 'caesar', name: '凯撒密码', category: 'classical', group: '移位', desc: '凯撒位移密码', modes: [{value:'encrypt',label:'加密'},{value:'decrypt',label:'解密'}], params: [{name:'shift',label:'位移',default:'3'}] },
+  { id: 'rot13', name: 'ROT13', category: 'classical', group: '移位', desc: 'ROT13 转换', modes: [{value:'encrypt',label:'加密'},{value:'decrypt',label:'解密'}] },
+  { id: 'vigenere', name: '维吉尼亚密码', category: 'classical', group: '替换', desc: '维吉尼亚密码', modes: [{value:'encrypt',label:'加密'},{value:'decrypt',label:'解密'}], params: [{name:'key',label:'密钥',default:'KEY'}] },
+  { id: 'morse', name: '摩斯密码', category: 'classical', group: '编码', desc: '摩斯电码转换', modes: [{value:'encode',label:'编码'},{value:'decode',label:'解码'}] },
+  // 哈希
+  { id: 'md5', name: 'MD5', category: 'hash', group: '哈希', desc: 'MD5 哈希计算', modes: [{value:'generate',label:'计算'}] },
+  { id: 'sha256', name: 'SHA-256', category: 'hash', group: '哈希', desc: 'SHA-256 哈希计算', modes: [{value:'generate',label:'计算'}] },
+  // Web
+  { id: 'url-parse', name: 'URL解析', category: 'web', group: 'URL', desc: 'URL 组件解析', modes: [{value:'analyze',label:'解析'}] },
+  { id: 'timestamp', name: '时间戳转换', category: 'web', group: '时间', desc: 'Unix 时间戳转换', modes: [{value:'toHuman',label:'时间戳→日期'},{value:'toStamp',label:'日期→时间戳'}] },
+  // 文件
+  { id: 'hex-viewer', name: 'Hex查看器', category: 'file', group: 'Hex', desc: '十六进制查看', modes: [{value:'view',label:'查看'}] },
+  // 图片
+  { id: 'lsb-stego', name: 'LSB隐写', category: 'image', group: '隐写', desc: 'LSB 隐写分析', modes: [{value:'analyze',label:'分析'}] },
+];
+
+/* ============================================================
+   State
+   ============================================================ */
+let state = {
+  view: 'tool',
+  selectedCategory: null,
+  searchQuery: '',
+  favorites: [],
+  recent: [],
+  tabs: [],
+  activeTabId: null,
+  expandedCats: new Set(),
+};
+
+/* ============================================================
+   Tool Execution Logic
+   ============================================================ */
+function executeTool(tool, input, mode, params) {
+  if (!input) return '';
+  try {
+    switch(tool.id) {
+      case 'base64':
+        if (mode === 'encode') return btoa(unescape(encodeURIComponent(input)));
+        else return decodeURIComponent(escape(atob(input)));
+      case 'base32':
+        return base32(input, mode === 'encode');
+      case 'url-encode':
+        if (mode === 'encode') return encodeURIComponent(input);
+        else return decodeURIComponent(input);
+      case 'hex-convert':
+        if (mode === 'encode') {
+          return Array.from(input).map(c => c.charCodeAt(0).toString(16).padStart(2,'0')).join(' ');
+        } else {
+          return input.trim().split(/\s+/).map(h => String.fromCharCode(parseInt(h, 16))).join('');
+        }
+      case 'caesar': {
+        const shift = parseInt(params.shift || 3);
+        const s = mode === 'decrypt' ? -shift : shift;
+        return input.replace(/[a-zA-Z]/g, c => {
+          const base = c <= 'Z' ? 65 : 97;
+          return String.fromCharCode((c.charCodeAt(0) - base + s + 26) % 26 + base);
+        });
+      }
+      case 'rot13':
+        return input.replace(/[a-zA-Z]/g, c => {
+          const base = c <= 'Z' ? 65 : 97;
+          return String.fromCharCode((c.charCodeAt(0) - base + 13) % 26 + base);
+        });
+      case 'vigenere': {
+        const key = (params.key || 'KEY').toUpperCase().replace(/[^A-Z]/g,'');
+        if (!key) return input;
+        let result = '', ki = 0;
+        const s = mode === 'decrypt' ? -1 : 1;
+        for (let i = 0; i < input.length; i++) {
+          const c = input[i];
+          if (/[a-zA-Z]/.test(c)) {
+            const base = c <= 'Z' ? 65 : 97;
+            const shift = key.charCodeAt(ki % key.length) - 65;
+            result += String.fromCharCode((c.charCodeAt(0) - base + shift * s + 26) % 26 + base);
+            ki++;
+          } else result += c;
+        }
+        return result;
+      }
+      case 'morse':
+        return morseConvert(input, mode === 'encode');
+      case 'md5':
+        return md5(input);
+      case 'sha256':
+        return 'SHA-256 计算中…（异步，请稍候）';
+      case 'url-parse':
+        try {
+          const u = new URL(input);
+          return `协议: ${u.protocol}\n主机: ${u.host}\n路径: ${u.pathname}\n查询: ${u.search}\n片段: ${u.hash}\n端口: ${u.port || '(默认)'}`;
+        } catch(e) { return 'URL 解析失败：' + e.message; }
+      case 'timestamp':
+        if (mode === 'toHuman') {
+          const ts = parseInt(input);
+          if (isNaN(ts)) return '无效时间戳';
+          const d = new Date(ts * 1000);
+          return d.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
+        } else {
+          const d = new Date(input);
+          if (isNaN(d)) return '无效日期';
+          return Math.floor(d.getTime() / 1000).toString();
+        }
+      case 'hex-viewer': {
+        const bytes = new TextEncoder().encode(input);
+        let hex = '', ascii = '';
+        for (let i = 0; i < bytes.length; i++) {
+          if (i > 0 && i % 16 === 0) { hex += '  ' + ascii + '\n'; ascii = ''; }
+          const h = bytes[i].toString(16).padStart(2, '0');
+          hex += h + ' ';
+          ascii += bytes[i] >= 32 && bytes[i] < 127 ? String.fromCharCode(bytes[i]) : '.';
+        }
+        const remaining = 16 - (bytes.length % 16);
+        if (bytes.length % 16 !== 0) hex += '   '.repeat(remaining);
+        hex += '  ' + ascii;
+        return hex;
+      }
+      case 'lsb-stego':
+        return '【模拟演示】LSB 隐写分析需要上传图片文件。\n在真实应用中，此工具会提取图片各通道的最低有效位，分析是否存在隐藏信息。';
+      default:
+        return '该工具为模拟演示，暂未实现具体功能。';
+    }
+  } catch(e) {
+    return '执行错误：' + e.message;
+  }
+}
+
+function base32(input, encode) {
+  const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  if (encode) {
+    const bytes = new TextEncoder().encode(input);
+    let bits = '', result = '';
+    for (const b of bytes) bits += b.toString(2).padStart(8, '0');
+    for (let i = 0; i < bits.length; i += 5) {
+      const chunk = bits.slice(i, i + 5).padEnd(5, '0');
+      result += alpha[parseInt(chunk, 2)];
+    }
+    return result;
+  } else {
+    let bits = '';
+    for (const c of input.toUpperCase()) {
+      const idx = alpha.indexOf(c);
+      if (idx >= 0) bits += idx.toString(2).padStart(5, '0');
+    }
+    let result = '';
+    for (let i = 0; i + 8 <= bits.length; i += 8) {
+      result += String.fromCharCode(parseInt(bits.slice(i, i + 8), 2));
+    }
+    return result;
+  }
+}
+
+function morseConvert(input, encode) {
+  const map = {
+    'A':'.-','B':'-...','C':'-.-.','D':'-..','E':'.','F':'..-.','G':'--.','H':'....',
+    'I':'..','J':'.---','K':'-.-','L':'.-..','M':'--','N':'-.','O':'---','P':'.--.',
+    'Q':'--.-','R':'.-.','S':'...','T':'-','U':'..-','V':'...-','W':'.--','X':'-..-',
+    'Y':'-.--','Z':'--..','0':'-----','1':'.----','2':'..---','3':'...--','4':'....-',
+    '5':'.....','6':'-....','7':'--...','8':'---..','9':'----.'
+  };
+  const reverse = {};
+  for (const [k, v] of Object.entries(map)) reverse[v] = k;
+  if (encode) {
+    return input.toUpperCase().split('').map(c => map[c] || (c === ' ' ? '/' : '')).filter(Boolean).join(' ');
+  } else {
+    return input.trim().split(/\s+/).map(code => code === '/' ? ' ' : (reverse[code] || '')).join('');
+  }
+}
+
+/* MD5 implementation (simplified, public domain) */
+function md5(string) {
+  function rotateLeft(x, n) { return (x << n) | (x >>> (32 - n)); }
+  function addUnsigned(x, y) { const x4 = (x & 0x40000000), y4 = (y & 0x40000000); const x8 = (x & 0x80000000), y8 = (y & 0x80000000); const r = (x & 0x3fffffff) + (y & 0x3fffffff); if (x4 & y4) return r ^ 0x80000000 ^ x8 ^ y8; if (x4 | y4) { if (r & 0x40000000) return r ^ 0xc0000000 ^ x8 ^ y8; else return r ^ 0x40000000 ^ x8 ^ y8; } else return r ^ x8 ^ y8; }
+  function F(x,y,z){return (x&y)|(~x&z)} function G(x,y,z){return (x&z)|(y&~z)} function H(x,y,z){return x^y^z} function I(x,y,z){return y^(x|~z)}
+  function FF(a,b,c,d,x,s,t){a=addUnsigned(rotateLeft(addUnsigned(addUnsigned(a,F(b,c,d)),addUnsigned(x,t)),s),b);}
+  function GG(a,b,c,d,x,s,t){a=addUnsigned(rotateLeft(addUnsigned(addUnsigned(a,G(b,c,d)),addUnsigned(x,t)),s),b);}
+  function HH(a,b,c,d,x,s,t){a=addUnsigned(rotateLeft(addUnsigned(addUnsigned(a,H(b,c,d)),addUnsigned(x,t)),s),b);}
+  function II(a,b,c,d,x,s,t){a=addUnsigned(rotateLeft(addUnsigned(addUnsigned(a,I(b,c,d)),addUnsigned(x,t)),s),b);}
+  function convertToWordArray(string){var lWordCount;var lMessageLength=string.length;var lNumberOfWords_temp1=lMessageLength+8;var lNumberOfWords_temp2=(lNumberOfWords_temp1-(lNumberOfWords_temp1%64))/64;var lNumberOfWords=(lNumberOfWords_temp2+1)*16;var lWordArray=Array(lNumberOfWords-1);var lBytePosition=0;var lByteCount=0;while(lByteCount<lMessageLength){lWordCount=(lByteCount-(lByteCount%4))/4;lBytePosition=(lByteCount%4)*8;lWordArray[lWordCount]=(lWordArray[lWordCount]|(string.charCodeAt(lByteCount)<<lBytePosition));lByteCount++;}lWordCount=(lByteCount-(lByteCount%4))/4;lBytePosition=(lByteCount%4)*8;lWordArray[lWordCount]=lWordArray[lWordCount]|(0x80<<lBytePosition);lWordArray[lNumberOfWords-2]=lMessageLength<<3;lWordArray[lNumberOfWords-1]=lMessageLength>>>29;return lWordArray;}
+  function wordToHex(lValue){var WordToHexValue="",WordToHexValue_temp="",lByte,lCount;for(lCount=0;lCount<=3;lCount++){lByte=(lValue>>>(lCount*8))&255;WordToHexValue_temp="0"+lByte.toString(16);WordToHexValue=WordToHexValue+WordToHexValue_temp.substr(WordToHexValue_temp.length-2,2);}return WordToHexValue;}
+  var x=[],k,AA,BB,CC,DD,a,b,c,d,S11=7,S12=12,S13=17,S14=22,S21=5,S22=9,S23=14,S24=20,S31=4,S32=11,S33=16,S34=23,S41=6,S42=10,S43=15,S44=21;
+  x=convertToWordArray(string);
+  a=0x67452301;b=0xEFCDAB89;c=0x98BADCFE;d=0x10325476;
+  for(k=0;k<x.length;k+=16){AA=a;BB=b;CC=c;DD=d;
+    FF(a,b,c,d,x[k+0],S11,0xD76AA478);FF(d,a,b,c,x[k+1],S12,0xE8C7B756);FF(c,d,a,b,x[k+2],S13,0x242070DB);FF(b,c,d,a,x[k+3],S14,0xC1BDCEEE);
+    FF(a,b,c,d,x[k+4],S11,0xF57C0FAF);FF(d,a,b,c,x[k+5],S12,0x4787C62A);FF(c,d,a,b,x[k+6],S13,0xA8304613);FF(b,c,d,a,x[k+7],S14,0xFD469501);
+    FF(a,b,c,d,x[k+8],S11,0x698098D8);FF(d,a,b,c,x[k+9],S12,0x8B44F7AF);FF(c,d,a,b,x[k+10],S13,0xFFFF5BB1);FF(b,c,d,a,x[k+11],S14,0x895CD7BE);
+    FF(a,b,c,d,x[k+12],S11,0x6B901122);FF(d,a,b,c,x[k+13],S12,0xFD987193);FF(c,d,a,b,x[k+14],S13,0xA679438E);FF(b,c,d,a,x[k+15],S14,0x49B40821);
+    GG(a,b,c,d,x[k+1],S21,0xF61E2562);GG(d,a,b,c,x[k+6],S22,0xC040B340);GG(c,d,a,b,x[k+11],S23,0x265E5A51);GG(b,c,d,a,x[k+0],S24,0xE9B6C7AA);
+    GG(a,b,c,d,x[k+5],S21,0xD62F105D);GG(d,a,b,c,x[k+10],S22,0x2441453);GG(c,d,a,b,x[k+15],S23,0xD8A1E681);GG(b,c,d,a,x[k+4],S24,0xE7D3FBC8);
+    GG(a,b,c,d,x[k+9],S21,0x21E1CDE6);GG(d,a,b,c,x[k+14],S22,0xC33707D6);GG(c,d,a,b,x[k+3],S23,0xF4D50D87);GG(b,c,d,a,x[k+8],S24,0x455A14ED);
+    GG(a,b,c,d,x[k+13],S21,0xA9E3E905);GG(d,a,b,c,x[k+2],S22,0xFCEFA3F8);GG(c,d,a,b,x[k+7],S23,0x676F02D9);GG(b,c,d,a,x[k+12],S24,0x8D2A4C8A);
+    HH(a,b,c,d,x[k+5],S31,0xFFFA3942);HH(d,a,b,c,x[k+8],S32,0x8771F681);HH(c,d,a,b,x[k+11],S33,0x6D9D6122);HH(b,c,d,a,x[k+14],S34,0xFDE5380C);
+    HH(a,b,c,d,x[k+1],S31,0xA4BEEA44);HH(d,a,b,c,x[k+4],S32,0x4BDECFA9);HH(c,d,a,b,x[k+7],S33,0xF6BB4B60);HH(b,c,d,a,x[k+10],S34,0xBEBFBC70);
+    HH(a,b,c,d,x[k+13],S31,0x289B7EC6);HH(d,a,b,c,x[k+0],S32,0xEAA127FA);HH(c,d,a,b,x[k+3],S33,0xD4EF3085);HH(b,c,d,a,x[k+6],S34,0x4881D05);
+    HH(a,b,c,d,x[k+9],S31,0xD9D4D039);HH(d,a,b,c,x[k+12],S32,0xE6DB99E5);HH(c,d,a,b,x[k+15],S33,0x1FA27CF8);HH(b,c,d,a,x[k+2],S34,0xC4AC5665);
+    II(a,b,c,d,x[k+0],S41,0xF4292244);II(d,a,b,c,x[k+7],S42,0x432AFF97);II(c,d,a,b,x[k+14],S43,0xAB9423A7);II(b,c,d,a,x[k+5],S44,0xFC93A039);
+    II(a,b,c,d,x[k+12],S41,0x655B59C3);II(d,a,b,c,x[k+3],S42,0x8F0CCC92);II(c,d,a,b,x[k+10],S43,0xFFEFF47D);II(b,c,d,a,x[k+1],S44,0x85845DD1);
+    II(a,b,c,d,x[k+8],S41,0x6FA87E4F);II(d,a,b,c,x[k+15],S42,0xFE2CE6E0);II(c,d,a,b,x[k+6],S43,0xA3014314);II(b,c,d,a,x[k+13],S44,0x4E0811A1);
+    II(a,b,c,d,x[k+4],S41,0xF7537E82);II(d,a,b,c,x[k+11],S42,0xBD3AF235);II(c,d,a,b,x[k+2],S43,0x2AD7D2BB);II(b,c,d,a,x[k+9],S44,0xEB86D391);
+    a=addUnsigned(a,AA);b=addUnsigned(b,BB);c=addUnsigned(c,CC);d=addUnsigned(d,DD);}
+  return (wordToHex(a)+wordToHex(b)+wordToHex(c)+wordToHex(d)).toLowerCase();
+}
+
+/* ============================================================
+   Render Functions
+   ============================================================ */
+function renderSidebar() {
+  // Favorites
+  const favSection = document.getElementById('favSection');
+  const favList = document.getElementById('favList');
+  if (state.favorites.length > 0) {
+    favSection.style.display = 'block';
+    favList.innerHTML = state.favorites.map(id => {
+      const tool = TOOLS.find(t => t.id === id);
+      return `<div class="sidebar-item" onclick="openTool('${id}')">
+        <span>${tool.name}</span>
+        <span class="star-remove" onclick="event.stopPropagation(); toggleFav('${id}')" style="cursor:pointer;color:var(--warning);">★</span>
+      </div>`;
+    }).join('');
+  } else favSection.style.display = 'none';
+
+  // Recent
+  const recentSection = document.getElementById('recentSection');
+  const recentList = document.getElementById('recentList');
+  if (state.recent.length > 0) {
+    recentSection.style.display = 'block';
+    recentList.innerHTML = state.recent.slice(0, 10).map(id => {
+      const tool = TOOLS.find(t => t.id === id);
+      return `<div class="sidebar-item" onclick="openTool('${id}')"><span>${tool.name}</span></div>`;
+    }).join('');
+  } else recentSection.style.display = 'none';
+
+  // Category Tree
+  const tree = document.getElementById('categoryTree');
+  tree.innerHTML = CATEGORIES.map(cat => {
+    const catTools = TOOLS.filter(t => t.category === cat.id);
+    const isActive = state.selectedCategory === cat.id;
+    const isOpen = state.expandedCats.has(cat.id);
+    const groups = [...new Set(catTools.map(t => t.group))];
+    return `<div class="cat-node ${isActive ? 'active' : ''}" onclick="toggleCat('${cat.id}')">
+      <div class="cat-icon ${cat.color}">${ICONS[cat.icon] || ''}</div>
+      <span class="cat-name">${cat.name}</span>
+      <span class="cat-count">${catTools.length}</span>
+      <svg class="cat-chevron ${isOpen ? 'open' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="cat-children ${isOpen ? 'open' : ''}">
+      ${groups.map(g => `<div class="cat-child" onclick="event.stopPropagation(); selectCategory('${cat.id}')">${g}</div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function toggleCat(catId) {
+  if (state.expandedCats.has(catId)) state.expandedCats.delete(catId);
+  else state.expandedCats.add(catId);
+  selectCategory(catId);
+}
+
+function selectCategory(catId) {
+  state.selectedCategory = state.selectedCategory === catId ? null : catId;
+  renderSidebar();
+  if (state.view === 'tool' && state.tabs.length === 0) renderToolGrid();
+}
+
+function renderToolGrid() {
+  const workarea = document.getElementById('workarea');
+  let tools = TOOLS;
+  if (state.selectedCategory) tools = tools.filter(t => t.category === state.selectedCategory);
+  if (state.searchQuery) {
+    const q = state.searchQuery.toLowerCase();
+    tools = tools.filter(t => t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q) || t.group.toLowerCase().includes(q));
+  }
+
+  const catName = state.selectedCategory ? CATEGORIES.find(c => c.id === state.selectedCategory).name : '全部工具';
+  const count = tools.length;
+
+  workarea.innerHTML = `
+    <div class="tool-grid-view">
+      <div class="tool-grid-header">
+        <h2>${state.searchQuery ? '搜索结果' : catName}</h2>
+        <p>共 ${count} 个工具${state.searchQuery ? '匹配' : ''}</p>
+      </div>
+      ${count === 0 ? `
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <h3>未找到匹配的工具</h3>
+          <p>试试调整搜索词或选择其他分类</p>
+        </div>
+      ` : `
+        <div class="tool-grid">
+          ${tools.map(t => {
+            const cat = CATEGORIES.find(c => c.id === t.category);
+            const isFav = state.favorites.includes(t.id);
+            return `<div class="tool-card" onclick="openTool('${t.id}')">
+              <div class="tool-card-icon ${cat.color}">${ICONS[cat.icon] || ''}</div>
+              <div class="tool-card-info">
+                <div class="tool-card-name">${t.name}</div>
+                <div class="tool-card-desc">${t.desc}</div>
+              </div>
+              <svg class="tool-card-fav ${isFav ? 'active' : ''}" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation(); toggleFav('${t.id}')"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>`;
+          }).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function renderToolWorkspace() {
+  const workarea = document.getElementById('workarea');
+  const activeTab = state.tabs.find(t => t.id === state.activeTabId);
+  if (!activeTab) { renderToolGrid(); return; }
+  const tool = TOOLS.find(t => t.id === activeTab.toolId);
+  const cat = CATEGORIES.find(c => c.id === tool.category);
+
+  workarea.innerHTML = `
+    <div class="tool-workspace">
+      <div class="tool-tabs" id="toolTabs">
+        ${state.tabs.map(tab => {
+          const t = TOOLS.find(x => x.id === tab.toolId);
+          return `<div class="tool-tab ${tab.id === state.activeTabId ? 'active' : ''}" onclick="switchTab('${tab.id}')">
+            <span>${t.name}</span>
+            <span class="close-btn" onclick="event.stopPropagation(); closeTab('${tab.id}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="io-container">
+        <div class="io-panel">
+          <div class="io-header">
+            <div class="io-header-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/></svg>
+              输入
+            </div>
+            <span class="io-stats" id="inputStats">${activeTab.input.length} 字符 · ${activeTab.input.split('\n').length} 行</span>
+          </div>
+          <textarea class="io-textarea" id="inputArea" placeholder="在此输入文本..." oninput="updateInput(this.value)">${activeTab.input}</textarea>
+          <div class="file-drop" onclick="showToast('文件上传为模拟功能','info')">
+            拖拽文件到此处或点击选择
+          </div>
+        </div>
+        <div class="io-panel">
+          <div class="io-header">
+            <div class="io-header-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6"/></svg>
+              输出
+            </div>
+            <div class="io-actions">
+              <button class="io-action-btn" onclick="copyOutput()" title="复制">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+              <button class="io-action-btn" onclick="downloadOutput()" title="下载">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </button>
+            </div>
+          </div>
+          ${activeTab.output ? `<div class="io-output">${escapeHtml(activeTab.output)}</div>` : `
+            <div class="io-output-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              执行操作后结果将显示在这里
+            </div>
+          `}
+        </div>
+      </div>
+      <div class="tool-controls">
+        <div class="tool-params">
+          ${tool.modes.length > 1 ? `
+            <select class="param-select" id="modeSelect" onchange="activeTab().mode = this.value">
+              ${tool.modes.map(m => `<option value="${m.value}" ${m.value === activeTab.mode ? 'selected' : ''}>${m.label}</option>`).join('')}
+            </select>
+          ` : `<span class="param-label">${tool.modes[0].label}</span>`}
+          ${(tool.params || []).map(p => `
+            <span class="param-label">${p.label}:</span>
+            <input class="param-input" type="text" id="param_${p.name}" value="${activeTab.params[p.name] || p.default}" placeholder="${p.default}" oninput="activeTab().params['${p.name}'] = this.value">
+          `).join('')}
+        </div>
+        <button class="btn-execute" onclick="executeActiveTool()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          执行
+        </button>
+        <div class="tool-actions-right">
+          <button class="tool-action-btn ai" onclick="showToast('AI Agent 解题为模拟功能','info')" ${!activeTab.output ? 'disabled' : ''}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>
+            AI Agent
+          </button>
+          <button class="tool-action-btn" onclick="swapIO()" title="交换输入输出">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+          </button>
+          <button class="tool-action-btn" onclick="copyOutput()" title="复制">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+          <button class="tool-action-btn" onclick="clearInput()" title="清空">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSmartCodec() {
+  const workarea = document.getElementById('workarea');
+  workarea.innerHTML = `
+    <div class="smart-codec-view">
+      <div class="sc-header">
+        <h2>智能编解码</h2>
+        <p>粘贴需要解码的文本，引擎将自动识别编码类型。</p>
+      </div>
+      <div class="sc-toolbar">
+        <div class="sc-mode-toggle">
+          <button class="sc-mode-btn active" onclick="setScMode('decode')">解码</button>
+          <button class="sc-mode-btn" onclick="setScMode('encode')">编码</button>
+        </div>
+        <button class="tool-action-btn" onclick="document.getElementById('scInput').value=''" style="height:32px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
+          清空
+        </button>
+      </div>
+      <div class="sc-card">
+        <div class="sc-card-label">输入</div>
+        <textarea class="sc-textarea" id="scInput" placeholder="粘贴需要解码的文本，引擎将自动识别编码类型..."></textarea>
+      </div>
+      <div class="sc-params">
+        <div class="sc-param-group">
+          <label class="sc-param-label">预期开头</label>
+          <input class="sc-param-input" id="scStart" type="text" placeholder="flag{" value="flag{">
+        </div>
+        <div class="sc-param-group">
+          <label class="sc-param-label">预期结尾</label>
+          <input class="sc-param-input" id="scEnd" type="text" placeholder="}" value="}">
+        </div>
+        <div class="sc-param-group">
+          <label class="sc-param-label">预设</label>
+          <select class="sc-preset-select" id="scPreset" onchange="applyScPreset(this.value)">
+            <option value="flag{">flag{</option>
+            <option value="FLAG{">FLAG{</option>
+            <option value="CTF{">CTF{</option>
+            <option value="key{">key{</option>
+            <option value="">无</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-execute" onclick="executeSmartCodec()" style="width:100%;justify-content:center;height:36px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        智能识别
+      </button>
+      <div class="sc-results" id="scResults"></div>
+    </div>
+  `;
+}
+
+let scMode = 'decode';
+
+function setScMode(mode) {
+  scMode = mode;
+  document.querySelectorAll('.sc-mode-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', (mode === 'decode' && i === 0) || (mode === 'encode' && i === 1));
+  });
+  document.getElementById('scInput').placeholder = mode === 'decode'
+    ? '粘贴需要解码的文本，引擎将自动识别编码类型...'
+    : '输入要编码的明文...';
+}
+
+function applyScPreset(val) {
+  document.getElementById('scStart').value = val ? val : '';
+  document.getElementById('scEnd').value = val ? val.charAt(0) === val.slice(-1) ? '' : '}' : '';
+  if (val === 'flag{') document.getElementById('scEnd').value = '}';
+  if (val === 'FLAG{') document.getElementById('scEnd').value = '}';
+  if (val === 'CTF{') document.getElementById('scEnd').value = '}';
+  if (val === 'key{') document.getElementById('scEnd').value = '}';
+}
+
+function executeSmartCodec() {
+  const input = document.getElementById('scInput').value.trim();
+  if (!input) { showToast('请输入文本', 'error'); return; }
+  const resultsDiv = document.getElementById('scResults');
+  const start = document.getElementById('scStart').value;
+  const end = document.getElementById('scEnd').value;
+
+  if (scMode === 'decode') {
+    const results = [];
+    // Try Base64
+    try {
+      const decoded = atob(input);
+      if (/^[\x20-\x7e]+$/.test(decoded)) results.push({ type: 'Base64', text: decoded });
+    } catch(e) {}
+    // Try Base32
+    try {
+      const decoded = base32(input, false);
+      if (decoded && /^[\x20-\x7e]+$/.test(decoded)) results.push({ type: 'Base32', text: decoded });
+    } catch(e) {}
+    // Try URL
+    try {
+      const decoded = decodeURIComponent(input);
+      if (decoded !== input) results.push({ type: 'URL编码', text: decoded });
+    } catch(e) {}
+    // Try Hex
+    try {
+      if (/^[0-9a-fA-F\s]+$/.test(input)) {
+        const decoded = input.trim().split(/\s+/).map(h => String.fromCharCode(parseInt(h, 16))).join('');
+        if (/^[\x20-\x7e]+$/.test(decoded)) results.push({ type: 'Hex', text: decoded });
+      }
+    } catch(e) {}
+    // Try ROT13
+    const rot13 = input.replace(/[a-zA-Z]/g, c => {
+      const base = c <= 'Z' ? 65 : 97;
+      return String.fromCharCode((c.charCodeAt(0) - base + 13) % 26 + base);
+    });
+    if (rot13 !== input) results.push({ type: 'ROT13', text: rot13 });
+
+    if (results.length === 0) {
+      resultsDiv.innerHTML = '<div class="sc-card"><p style="color:var(--muted-foreground);font-size:13px;text-align:center;">未识别到已知编码格式</p></div>';
+      return;
+    }
+
+    // Filter by expected prefix/suffix
+    let filtered = results;
+    if (start) filtered = results.filter(r => r.text.startsWith(start));
+    if (end) filtered = filtered.filter(r => r.text.endsWith(end));
+    const display = filtered.length > 0 ? filtered : results;
+
+    resultsDiv.innerHTML = '<div class="sc-card-label" style="margin-bottom:8px;">候选结果</div>' +
+      display.map(r => `
+        <div class="sc-result-item">
+          <div class="sc-result-info">
+            <div class="sc-result-type">${r.type}</div>
+            <div class="sc-result-text">${escapeHtml(r.text)}</div>
+          </div>
+          <button class="sc-result-use" onclick="useScResult('${escapeHtml(r.text).replace(/'/g,"\\'")}')">使用</button>
+        </div>
+      `).join('');
+  } else {
+    try {
+      const encoded = btoa(input);
+      resultsDiv.innerHTML = '<div class="sc-card-label" style="margin-bottom:8px;">编码输出</div>' +
+        `<div class="sc-result-item"><div class="sc-result-info"><div class="sc-result-type">Base64</div><div class="sc-result-text">${escapeHtml(encoded)}</div></div>
+        <button class="sc-result-use" onclick="copyText('${encoded}')">复制</button></div>`;
+    } catch(e) {
+      resultsDiv.innerHTML = '<div class="sc-card"><p style="color:var(--destructive);font-size:13px;">编码失败</p></div>';
+    }
+  }
+}
+
+function useScResult(text) {
+  document.getElementById('scInput').value = text;
+  executeSmartCodec();
+  showToast('已填入输入框', 'success');
+}
+
+function renderChainView() {
+  const workarea = document.getElementById('workarea');
+  workarea.innerHTML = `
+    <div class="chain-view">
+      <div class="chain-main">
+        <div class="chain-header">
+          <h2>操作链构建器</h2>
+          <p>添加操作步骤来构建处理链，依次对输入文本进行处理。</p>
+        </div>
+        <input class="chain-input" id="chainInput" placeholder="输入待处理的文本..." oninput="state.chainInput = this.value">
+        <div class="chain-add">
+          <select class="chain-select" id="chainOpSelect">
+            <option value="">选择操作...</option>
+            <option value="base64-encode">Base64 编码</option>
+            <option value="base64-decode">Base64 解码</option>
+            <option value="url-encode">URL 编码</option>
+            <option value="url-decode">URL 解码</option>
+            <option value="rot13">ROT13</option>
+            <option value="md5">MD5 哈希</option>
+            <option value="hex-encode">Hex 编码</option>
+            <option value="hex-decode">Hex 解码</option>
+            <option value="uppercase">转大写</option>
+            <option value="lowercase">转小写</option>
+            <option value="reverse">反转文本</option>
+          </select>
+          <button class="chain-add-btn" onclick="addChainStep()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            添加
+          </button>
+        </div>
+        <div class="chain-steps" id="chainSteps"></div>
+        <div class="chain-actions">
+          <button class="btn-execute" onclick="executeChain()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            执行链
+          </button>
+          <button class="tool-action-btn" onclick="saveChainRecipe()">保存配方</button>
+          <button class="tool-action-btn" onclick="clearChain()">清空</button>
+        </div>
+      </div>
+      <div class="chain-sidebar">
+        <h3>预设链</h3>
+        <div class="chain-preset" onclick="loadPresetChain('base64-double')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+          Base64 双重编码
+        </div>
+        <div class="chain-preset" onclick="loadPresetChain('rot13-upper')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+          ROT13 + 转大写
+        </div>
+        <div class="chain-preset" onclick="loadPresetChain('hex-reverse')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+          Hex 编码 + 反转
+        </div>
+        <h3 style="margin-top:16px;">已保存配方</h3>
+        <div id="savedRecipes" style="font-size:13px;color:var(--muted-foreground);">暂无保存的配方</div>
+      </div>
+    </div>
+  `;
+  renderChainSteps();
+}
+
+state.chainSteps = [];
+
+function addChainStep() {
+  const select = document.getElementById('chainOpSelect');
+  if (!select.value) { showToast('请先选择一个操作', 'error'); return; }
+  state.chainSteps.push({ op: select.value });
+  renderChainSteps();
+  select.value = '';
+}
+
+function removeChainStep(index) {
+  state.chainSteps.splice(index, 1);
+  renderChainSteps();
+}
+
+function renderChainSteps() {
+  const div = document.getElementById('chainSteps');
+  if (!div) return;
+  if (state.chainSteps.length === 0) {
+    div.innerHTML = '<div class="chain-empty">添加操作步骤来构建处理链</div>';
+    return;
+  }
+  const opNames = {
+    'base64-encode': 'Base64 编码', 'base64-decode': 'Base64 解码',
+    'url-encode': 'URL 编码', 'url-decode': 'URL 解码',
+    'rot13': 'ROT13', 'md5': 'MD5 哈希',
+    'hex-encode': 'Hex 编码', 'hex-decode': 'Hex 解码',
+    'uppercase': '转大写', 'lowercase': '转小写', 'reverse': '反转文本'
+  };
+  div.innerHTML = state.chainSteps.map((step, i) => `
+    <div class="chain-step">
+      <span class="chain-step-num">${i + 1}</span>
+      <span class="chain-step-name">${opNames[step.op] || step.op}</span>
+      <span class="chain-step-preview">${step.preview ? escapeHtml(step.preview.slice(0, 40)) : ''}</span>
+      <button class="chain-step-remove" onclick="removeChainStep(${i})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+
+function executeChainStep(input, op) {
+  switch(op) {
+    case 'base64-encode': return btoa(unescape(encodeURIComponent(input)));
+    case 'base64-decode': return decodeURIComponent(escape(atob(input)));
+    case 'url-encode': return encodeURIComponent(input);
+    case 'url-decode': return decodeURIComponent(input);
+    case 'rot13': return input.replace(/[a-zA-Z]/g, c => { const b = c <= 'Z' ? 65 : 97; return String.fromCharCode((c.charCodeAt(0) - b + 13) % 26 + b); });
+    case 'md5': return md5(input);
+    case 'hex-encode': return Array.from(input).map(c => c.charCodeAt(0).toString(16).padStart(2,'0')).join(' ');
+    case 'hex-decode': return input.trim().split(/\s+/).map(h => String.fromCharCode(parseInt(h, 16))).join('');
+    case 'uppercase': return input.toUpperCase();
+    case 'lowercase': return input.toLowerCase();
+    case 'reverse': return input.split('').reverse().join('');
+    default: return input;
+  }
+}
+
+function executeChain() {
+  let input = document.getElementById('chainInput').value;
+  if (!input) { showToast('请先输入文本', 'error'); return; }
+  if (state.chainSteps.length === 0) { showToast('请先添加操作步骤', 'error'); return; }
+
+  for (let i = 0; i < state.chainSteps.length; i++) {
+    try {
+      input = executeChainStep(input, state.chainSteps[i].op);
+      state.chainSteps[i].preview = input;
+    } catch(e) {
+      showToast(`第 ${i + 1} 步执行失败: ${e.message}`, 'error');
+      return;
+    }
+  }
+  renderChainSteps();
+  showToast('链执行完成', 'success');
+  // Show final result
+  const main = document.querySelector('.chain-main');
+  let resultDiv = document.getElementById('chainResult');
+  if (!resultDiv) {
+    resultDiv = document.createElement('div');
+    resultDiv.id = 'chainResult';
+    resultDiv.className = 'sc-card';
+    resultDiv.style.marginTop = '16px';
+    main.appendChild(resultDiv);
+  }
+  resultDiv.innerHTML = `<div class="sc-card-label">最终输出</div><div style="font-family:var(--font-mono);font-size:13px;color:var(--foreground);word-break:break-all;">${escapeHtml(input)}</div>`;
+}
+
+function loadPresetChain(name) {
+  if (name === 'base64-double') state.chainSteps = [{op:'base64-encode'},{op:'base64-encode'}];
+  if (name === 'rot13-upper') state.chainSteps = [{op:'rot13'},{op:'uppercase'}];
+  if (name === 'hex-reverse') state.chainSteps = [{op:'hex-encode'},{op:'reverse'}];
+  renderChainSteps();
+  showToast('已加载预设链', 'success');
+}
+
+function saveChainRecipe() {
+  if (state.chainSteps.length === 0) { showToast('请先添加操作步骤', 'error'); return; }
+  showToast('配方已保存', 'success');
+}
+
+function clearChain() {
+  state.chainSteps = [];
+  const input = document.getElementById('chainInput');
+  if (input) input.value = '';
+  const result = document.getElementById('chainResult');
+  if (result) result.remove();
+  renderChainSteps();
+}
+
+/* ============================================================
+   Actions
+   ============================================================ */
+function switchView(view) {
+  state.view = view;
+  document.querySelectorAll('.view-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.view === view);
+  });
+  if (view === 'tool') {
+    if (state.tabs.length > 0) renderToolWorkspace();
+    else renderToolGrid();
+  } else if (view === 'smart-codec') {
+    renderSmartCodec();
+  } else if (view === 'chain') {
+    renderChainView();
+  }
+}
+
+function handleSearch(query) {
+  state.searchQuery = query;
+  if (state.view === 'tool' && state.tabs.length === 0) renderToolGrid();
+}
+
+function openTool(toolId) {
+  // Add to recent
+  state.recent = state.recent.filter(id => id !== toolId);
+  state.recent.unshift(toolId);
+  state.recent = state.recent.slice(0, 20);
+
+  // Check if tab already exists
+  let tab = state.tabs.find(t => t.toolId === toolId);
+  if (!tab) {
+    const tool = TOOLS.find(t => t.id === toolId);
+    tab = {
+      id: 'tab_' + Date.now(),
+      toolId: toolId,
+      input: '',
+      output: '',
+      mode: tool.modes[0].value,
+      params: {},
+    };
+    if (tool.params) tool.params.forEach(p => { tab.params[p.name] = p.default; });
+    state.tabs.push(tab);
+  }
+  state.activeTabId = tab.id;
+  state.view = 'tool';
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.toggle('active', t.dataset.view === 'tool'));
+  renderSidebar();
+  renderToolWorkspace();
+}
+
+function switchTab(tabId) {
+  state.activeTabId = tabId;
+  renderToolWorkspace();
+}
+
+function closeTab(tabId) {
+  const idx = state.tabs.findIndex(t => t.id === tabId);
+  if (idx < 0) return;
+  state.tabs.splice(idx, 1);
+  if (state.activeTabId === tabId) {
+    state.activeTabId = state.tabs.length > 0 ? state.tabs[Math.min(idx, state.tabs.length - 1)].id : null;
+  }
+  if (state.tabs.length === 0) renderToolGrid();
+  else renderToolWorkspace();
+}
+
+function activeTab() {
+  return state.tabs.find(t => t.id === state.activeTabId);
+}
+
+function updateInput(value) {
+  const tab = activeTab();
+  if (tab) {
+    tab.input = value;
+    const stats = document.getElementById('inputStats');
+    if (stats) stats.textContent = `${value.length} 字符 · ${value.split('\n').length} 行`;
+  }
+}
+
+function executeActiveTool() {
+  const tab = activeTab();
+  if (!tab) return;
+  const tool = TOOLS.find(t => t.id === tab.toolId);
+  if (!tab.input) { showToast('请先输入文本', 'error'); return; }
+
+  if (tool.id === 'sha256') {
+    showToast('正在计算 SHA-256...', 'info');
+    crypto.subtle.digest('SHA-256', new TextEncoder().encode(tab.input)).then(hash => {
+      const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+      tab.output = hex;
+      renderToolWorkspace();
+      showToast('执行完成', 'success');
+    });
+    return;
+  }
+
+  tab.output = executeTool(tool, tab.input, tab.mode, tab.params);
+  renderToolWorkspace();
+  showToast('执行完成', 'success');
+}
+
+function swapIO() {
+  const tab = activeTab();
+  if (!tab || !tab.output) { showToast('输出为空，无法交换', 'error'); return; }
+  tab.input = tab.output;
+  tab.output = '';
+  renderToolWorkspace();
+}
+
+function copyOutput() {
+  const tab = activeTab();
+  if (!tab || !tab.output) { showToast('输出为空', 'error'); return; }
+  copyText(tab.output);
+}
+
+function copyText(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板', 'success'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('已复制到剪贴板', 'success');
+  }
+}
+
+function downloadOutput() {
+  const tab = activeTab();
+  if (!tab || !tab.output) { showToast('输出为空', 'error'); return; }
+  const blob = new Blob([tab.output], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'output.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('已下载', 'success');
+}
+
+function clearInput() {
+  const tab = activeTab();
+  if (tab) { tab.input = ''; tab.output = ''; renderToolWorkspace(); }
+}
+
+function toggleFav(toolId) {
+  if (state.favorites.includes(toolId)) state.favorites = state.favorites.filter(id => id !== toolId);
+  else state.favorites.push(toolId);
+  renderSidebar();
+  if (state.view === 'tool' && state.tabs.length === 0) renderToolGrid();
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+function showToast(message, type) {
+  type = type || 'info';
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast' + (type !== 'info' ? ' ' + type : '');
+  const icon = type === 'success'
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+    : type === 'error'
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+  toast.innerHTML = icon + '<span>' + message + '</span>';
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'toastOut 0.25s ease forwards';
+    setTimeout(() => toast.remove(), 250);
+  }, 2500);
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+/* ============================================================
+   Init
+   ============================================================ */
+renderSidebar();
+renderToolGrid();
+</script>
+</body>
+</html>
