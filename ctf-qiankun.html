@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTF 乾坤袋 · 浏览器端 CTF 工具箱 — Workshop</title>
+<meta name="description" content="CTF 乾坤袋 — 浏览器端 CTF 工具箱:编码转换、密码学辅助、Web 数据处理、文件分析、隐写分析、取证、OSINT、PWN 与逆向等工具,输入默认在浏览器本地处理。">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* ============================================================
+     CTF 乾坤袋 — 详情页专属样式
+     继承 Workshop 共享变量,启用墨绿主题色 --c
+     ============================================================ */
+
+  /* ---------- Hero 区 ---------- */
+  .hero {
+    padding: var(--space-9) 0 var(--space-8);
+    border-bottom: var(--border);
+    position: relative;
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(58,107,42,0.06), transparent 60%);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: var(--space-8);
+    align-items: end;
+  }
+
+  .hero h1 {
+    font-size: clamp(3.2rem, 9vw, 7.5rem);
+    margin: var(--space-3) 0 var(--space-5);
+  }
+
+  .hero h1 .ital {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--c);
+  }
+
+  .hero h1 .stroke {
+    -webkit-text-stroke: 2px var(--ink);
+    color: transparent;
+  }
+
+  .hero-tagline {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.4rem;
+    color: var(--ink-2);
+    letter-spacing: -0.01em;
+    border-left: 3px solid var(--c);
+    padding-left: var(--space-4);
+    margin-top: var(--space-4);
+    max-width: 30ch;
+  }
+
+  /* 元信息表 */
+  .meta-card {
+    border: var(--border);
+    background: var(--paper);
+    box-shadow: var(--shadow-hard);
+    padding: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.9;
+  }
+
+  .meta-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: var(--border-2);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-3);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .meta-card-head .dot {
+    width: 8px; height: 8px;
+    background: var(--c);
+    display: inline-block;
+    margin-right: var(--space-2);
+    vertical-align: middle;
+  }
+
+  .meta-card dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-1) var(--space-5);
+  }
+
+  .meta-card dt {
+    color: var(--ink-4);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .meta-card dd { color: var(--ink); }
+
+  .meta-card dd a { border-bottom: 1px solid var(--line); }
+  .meta-card dd a:hover { color: var(--c); border-color: var(--c); }
+
+  /* 标尺装饰 */
+  .ruler {
+    position: absolute;
+    top: 0; right: 0;
+    width: 64px; height: 100%;
+    border-left: var(--border-2);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 23px,
+      var(--line) 23px,
+      var(--line) 24px
+    );
+    pointer-events: none;
+  }
+
+  .ruler::before {
+    content: 'CTF · 03';
+    position: absolute;
+    top: 50%; right: 20px;
+    transform: rotate(90deg) translateY(-50%);
+    transform-origin: right center;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    color: var(--ink-4);
+    white-space: nowrap;
+  }
+
+  /* 装饰 SVG —— 密码学符号 */
+  .crypto-deco {
+    position: absolute;
+    top: var(--space-7); right: 96px;
+    width: 180px; height: 180px;
+    opacity: 0.5;
+    pointer-events: none;
+    color: var(--c);
+  }
+
+  /* 二进制流装饰 */
+  .binstream {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--ink-4);
+    opacity: 0.35;
+    letter-spacing: 0.3em;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: var(--space-2) var(--space-6);
+    border-top: var(--border-2);
+    pointer-events: none;
+  }
+
+  /* ---------- 通用 section ---------- */
+  section.block {
+    padding: var(--space-8) 0;
+    border-bottom: var(--border-2);
+  }
+
+  section.block.shaded {
+    background: var(--paper-2);
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: var(--border);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-7);
+  }
+
+  .section-head h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    letter-spacing: -0.025em;
+    line-height: 1;
+  }
+
+  .section-head h2 .ital {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--c);
+  }
+
+  .section-head .num {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    letter-spacing: 0.1em;
+  }
+
+  /* ---------- 正文 ---------- */
+  .prose {
+    font-size: 1.02rem;
+    color: var(--ink-2);
+    max-width: 62ch;
+  }
+
+  .prose p + p { margin-top: var(--space-4); }
+
+  .prose strong { color: var(--ink); font-weight: 700; }
+
+  .lead {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.3rem, 2.4vw, 1.7rem);
+    line-height: 1.4;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    max-width: 30ch;
+    margin-bottom: var(--space-6);
+  }
+
+  .lead .hl {
+    background: linear-gradient(180deg, transparent 60%, rgba(58,107,42,0.28) 60%);
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  /* ---------- 功能矩阵 ---------- */
+  .matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+  }
+
+  .matrix-card {
+    border: var(--border);
+    background: var(--paper);
+    padding: var(--space-5);
+    position: relative;
+    transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s cubic-bezier(.2,.7,.2,1);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .matrix-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: var(--shadow-hard);
+  }
+
+  .matrix-card .midx {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--ink-4);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .matrix-card .midx .pill {
+    background: var(--c);
+    color: var(--paper);
+    padding: 1px 6px;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+  }
+
+  .matrix-card svg.micon {
+    width: 36px; height: 36px;
+    color: var(--c);
+  }
+
+  .matrix-card h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .matrix-card p {
+    font-size: 0.88rem;
+    color: var(--ink-3);
+    line-height: 1.55;
+  }
+
+  /* ---------- 安全边界 ---------- */
+  .boundary {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  .check-list {
+    list-style: none;
+    border: var(--border);
+    background: var(--paper);
+  }
+
+  .check-list li {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: var(--border-2);
+    font-size: 0.92rem;
+    color: var(--ink-2);
+    align-items: flex-start;
+  }
+
+  .check-list li:last-child { border-bottom: none; }
+
+  .check-list .mk {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--c);
+    flex-shrink: 0;
+    width: 1.2em;
+  }
+
+  .check-list .mk.x { color: var(--accent); }
+
+  /* ---------- 代码块 / 终端 ---------- */
+  .terminal {
+    border: var(--border);
+    background: #15110d;
+    box-shadow: var(--shadow-hard);
+    overflow: hidden;
+  }
+
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: #211b14;
+    border-bottom: 1px solid #3a3026;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: #c9bfa9;
+    letter-spacing: 0.1em;
+  }
+
+  .terminal-bar .ttdot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #3a3026;
+  }
+
+  .terminal-bar .ttdot:nth-child(1) { background: #b8341a; }
+  .terminal-bar .ttdot:nth-child(2) { background: #8a6d1e; }
+  .terminal-bar .ttdot:nth-child(3) { background: var(--c); }
+
+  .terminal-bar .tttitle {
+    margin-left: var(--space-3);
+    color: #9a9082;
+  }
+
+  .terminal pre {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: #e3dcc8;
+    padding: var(--space-5);
+    overflow-x: auto;
+    margin: 0;
+  }
+
+  .terminal pre .cmt { color: #6b6358; }
+  .terminal pre .cmd { color: #a9d48a; }
+  .terminal pre .out { color: #c9bfa9; }
+  .terminal pre .url { color: #e0b070; text-decoration: underline; }
+  .terminal pre .ps1 { color: var(--c); }
+  .terminal pre .kw { color: #e0b070; }
+
+  .code-note {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    margin-top: var(--space-3);
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+  }
+
+  .code-note::before {
+    content: '※';
+    color: var(--c);
+    font-weight: 700;
+  }
+
+  /* ---------- 规格表(spec-card + dl) ---------- */
+  .spec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+    margin-top: var(--space-6);
+  }
+
+  .spec-card dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2) var(--space-5);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+
+  .spec-card dt {
+    color: var(--ink-4);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    align-self: center;
+  }
+
+  .spec-card dd { color: var(--ink); }
+
+  .spec-card dd .bar {
+    display: inline-block;
+    height: 8px;
+    background: var(--paper-3);
+    border: 1px solid var(--line);
+    position: relative;
+    vertical-align: middle;
+    margin-left: var(--space-2);
+    width: 90px;
+  }
+
+  .spec-card dd .bar i {
+    display: block;
+    height: 100%;
+    background: var(--c);
+  }
+
+  /* ---------- 添加工具 ---------- */
+  .toolpath {
+    border: var(--border);
+    background: var(--paper);
+    padding: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    box-shadow: var(--shadow-soft);
+    margin-bottom: var(--space-5);
+  }
+
+  .toolpath .path-line {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .toolpath .path-line .seg {
+    padding: 2px 8px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+  }
+
+  .toolpath .path-line .seg.leaf {
+    background: var(--c);
+    color: var(--paper);
+    border-color: var(--c);
+  }
+
+  .toolpath .path-line .sep { color: var(--ink-4); }
+
+  .notes-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  .notes-list li {
+    border: var(--border-2);
+    background: var(--paper);
+    padding: var(--space-4);
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    transition: border-color .2s, transform .2s;
+  }
+
+  .notes-list li:hover {
+    border-color: var(--c);
+    transform: translateX(3px);
+  }
+
+  .notes-list .nn {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--c);
+    flex-shrink: 0;
+    font-size: 0.8rem;
+  }
+
+  /* ---------- CTA ---------- */
+  .cta {
+    padding: var(--space-9) 0;
+    border-top: var(--border);
+    background: var(--paper-2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-inner {
+    display: grid;
+    grid-template-columns: 1.4fr auto;
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  .cta h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+
+  .cta h2 .ital {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--c);
+  }
+
+  .cta p {
+    margin-top: var(--space-4);
+    color: var(--ink-2);
+    max-width: 48ch;
+    font-size: 1.02rem;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .cta .btn-primary {
+    background: var(--c);
+    border-color: var(--c);
+  }
+
+  .cta .btn-primary:hover {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  /* CTA 装饰 */
+  .cta-deco {
+    position: absolute;
+    right: -40px; bottom: -40px;
+    width: 260px; height: 260px;
+    opacity: 0.08;
+    color: var(--c);
+    pointer-events: none;
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; gap: var(--space-6); }
+    .crypto-deco { display: none; }
+    .two-col { grid-template-columns: 1fr; gap: var(--space-5); }
+    .matrix-grid { grid-template-columns: repeat(2, 1fr); }
+    .boundary { grid-template-columns: 1fr; gap: var(--space-5); }
+    .spec-grid { grid-template-columns: 1fr; }
+    .notes-list { grid-template-columns: 1fr; }
+    .cta-inner { grid-template-columns: 1fr; gap: var(--space-5); }
+  }
+
+  @media (max-width: 640px) {
+    .ruler { display: none; }
+    .matrix-grid { grid-template-columns: 1fr; }
+    .binstream { display: none; }
+  }
+</style>
+</head>
+<body class="theme-ctf">
+
+<!-- 导航 -->
+<header class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand"><span class="brand-mark">工</span><span>Workshop</span></a>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-back">返回索引</a>
+      <a href="https://github.com/by-fengqiao/ctf-qiankun" target="_blank" rel="noopener">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ============ Hero ============ -->
+  <section class="hero" id="overview">
+    <div class="ruler"></div>
+
+    <!-- 密码学符号装饰 SVG -->
+    <svg class="crypto-deco" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+      <!-- 凯撒密码盘外圈 -->
+      <circle cx="100" cy="100" r="78"/>
+      <circle cx="100" cy="100" r="58" stroke-dasharray="3 5"/>
+      <circle cx="100" cy="100" r="38"/>
+      <!-- 刻度 -->
+      <g stroke-width="1">
+        <line x1="100" y1="22" x2="100" y2="34"/>
+        <line x1="178" y1="100" x2="166" y2="100"/>
+        <line x1="100" y1="178" x2="100" y2="166"/>
+        <line x1="22" y1="100" x2="34" y2="100"/>
+        <line x1="155" y1="45" x2="147" y2="53"/>
+        <line x1="155" y1="155" x2="147" y2="147"/>
+        <line x1="45" y1="155" x2="53" y2="147"/>
+        <line x1="45" y1="45" x2="53" y2="53"/>
+      </g>
+      <!-- 中心密钥 -->
+      <circle cx="100" cy="100" r="6" fill="currentColor" stroke="none"/>
+      <!-- 指针 -->
+      <line x1="100" y1="100" x2="146" y2="62" stroke-width="2"/>
+      <!-- 字母点缀 -->
+      <text x="100" y="30" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="currentColor" stroke="none">A</text>
+      <text x="170" y="104" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="currentColor" stroke="none">F</text>
+      <text x="100" y="176" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="currentColor" stroke="none">K</text>
+      <text x="30" y="104" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="currentColor" stroke="none">P</text>
+    </svg>
+
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow rise rise-1">PROJECT N° 03 · CTF TOOLKIT</p>
+          <h1 class="display rise rise-2">
+            CTF <span class="ital">乾坤</span><br>
+            <span class="stroke">袋</span>
+          </h1>
+          <p class="hero-tagline rise rise-3">浏览器端 CTF 工具箱。</p>
+        </div>
+
+        <div class="meta-card rise rise-4">
+          <div class="meta-card-head">
+            <span><span class="dot"></span>规格表 · SPEC SHEET</span>
+            <span>v1</span>
+          </div>
+          <dl>
+            <dt>版本</dt><dd>开源客户端</dd>
+            <dt>许可</dt><dd>MIT</dd>
+            <dt>技术栈</dt><dd>TypeScript 98.4% / JS 1.1%</dd>
+            <dt>作者</dt><dd>枫桥 · by-fengqiao 与 dzwm</dd>
+            <dt>仓库</dt><dd><a href="https://github.com/by-fengqiao/ctf-qiankun" target="_blank" rel="noopener">github.com/by-fengqiao/ctf-qiankun</a></dd>
+            <dt>更新</dt><dd>2026-07-27</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <!-- 二进制流装饰 -->
+    <div class="binstream">01001000 01100101 01101100 01101100 01101111 00100000 01000011 01010100 01000110 00100000 11000110 10101010 10001010 11101110 10111010 01010101 11001100 10101010</div>
+  </section>
+
+  <!-- ============ 它是什么 ============ -->
+  <section class="block" id="what">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>它<span class="ital">是什么</span></h2>
+        <span class="num">§ 01</span>
+      </div>
+
+      <div class="two-col">
+        <div class="prose">
+          <p class="lead">一个跑在<span class="hl">浏览器端</span>的 CTF 工具箱,把比赛和研究中常用的工具收进一个袋子。</p>
+
+          <p><strong>开源版只保留客户端工具。</strong>它不包含登录、邀请码、积分、管理后台、数据库或付费服务 —— 这些都不属于这个袋子要装的东西。</p>
+
+          <p>工具输入默认在<strong>浏览器本地处理</strong>。适合个人学习、比赛准备,以及在已获授权的安全测试场景中快速调用一组合手的小工具,而不用在各个在线网站之间来回粘贴。</p>
+        </div>
+
+        <div class="spec-card" data-tag="定位 · POSITIONING">
+          <dl>
+            <dt>形态</dt><dd>静态站点 / 客户端</dd>
+            <dt>运行</dt><dd>浏览器本地</dd>
+            <dt>登录</dt><dd>不需要</dd>
+            <dt>数据库</dt><dd>无</dd>
+            <dt>付费</dt><dd>无</dd>
+            <dt>服务端 API</dt><dd>开源版不提供</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 功能矩阵 ============ -->
+  <section class="block shaded" id="matrix">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>功能<span class="ital">矩阵</span></h2>
+        <span class="num">§ 02 · 09 类</span>
+      </div>
+
+      <div class="matrix-grid">
+
+        <!-- 01 编码与文本转换 -->
+        <div class="matrix-card rise rise-1">
+          <div class="midx"><span>01</span><span class="pill">ENCODE</span></div>
+          <svg class="micon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <rect x="4" y="6" width="28" height="10"/>
+            <rect x="4" y="20" width="28" height="10"/>
+            <path d="M10 11h6M10 25h12M22 11h4"/>
+          </svg>
+          <h3>编码与文本转换</h3>
+          <p>Base 系列、URL、Hex、Unicode、HTML 实体等常见编码的互转与识别,配合智能编解码快速定位。</p>
+        </div>
+
+        <!-- 02 密码学 -->
+        <div class="matrix-card rise rise-2">
+          <div class="midx"><span>02</span><span class="pill">CRYPTO</span></div>
+          <svg class="micon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <circle cx="18" cy="14" r="8"/>
+            <path d="M18 22v8M13 30h10"/>
+            <path d="M14 14a4 4 0 011-3" stroke-width="1"/>
+          </svg>
+          <h3>古典密码 · 哈希 · 密码学辅助</h3>
+          <p>凯撒、维吉尼亚、栅栏等古典密码,常见哈希计算与识别,以及密钥格式、填充等辅助分析。</p>
+        </div>
+
+        <!-- 03 Web 与网络 -->
+        <div class="matrix-card rise rise-3">
+          <div class="midx"><span>03</span><span class="pill">WEB</span></div>
+          <svg class="micon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <circle cx="18" cy="18" r="13"/>
+            <ellipse cx="18" cy="18" rx="6" ry="13"/>
+            <line x1="5" y1="18" x2="31" y2="18"/>
+            <path d="M7 12h22M7 24h22"/>
+          </svg>
+          <h3>Web 与网络数据处理</h3>
+          <p>请求参数、Cookie、JWT、HTTP 报文拆解,IP / 域名解析与网络数据可视化处理。</p>
+        </div>
+
+        <!-- 04 文件与隐写 -->
+        <div class="matrix-card rise rise-1">
+          <div class="midx"><span>04</span><span class="pill">STEGO</span></div>
+          <svg class="micon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <rect x="5" y="7" width="26" height="22"/>
+            <circle cx="13" cy="15" r="3"/>
+            <path d="M5 24l7-7 6 6 5-5 6 6"/>
+            <path d="M22 9l4 4" stroke-dasharray="2 2"/>
+          </svg>
+          <h3>文件 · 二进制 · 隐写分析</h3>
+          <p>文件头识别、Hex 查看、图片 / 音频隐写辅助、二进制结构拆解与 LSB 等常见隐写手法分析。</p>
+        </div>
+
+        <!-- 05 取证 OSINT PWN -->
+        <div class="matrix-card rise rise-2">
+          <div class="midx"><span>05</span><span class="pill">FORENSIC</span></div>
+          <svg class="micon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <circle cx="18" cy="18" r="13"/>
+            <circle cx="18" cy="18" r="4" fill="currentColor" stroke="none"/>
+            <path d="M18 5v6M18 25v6M5 18h6M25 18h6"/>
+          </svg>
+          <h3>取证 · OSINT · PWN 与逆向辅助</h3>
+          <p>内存/磁盘镜像线索提取、OSINT 信息整理、PWN payload 构造与逆向工程中的格式化、反汇编辅助。</p>
+        </div>
+
+        <!-- 06 浏览与收藏 -->
+        <div class="matrix-card rise rise-3">
+          <div class="midx"><span>06</span><span class="pill">INDEX</span></div>
+          <svg class="micon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <rect x="6" y="6" width="24" height="24"/>
+            <line x1="6" y1="13" x2="30" y2="13"/>
+            <line x1="13" y1="13" x2="13" y2="30"/>
+            <path d="M18 18h8M18 22h8M18 26h5"/>
+          </svg>
+          <h3>搜索 · 分类 · 收藏 · 最近使用</h3>
+          <p>工具搜索、按分类浏览、收藏常用工具、记录最近使用,把工具组织成顺手的工作台。</p>
+        </div>
+
+        <!-- 07 智能编解码 -->
+        <div class="matrix-card rise rise-1">
+          <div class="midx"><span>07</span><span class="pill">SMART</span></div>
+          <svg class="micon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M18 5l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/>
+            <circle cx="18" cy="18" r="2.5" fill="currentColor" stroke="none"/>
+          </svg>
+          <h3>智能编解码</h3>
+          <p>自动识别输入的编码类型并尝试解码,免去在多种编码间手动试探,快速还原可读文本。</p>
+        </div>
+
+        <!-- 08 多步骤操作链 -->
+        <div class="matrix-card rise rise-2">
+          <div class="midx"><span>08</span><span class="pill">CHAIN</span></div>
+          <svg class="micon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <rect x="4" y="13" width="9" height="10"/>
+            <rect x="17" y="13" width="9" height="10"/>
+            <circle cx="31" cy="18" r="3"/>
+            <path d="M13 18h4M26 18h2"/>
+          </svg>
+          <h3>多步骤操作链</h3>
+          <p>把多个工具串成一条操作链,上一步的输出自动作为下一步输入,记录中间过程便于复盘。</p>
+        </div>
+
+        <!-- 09 使用说明 -->
+        <div class="matrix-card rise rise-3">
+          <div class="midx"><span>09</span><span class="pill">MANUAL</span></div>
+          <svg class="micon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <rect x="8" y="5" width="20" height="26"/>
+            <line x1="12" y1="12" x2="24" y2="12"/>
+            <line x1="12" y1="17" x2="24" y2="17"/>
+            <line x1="12" y1="22" x2="20" y2="22"/>
+          </svg>
+          <h3>内置说明与工具手册</h3>
+          <p>每个工具附带使用说明和原理简述,把"工具怎么用"和"它为什么这么算"一起放进袋子。</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 安全边界 ============ -->
+  <section class="block" id="boundary">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>安全<span class="ital">边界</span></h2>
+        <span class="num">§ 03</span>
+      </div>
+
+      <div class="boundary">
+        <div class="prose">
+          <p class="lead">只面向<span class="hl">已获授权</span>的学习、比赛和安全测试。</p>
+          <p>乾坤袋里的工具本身没有攻击性,但 CTF 工具天然靠近安全研究的灰色地带。明确边界,是对工具和使用者双方的尊重。</p>
+          <p><strong>开源版不提供服务端 API</strong>,也不会主动把工具输入发送到项目服务器。需要联网的工具会明确标注,默认情况下数据留在你自己的浏览器里。</p>
+        </div>
+
+        <ul class="check-list">
+          <li><span class="mk">✓</span><span>个人学习与 CTF 比赛准备</span></li>
+          <li><span class="mk">✓</span><span>已获书面授权的安全测试</span></li>
+          <li><span class="mk">✓</span><span>课堂教学与研究演示</span></li>
+          <li><span class="mk">✓</span><span>对自有系统与数据的分析</span></li>
+          <li><span class="mk x">✕</span><span>未经授权的对他人系统探测</span></li>
+          <li><span class="mk x">✕</span><span>任何违反当地法律法规的用途</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 本地运行 ============ -->
+  <section class="block shaded" id="run">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>本地<span class="ital">运行</span></h2>
+        <span class="num">§ 04</span>
+      </div>
+
+      <div class="two-col">
+        <div class="prose">
+          <p>克隆仓库后,用两行命令就能把乾坤袋跑起来。开发服务器默认监听本地端口,工具在浏览器里即可使用。</p>
+          <p>建议使用 Node 稳定版本,首次拉取代码后用 <code class="mono">npm ci</code> 安装依赖,以保证与锁定版本一致。</p>
+        </div>
+
+        <div>
+          <div class="terminal">
+            <div class="terminal-bar">
+              <span class="ttdot"></span><span class="ttdot"></span><span class="ttdot"></span>
+              <span class="tttitle">bash — ctf-qiankun</span>
+            </div>
+<pre><span class="cmt"># 安装依赖(按锁定版本)</span>
+<span class="ps1">$</span> <span class="cmd">npm ci</span>
+
+<span class="cmt"># 启动开发服务器</span>
+<span class="ps1">$</span> <span class="cmd">npm run dev</span>
+
+<span class="out">  VITE ready in 420 ms</span>
+<span class="out">  ➜  Local:   http://127.0.0.1:5173/</span>
+<span class="out">  ➜  Network: use --host to expose</span></pre>
+          </div>
+          <p class="code-note">开发服务器启动后,浏览器打开 <span class="mono">http://127.0.0.1:5173/</span> 即可使用全部客户端工具。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 构建与部署 ============ -->
+  <section class="block" id="deploy">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>构建与<span class="ital">部署</span></h2>
+        <span class="num">§ 05</span>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="terminal">
+            <div class="terminal-bar">
+              <span class="ttdot"></span><span class="ttdot"></span><span class="ttdot"></span>
+              <span class="tttitle">bash — build</span>
+            </div>
+<pre><span class="cmt"># 生产构建,产物输出到 dist/</span>
+<span class="ps1">$</span> <span class="cmd">npm run build</span>
+
+<span class="out">  ✓ built in 1.8s</span>
+<span class="out">  dist/index.html      0.46 kB</span>
+<span class="out">  dist/assets/*.js   128.4 kB │ gzip: 41.2 kB</span>
+<span class="out">  dist/assets/*.css   18.7 kB │ gzip:  4.1 kB</span></pre>
+          </div>
+          <p class="code-note"><span class="mono">dist/</span> 是一个纯静态目录,可直接交给 Nginx、GitHub Pages 或 Cloudflare Pages 托管,无需服务端运行时。</p>
+        </div>
+
+        <div class="prose">
+          <p>构建产物是一组静态文件,部署方式很灵活:</p>
+          <p><strong>Nginx</strong> —— 把 <code class="mono">dist/</code> 指向站点根目录,配置 SPA 回退即可。</p>
+          <p><strong>GitHub Pages</strong> —— 仓库内已包含 GitHub Actions 工作流,推送后自动构建并发布到 Pages。</p>
+          <p><strong>Cloudflare Pages</strong> —— 构建命令 <code class="mono">npm run build</code>,输出目录 <code class="mono">dist</code>,即可全球边缘分发。</p>
+          <p>因为开源版没有服务端 API,部署后即是完整可用的客户端工具箱。</p>
+        </div>
+      </div>
+
+      <div class="spec-grid">
+        <div class="spec-card" data-tag="部署目标 · TARGETS">
+          <dl>
+            <dt>静态托管</dt><dd>Nginx / Caddy</dd>
+            <dt>Pages 类</dt><dd>GitHub Pages · Cloudflare Pages</dd>
+            <dt>运行时</dt><dd>无需(纯静态)</dd>
+            <dt>SPA 回退</dt><dd>需配置 index.html</dd>
+          </dl>
+        </div>
+        <div class="spec-card" data-tag="CI · 工作流">
+          <dl>
+            <dt>GitHub Actions</dt><dd>已含 Pages 工作流</dd>
+            <dt>触发</dt><dd>推送主分支</dd>
+            <dt>产物</dt><dd>自动发布 dist/</dd>
+            <dt>环境</dt><dd>Node 稳定版</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 添加工具 ============ -->
+  <section class="block shaded" id="extend">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>添加<span class="ital">工具</span></h2>
+        <span class="num">§ 06</span>
+      </div>
+
+      <div class="prose">
+        <p>乾坤袋的工具是模块化的。所有工具代码位于 <code class="mono">client/src/tools/</code>,通过注册表 <code class="mono">client/src/tools/registry.ts</code> 统一登记。新增一个工具,本质上是写一个工具模块并在注册表里挂上它。</p>
+      </div>
+
+      <div class="toolpath">
+        <div class="path-line">
+          <span class="seg">client</span><span class="sep">/</span>
+          <span class="seg">src</span><span class="sep">/</span>
+          <span class="seg">tools</span><span class="sep">/</span>
+          <span class="seg leaf">your-tool</span>
+        </div>
+        <div class="path-line" style="margin-top: var(--space-2);">
+          <span class="seg">client</span><span class="sep">/</span>
+          <span class="seg">src</span><span class="sep">/</span>
+          <span class="seg">tools</span><span class="sep">/</span>
+          <span class="seg leaf">registry.ts</span>
+          <span class="sep" style="margin-left: var(--space-3);">← 注册表</span>
+        </div>
+      </div>
+
+      <p class="prose" style="margin-bottom: var(--space-5);">新增工具时,有几条约定需要遵守,它们共同维护"输入默认不离开浏览器"这条核心承诺:</p>
+
+      <ul class="notes-list">
+        <li><span class="nn">01</span><span><strong>优先浏览器原生能力。</strong>能用 Web Crypto、File API、WebAssembly 完成的,尽量不引入额外依赖。</span></li>
+        <li><span class="nn">02</span><span><strong>默认不上传。</strong>工具输入默认在本地处理;确需联网时必须显式标注,并由用户主动触发。</span></li>
+        <li><span class="nn">03</span><span><strong>限制输入大小。</strong>对大文件/长文本设置合理上限,避免浏览器卡死或内存溢出。</span></li>
+        <li><span class="nn">04</span><span><strong>附带使用说明。</strong>每个工具应提供简短的手册与原理说明,放进内置文档体系。</span></li>
+        <li><span class="nn">05</span><span><strong>分类与可搜索。</strong>在注册表中填写分类、关键词,让工具能被搜索和收藏体系正确收录。</span></li>
+        <li><span class="nn">06</span><span><strong>无副作用。</strong>工具应保持纯函数式风格,不在全局留下未清理的状态或持久化敏感数据。</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section class="cta" id="cta">
+    <!-- 工具网格装饰 SVG -->
+    <svg class="cta-deco" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+      <g>
+        <rect x="10" y="10" width="50" height="50"/>
+        <rect x="75" y="10" width="50" height="50"/>
+        <rect x="140" y="10" width="50" height="50"/>
+        <rect x="10" y="75" width="50" height="50"/>
+        <rect x="75" y="75" width="50" height="50"/>
+        <rect x="140" y="75" width="50" height="50"/>
+        <rect x="10" y="140" width="50" height="50"/>
+        <rect x="75" y="140" width="50" height="50"/>
+        <rect x="140" y="140" width="50" height="50"/>
+      </g>
+      <g fill="currentColor" stroke="none">
+        <circle cx="35" cy="35" r="4"/>
+        <circle cx="100" cy="35" r="4"/>
+        <circle cx="165" cy="35" r="4"/>
+        <circle cx="35" cy="100" r="4"/>
+        <circle cx="100" cy="100" r="6"/>
+        <circle cx="165" cy="100" r="4"/>
+        <circle cx="35" cy="165" r="4"/>
+        <circle cx="100" cy="165" r="4"/>
+        <circle cx="165" cy="165" r="4"/>
+      </g>
+    </svg>
+
+    <div class="wrap">
+      <div class="cta-inner">
+        <div>
+          <p class="eyebrow" style="margin-bottom: var(--space-3);">READY TO USE · 开源 · MIT</p>
+          <h2>把工具<br>收进<span class="ital">袋子</span>里。</h2>
+          <p>CTF 乾坤袋完全开源,接受 Issue 与贡献。克隆仓库、跑起本地服务,或者直接部署到你自己的静态托管 —— 这个袋子归你自己管。</p>
+        </div>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="https://github.com/by-fengqiao/ctf-qiankun" target="_blank" rel="noopener">查看仓库</a>
+          <a class="btn" href="https://github.com/by-fengqiao/ctf-qiankun#readme" target="_blank" rel="noopener">阅读 README</a>
+          <a class="btn" href="index.html">返回项目索引</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 页脚 -->
+<footer class="footer"><div class="wrap"><div class="footer-inner">
+  <span>© 2026 by-fengqiao · Workshop</span>
+  <span><a href="index.html">返回索引</a></span>
+</div></div></footer>
+
+</body>
+</html>

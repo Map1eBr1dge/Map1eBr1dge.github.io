@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LanNook · 局域网文件互传 · Workshop 工坊</title>
+<meta name="description" content="LanNook — 在同一局域网里,用手机浏览器和电脑互传文件。手机不用装 App,也不用注册账号。">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* ============================================================
+     LanNook 详情页专属样式
+     继承共享令牌,赭橙标识色由 .theme-lannook 提供 (--c)
+     ============================================================ */
+
+  /* ---------- Hero ---------- */
+  .hero {
+    padding: var(--space-8) 0 var(--space-7);
+    border-bottom: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  .hero h1 {
+    font-size: clamp(4rem, 13vw, 10.5rem);
+    margin: var(--space-3) 0 var(--space-5);
+    color: var(--c);
+    line-height: 0.9;
+  }
+
+  .hero h1 .ital {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink);
+  }
+
+  .hero-tagline {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+    line-height: 1.4;
+    color: var(--ink-2);
+    max-width: 30ch;
+    margin-bottom: var(--space-6);
+  }
+
+  /* 元信息规格表 */
+  .hero-spec {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr;
+    gap: var(--space-2) var(--space-5);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.8;
+    border-top: var(--border);
+    padding-top: var(--space-4);
+  }
+
+  .hero-spec dt {
+    color: var(--ink-4);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    align-self: center;
+  }
+
+  .hero-spec dd {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .hero-spec dd .pill {
+    font-size: 0.7rem;
+    padding: 1px 7px;
+    border: 1px solid var(--line);
+    background: var(--paper-2);
+    color: var(--ink-3);
+    margin-left: 4px;
+    font-weight: 400;
+  }
+
+  /* 技术栈条形图 */
+  .stack-bar {
+    grid-column: 1 / -1;
+    display: flex;
+    height: 10px;
+    border: 1.5px solid var(--ink);
+    margin-top: var(--space-2);
+    overflow: hidden;
+  }
+
+  .stack-bar span {
+    display: block;
+    height: 100%;
+  }
+
+  .stack-bar .s-rust { background: var(--c); }
+  .stack-bar .s-vue { background: var(--ink); }
+  .stack-bar .s-ts { background: var(--ink-3); }
+  .stack-bar .s-css { background: var(--line); }
+
+  .stack-legend {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    font-size: 0.72rem;
+    color: var(--ink-3);
+    margin-top: -2px;
+  }
+
+  .stack-legend i {
+    display: inline-block;
+    width: 10px; height: 10px;
+    margin-right: 5px;
+    vertical-align: middle;
+    border: 1px solid var(--ink-4);
+  }
+
+  /* 拓扑图卡片 */
+  .topo {
+    border: var(--border);
+    background: var(--paper);
+    padding: var(--space-5);
+    box-shadow: var(--shadow-hard);
+    position: relative;
+  }
+
+  .topo::before {
+    content: 'TOPOLOGY · LAN';
+    position: absolute;
+    top: -1px; left: var(--space-4);
+    background: var(--paper);
+    padding: 0 var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--c);
+    transform: translateY(-50%);
+    font-weight: 700;
+  }
+
+  .topo svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .topo-caption {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--ink-3);
+    text-align: center;
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: var(--border-2);
+    letter-spacing: 0.05em;
+  }
+
+  /* 侧边标尺 */
+  .ruler-side {
+    position: absolute;
+    top: 0; right: 0;
+    width: 48px; height: 100%;
+    border-left: var(--border-2);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 23px,
+      var(--line) 23px,
+      var(--line) 24px
+    );
+    pointer-events: none;
+  }
+
+  .ruler-side::before {
+    content: 'LN · 26.2.1';
+    position: absolute;
+    top: 50%; right: 20px;
+    transform: rotate(90deg) translateY(-50%);
+    transform-origin: right center;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--ink-4);
+    white-space: nowrap;
+  }
+
+  /* ---------- section 通用 ---------- */
+  .sec {
+    padding: var(--space-8) 0;
+    border-bottom: var(--border-2);
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: var(--border);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-7);
+    gap: var(--space-4);
+  }
+
+  .section-head h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .section-head h2 .ital {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--c);
+  }
+
+  .section-head .num {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ---------- § 01 解决什么 ---------- */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: var(--space-7);
+    align-items: start;
+  }
+
+  .problem-text .lead {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: var(--space-5);
+    letter-spacing: -0.01em;
+  }
+
+  .problem-text .lead .hl {
+    background: var(--c);
+    color: var(--paper);
+    padding: 0 6px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  .problem-text p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--ink-2);
+    margin-bottom: var(--space-4);
+    max-width: 50ch;
+  }
+
+  .problem-text .note {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    border-left: 3px solid var(--c);
+    padding-left: var(--space-4);
+    margin-top: var(--space-5);
+  }
+
+  /* 对比表 */
+  .contrast {
+    border: var(--border);
+    background: var(--paper);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  .contrast-title {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--paper);
+    background: var(--ink);
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .contrast-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: var(--border-2);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .contrast-row:last-child { border-bottom: none; }
+
+  .contrast-row .ico {
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-top: 1px;
+  }
+
+  .contrast-row.no .ico {
+    background: var(--ink);
+    color: var(--paper);
+    border: 1.5px solid var(--ink);
+  }
+
+  .contrast-row.yes .ico {
+    background: var(--c);
+    color: var(--paper);
+    border: 1.5px solid var(--c);
+  }
+
+  .contrast-row .label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* ---------- § 02 步骤 ---------- */
+  .steps {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 90px 1fr auto;
+    gap: var(--space-5);
+    border: var(--border);
+    background: var(--paper);
+    padding: var(--space-5) var(--space-6);
+    transition: all .25s cubic-bezier(.2,.7,.2,1);
+    align-items: center;
+  }
+
+  .step:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: var(--shadow-hard);
+  }
+
+  .step-num {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 3.8rem;
+    line-height: 1;
+    color: var(--c);
+    letter-spacing: -0.05em;
+    font-variation-settings: 'opsz' 144;
+  }
+
+  .step-body h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: var(--space-2);
+    letter-spacing: -0.02em;
+  }
+
+  .step-body p {
+    color: var(--ink-2);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .step-body .kw {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    padding: 1px 6px;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .step-tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    border: 1px solid var(--line);
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
+
+  /* ---------- § 03 功能列表 ---------- */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .feat {
+    border: var(--border);
+    background: var(--paper);
+    padding: var(--space-5);
+    transition: all .22s cubic-bezier(.2,.7,.2,1);
+    position: relative;
+  }
+
+  .feat:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+
+  .feat::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: var(--c);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .3s ease;
+  }
+
+  .feat:hover::after { transform: scaleX(1); }
+
+  .feat-icon {
+    width: 36px; height: 36px;
+    margin-bottom: var(--space-3);
+    color: var(--c);
+  }
+
+  .feat-icon svg { width: 100%; height: 100%; }
+
+  .feat h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.08rem;
+    margin-bottom: var(--space-2);
+    letter-spacing: -0.01em;
+  }
+
+  .feat p {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    line-height: 1.55;
+  }
+
+  .feat .feat-code {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--c);
+    margin-top: var(--space-3);
+    display: block;
+    opacity: 0.7;
+  }
+
+  /* ---------- § 04 下载表格 ---------- */
+  .dl-wrap {
+    border: var(--border);
+    box-shadow: var(--shadow-hard);
+    overflow-x: auto;
+  }
+
+  .dl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    min-width: 600px;
+  }
+
+  .dl-table thead th {
+    text-align: left;
+    padding: var(--space-3) var(--space-5);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .dl-table tbody tr {
+    border-bottom: var(--border-2);
+    transition: background .15s;
+  }
+
+  .dl-table tbody tr:last-child { border-bottom: none; }
+
+  .dl-table tbody tr:hover {
+    background: var(--paper-2);
+  }
+
+  .dl-table td {
+    padding: var(--space-4) var(--space-5);
+    vertical-align: middle;
+  }
+
+  .dl-table .plat {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+
+  .dl-table .plat .sub {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 0.72rem;
+    color: var(--ink-4);
+    display: block;
+    margin-top: 2px;
+  }
+
+  .dl-table .arch {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--ink-3);
+  }
+
+  .dl-table .fmt {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+  }
+
+  .dl-table .fmt span {
+    display: inline-block;
+    padding: 2px 8px;
+    border: 1px solid var(--line);
+    background: var(--paper-2);
+    margin-right: 4px;
+    margin-bottom: 4px;
+    color: var(--ink-2);
+  }
+
+  .dl-table .dl-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--c);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .dl-table .dl-link::after {
+    content: ' ↓';
+  }
+
+  .dl-note {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--ink-3);
+    margin-top: var(--space-4);
+    padding-left: var(--space-2);
+    border-left: 2px solid var(--line);
+  }
+
+  /* ---------- § 05 安全边界 ---------- */
+  .security {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  .sec-item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: var(--space-4);
+    border: var(--border);
+    background: var(--paper);
+    padding: var(--space-5);
+    align-items: start;
+    transition: all .2s ease;
+  }
+
+  .sec-item:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  .sec-item .badge {
+    width: 40px; height: 40px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  .sec-item .badge svg { width: 100%; height: 100%; color: var(--c); }
+
+  .sec-item h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.08rem;
+    margin-bottom: var(--space-2);
+    letter-spacing: -0.01em;
+  }
+
+  .sec-item p {
+    font-size: 0.88rem;
+    color: var(--ink-3);
+    line-height: 1.6;
+  }
+
+  .sec-item p .em {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--ink);
+    background: var(--paper-2);
+    padding: 0 4px;
+    border: 1px solid var(--line);
+  }
+
+  /* ---------- § 06 代码位置 ---------- */
+  .code-wrap {
+    border: var(--border);
+    overflow: hidden;
+  }
+
+  .code-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .code-table thead th {
+    text-align: left;
+    padding: var(--space-3) var(--space-5);
+    background: var(--paper-2);
+    border-bottom: var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+
+  .code-table tbody tr {
+    border-bottom: var(--border-2);
+    transition: background .15s;
+  }
+
+  .code-table tbody tr:last-child { border-bottom: none; }
+  .code-table tbody tr:hover { background: var(--paper-2); }
+
+  .code-table td {
+    padding: var(--space-4) var(--space-5);
+    vertical-align: middle;
+  }
+
+  .code-table .path {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--c);
+    font-size: 0.95rem;
+  }
+
+  .code-table .desc {
+    color: var(--ink-2);
+    font-size: 0.9rem;
+  }
+
+  .code-table .lang {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    border: 1px solid var(--line);
+    padding: 2px 8px;
+    display: inline-block;
+    color: var(--ink-2);
+    background: var(--paper);
+  }
+
+  .code-table .pct {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--ink-3);
+  }
+
+  /* ---------- § 07 CTA ---------- */
+  .cta-sec {
+    padding: var(--space-9) 0;
+    background: var(--ink);
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+    border-bottom: none;
+  }
+
+  .cta-sec::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(244,239,228,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(244,239,228,0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+  }
+
+  .cta-grid {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    gap: var(--space-8);
+    align-items: center;
+    position: relative;
+  }
+
+  .cta-sec h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+
+  .cta-sec h2 .ital {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--c);
+  }
+
+  .cta-sec .cta-desc {
+    font-size: 1.02rem;
+    color: var(--paper-2);
+    margin-top: var(--space-4);
+    max-width: 48ch;
+    opacity: 0.72;
+    line-height: 1.6;
+  }
+
+  .cta-sec .cta-stamp {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-4);
+    margin-top: var(--space-5);
+    letter-spacing: 0.1em;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .cta-sec .btn {
+    background: transparent;
+    border: 1.5px solid var(--paper);
+    color: var(--paper);
+    justify-content: center;
+    padding: var(--space-4) var(--space-6);
+    font-size: 0.92rem;
+  }
+
+  .cta-sec .btn:hover {
+    background: var(--c);
+    border-color: var(--c);
+    box-shadow: 6px 6px 0 var(--paper);
+    color: var(--paper);
+  }
+
+  .cta-sec .btn-primary {
+    background: var(--c);
+    border-color: var(--c);
+  }
+
+  .cta-sec .btn-primary:hover {
+    background: var(--paper);
+    color: var(--ink);
+    border-color: var(--paper);
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 960px) {
+    .hero-grid { grid-template-columns: 1fr; gap: var(--space-6); }
+    .ruler-side { display: none; }
+    .problem-grid { grid-template-columns: 1fr; gap: var(--space-5); }
+    .security { grid-template-columns: 1fr; }
+    .cta-grid { grid-template-columns: 1fr; gap: var(--space-6); }
+    .step { grid-template-columns: 64px 1fr; gap: var(--space-3); padding: var(--space-4); }
+    .step-tag { display: none; }
+    .step-num { font-size: 2.6rem; }
+    .hero-spec { grid-template-columns: auto 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 3.5rem; }
+    .section-head { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+  }
+</style>
+</head>
+<body class="theme-lannook">
+
+<!-- 导航 -->
+<header class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand"><span class="brand-mark">工</span><span>Workshop</span></a>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-back">返回索引</a>
+      <a href="https://github.com/by-fengqiao/lannook" target="_blank" rel="noopener">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ========== Hero ========== -->
+  <section class="hero" id="top">
+    <div class="ruler-side"></div>
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow rise rise-1">PROJECT · N° 02 · 桌面应用</p>
+          <h1 class="display rise rise-2">Lan<span class="ital">Nook</span></h1>
+          <p class="hero-tagline rise rise-3">在同一局域网里,用手机浏览器和电脑互传文件。</p>
+
+          <dl class="hero-spec rise rise-4">
+            <dt>版本</dt>
+            <dd>v26.2.1 <span class="pill">原名 LYNQO</span></dd>
+            <dt>许可</dt>
+            <dd>GPL-3.0</dd>
+            <dt>平台</dt>
+            <dd>Windows · macOS · Linux</dd>
+            <dt>更新</dt>
+            <dd>2026-07-27</dd>
+
+            <div class="stack-bar">
+              <span class="s-rust" style="width:41.5%"></span>
+              <span class="s-vue" style="width:35.1%"></span>
+              <span class="s-ts" style="width:21.9%"></span>
+              <span class="s-css" style="width:1.5%"></span>
+            </div>
+            <div class="stack-legend">
+              <span><i style="background:var(--c)"></i>Rust 41.5%</span>
+              <span><i style="background:var(--ink)"></i>Vue 35.1%</span>
+              <span><i style="background:var(--ink-3)"></i>TypeScript 21.9%</span>
+              <span><i style="background:var(--line)"></i>CSS 1.3%</span>
+            </div>
+          </dl>
+        </div>
+
+        <!-- 局域网拓扑图 -->
+        <div class="topo rise rise-3">
+          <svg viewBox="0 0 420 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <!-- 背景网格点 -->
+            <defs>
+              <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                <circle cx="1" cy="1" r="0.8" fill="#c9bfa9" />
+              </pattern>
+            </defs>
+            <rect width="420" height="240" fill="url(#dots)" opacity="0.5" />
+
+            <!-- 连接线: 电脑 — 二维码 — 手机 -->
+            <line x1="120" y1="100" x2="175" y2="100" stroke="#9c4a1e" stroke-width="1.5" stroke-dasharray="5 4" />
+            <line x1="265" y1="100" x2="320" y2="100" stroke="#9c4a1e" stroke-width="1.5" stroke-dasharray="5 4" />
+
+            <!-- 信号波纹 -->
+            <path d="M 145 90 Q 150 85 155 90" stroke="#9c4a1e" stroke-width="1" opacity="0.5" />
+            <path d="M 145 110 Q 150 115 155 110" stroke="#9c4a1e" stroke-width="1" opacity="0.5" />
+            <path d="M 285 90 Q 290 85 295 90" stroke="#9c4a1e" stroke-width="1" opacity="0.5" />
+            <path d="M 285 110 Q 290 115 295 110" stroke="#9c4a1e" stroke-width="1" opacity="0.5" />
+
+            <!-- 电脑 -->
+            <g stroke="#1a1714" stroke-width="1.5">
+              <rect x="30" y="50" width="90" height="65" rx="3" fill="#f4efe4" />
+              <rect x="40" y="60" width="70" height="42" fill="#ece5d4" />
+              <!-- 底座 -->
+              <path d="M 60 115 L 90 115 L 95 128 L 55 128 Z" fill="#f4efe4" />
+              <rect x="48" y="128" width="54" height="5" rx="2" fill="#1a1714" />
+              <!-- 屏幕内容 -->
+              <line x1="48" y1="70" x2="75" y2="70" stroke="#9c4a1e" stroke-width="1.5" />
+              <line x1="48" y1="76" x2="90" y2="76" stroke="#6b6358" stroke-width="1" />
+              <line x1="48" y1="82" x2="85" y2="82" stroke="#6b6358" stroke-width="1" />
+              <rect x="48" y="88" width="16" height="8" fill="#9c4a1e" stroke="none" />
+            </g>
+            <text x="75" y="155" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6b6358" text-anchor="middle" letter-spacing="1">PC · 运行中</text>
+
+            <!-- 二维码 -->
+            <g>
+              <rect x="175" y="55" width="90" height="90" fill="#f4efe4" stroke="#1a1714" stroke-width="1.5" />
+              <!-- 模拟二维码点阵 -->
+              <g fill="#1a1714">
+                <!-- 定位角 左上 -->
+                <rect x="183" y="63" width="18" height="18" fill="none" stroke="#1a1714" stroke-width="2" />
+                <rect x="188" y="68" width="8" height="8" />
+                <!-- 定位角 右上 -->
+                <rect x="239" y="63" width="18" height="18" fill="none" stroke="#1a1714" stroke-width="2" />
+                <rect x="244" y="68" width="8" height="8" />
+                <!-- 定位角 左下 -->
+                <rect x="183" y="119" width="18" height="18" fill="none" stroke="#1a1714" stroke-width="2" />
+                <rect x="188" y="124" width="8" height="8" />
+                <!-- 随机点阵 -->
+                <rect x="208" y="63" width="4" height="4" />
+                <rect x="216" y="63" width="4" height="4" />
+                <rect x="224" y="63" width="4" height="4" />
+                <rect x="232" y="63" width="4" height="4" />
+                <rect x="208" y="71" width="4" height="4" />
+                <rect x="220" y="71" width="4" height="4" />
+                <rect x="228" y="71" width="4" height="4" />
+                <rect x="183" y="87" width="4" height="4" />
+                <rect x="191" y="87" width="4" height="4" />
+                <rect x="199" y="87" width="4" height="4" />
+                <rect x="211" y="87" width="4" height="4" />
+                <rect x="219" y="87" width="4" height="4" />
+                <rect x="231" y="87" width="4" height="4" />
+                <rect x="243" y="87" width="4" height="4" />
+                <rect x="251" y="87" width="4" height="4" />
+                <rect x="187" y="95" width="4" height="4" />
+                <rect x="195" y="95" width="4" height="4" />
+                <rect x="207" y="95" width="4" height="4" />
+                <rect x="215" y="95" width="4" height="4" />
+                <rect x="227" y="95" width="4" height="4" />
+                <rect x="239" y="95" width="4" height="4" />
+                <rect x="247" y="95" width="4" height="4" />
+                <rect x="183" y="103" width="4" height="4" />
+                <rect x="195" y="103" width="4" height="4" />
+                <rect x="203" y="103" width="4" height="4" />
+                <rect x="211" y="103" width="4" height="4" />
+                <rect x="223" y="103" width="4" height="4" />
+                <rect x="235" y="103" width="4" height="4" />
+                <rect x="243" y="103" width="4" height="4" />
+                <rect x="251" y="103" width="4" height="4" />
+                <rect x="191" y="111" width="4" height="4" />
+                <rect x="199" y="111" width="4" height="4" />
+                <rect x="211" y="111" width="4" height="4" />
+                <rect x="223" y="111" width="4" height="4" />
+                <rect x="231" y="111" width="4" height="4" />
+                <rect x="247" y="111" width="4" height="4" />
+                <rect x="208" y="119" width="4" height="4" />
+                <rect x="216" y="119" width="4" height="4" />
+                <rect x="224" y="119" width="4" height="4" />
+                <rect x="232" y="119" width="4" height="4" />
+                <rect x="244" y="119" width="4" height="4" />
+                <rect x="208" y="127" width="4" height="4" />
+                <rect x="220" y="127" width="4" height="4" />
+                <rect x="228" y="127" width="4" height="4" />
+                <rect x="240" y="127" width="4" height="4" />
+                <rect x="248" y="127" width="4" height="4" />
+              </g>
+              <!-- 扫描线 -->
+              <line x1="175" y1="100" x2="265" y2="100" stroke="#9c4a1e" stroke-width="2" opacity="0.6" />
+            </g>
+            <text x="220" y="162" font-family="'JetBrains Mono',monospace" font-size="9" fill="#9c4a1e" text-anchor="middle" font-weight="700" letter-spacing="1">QR · 配对码</text>
+
+            <!-- 手机 -->
+            <g stroke="#1a1714" stroke-width="1.5">
+              <rect x="320" y="40" width="60" height="120" rx="8" fill="#f4efe4" />
+              <rect x="326" y="50" width="48" height="95" rx="2" fill="#ece5d4" />
+              <!-- 听筒 -->
+              <line x1="342" y1="45" x2="358" y2="45" stroke-width="2" />
+              <!-- 屏幕内容 -->
+              <rect x="332" y="58" width="36" height="20" fill="#9c4a1e" stroke="none" opacity="0.85" />
+              <line x1="332" y1="84" x2="360" y2="84" stroke="#6b6358" stroke-width="1" />
+              <line x1="332" y1="90" x2="356" y2="90" stroke="#6b6358" stroke-width="1" />
+              <line x1="332" y1="96" x2="362" y2="96" stroke="#6b6358" stroke-width="1" />
+              <circle cx="350" cy="138" r="4" fill="none" stroke="#1a1714" stroke-width="1.5" />
+            </g>
+            <text x="350" y="180" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6b6358" text-anchor="middle" letter-spacing="1">手机 · 浏览器</text>
+
+            <!-- LAN 标签 -->
+            <g>
+              <rect x="185" y="195" width="70" height="18" fill="#1a1714" />
+              <text x="220" y="207" font-family="'JetBrains Mono',monospace" font-size="9" fill="#f4efe4" text-anchor="middle" font-weight="700" letter-spacing="2">LAN</text>
+            </g>
+
+            <!-- 坐标标注 -->
+            <text x="10" y="15" font-family="'JetBrains Mono',monospace" font-size="7" fill="#9a9082" letter-spacing="1">FIG.01 · NETWORK TOPOLOGY</text>
+            <text x="410" y="232" font-family="'JetBrains Mono',monospace" font-size="7" fill="#9a9082" text-anchor="end" letter-spacing="1">SCALE 1:1</text>
+          </svg>
+          <p class="topo-caption">电脑运行 LanNook → 手机扫码 → 浏览器内直接互传</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== § 01 它解决什么 ========== -->
+  <section class="sec" id="problem">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>它解决<span class="ital">什么</span></h2>
+        <span class="num">§ 01</span>
+      </div>
+
+      <div class="problem-grid">
+        <div class="problem-text rise rise-1">
+          <p class="lead">文件就在手机或身边电脑上,只想直接<span class="hl">送到另一台设备</span>。</p>
+          <p>常见的传文件方式要么依赖云盘中转、要么要求双方安装同一个 App、要么需要注册账号。如果只是把一张截图从手机挪到电脑、把一个安装包从电脑发到手机,这些前置成本显得过重。</p>
+          <p>LanNook 的做法很直接:电脑运行程序后,在局域网内提供一个二维码和地址;手机用自带浏览器打开,就能双向选择文件和目标设备。官方发行版不会把文件上传到公共云盘,数据只在你自己的局域网里流动。</p>
+          <p class="note">前提:电脑和手机需连接同一个局域网(同一路由器 / 同一 Wi-Fi)。</p>
+        </div>
+
+        <div class="contrast rise rise-2">
+          <div class="contrast-title">对比 · COMPARISON</div>
+          <div class="contrast-row no">
+            <span class="ico">✕</span>
+            <div>
+              <span class="label">云盘中转</span>
+              文件先上传到公共服务器,再从另一端下载。需要账号,依赖外网带宽。
+            </div>
+          </div>
+          <div class="contrast-row no">
+            <span class="ico">✕</span>
+            <div>
+              <span class="label">社交 App 互发</span>
+              双方都要装同一个 App、加好友,文件还可能被压缩。
+            </div>
+          </div>
+          <div class="contrast-row no">
+            <span class="ico">✕</span>
+            <div>
+              <span class="label">数据线</span>
+              需要线缆、驱动、授权弹窗,跨平台体验割裂。
+            </div>
+          </div>
+          <div class="contrast-row yes">
+            <span class="ico">✓</span>
+            <div>
+              <span class="label">LanNook</span>
+              电脑开程序,手机扫码,浏览器里直接传。不装 App、不注册、不上云。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== § 02 第一次使用 ========== -->
+  <section class="sec" id="start">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>第一次<span class="ital">使用</span></h2>
+        <span class="num">§ 02</span>
+      </div>
+
+      <div class="steps">
+        <div class="step rise rise-1">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <h3>电脑启动 LanNook</h3>
+            <p>打开桌面端程序,主界面确认状态为 <span class="kw">运行中</span>。此时程序已在局域网内监听服务,等待设备接入。</p>
+          </div>
+          <span class="step-tag">STEP · BOOT</span>
+        </div>
+
+        <div class="step rise rise-2">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <h3>点击"连接设备"</h3>
+            <p>在电脑端点击 <span class="kw">连接设备</span>,界面会展示二维码和局域网地址。手机用自带浏览器扫描二维码,或手动在地址栏输入地址即可打开传输页面。</p>
+          </div>
+          <span class="step-tag">STEP · PAIR</span>
+        </div>
+
+        <div class="step rise rise-3">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <h3>审批接入请求</h3>
+            <p>新设备默认会弹出接入请求。你可以选择 <span class="kw">仅本次允许</span> 或 <span class="kw">信任此设备</span>。被信任的设备下次接入时不再重复询问。</p>
+          </div>
+          <span class="step-tag">STEP · APPROVE</span>
+        </div>
+
+        <div class="step rise rise-4">
+          <div class="step-num">04</div>
+          <div class="step-body">
+            <h3>选文件并查看进度</h3>
+            <p>在手机或电脑上选择文件和目标设备,发起传输。到 <span class="kw">传输中心</span> 查看进行中与已完成的任务进度,支持多文件并行。</p>
+          </div>
+          <span class="step-tag">STEP · TRANSFER</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== § 03 目前可以做什么 ========== -->
+  <section class="sec" id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>目前可以做<span class="ital">什么</span></h2>
+        <span class="num">§ 03</span>
+      </div>
+
+      <div class="features">
+        <div class="feat rise rise-1">
+          <div class="feat-icon">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="4" y="6" width="28" height="20" rx="2" />
+              <line x1="4" y1="22" x2="32" y2="22" />
+              <rect x="14" y="28" width="8" height="3" />
+              <line x1="10" y1="31" x2="26" y2="31" stroke-width="2" />
+            </svg>
+          </div>
+          <h4>浏览器端运行</h4>
+          <p>手机无需安装任何 App,用系统自带浏览器打开页面即可使用全部传输功能。</p>
+          <span class="feat-code">// no app required</span>
+        </div>
+
+        <div class="feat rise rise-1">
+          <div class="feat-icon">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M6 10 L6 26 L18 26" />
+              <path d="M18 10 L18 26 L30 26" />
+              <path d="M12 18 L24 18" />
+              <path d="M20 14 L24 18 L20 22" />
+              <path d="M16 22 L12 18 L16 14" />
+            </svg>
+          </div>
+          <h4>双向传文件</h4>
+          <p>手机到电脑、电脑到手机,两个方向都可以发起传输,自由选择目标设备。</p>
+          <span class="feat-code">// bidirectional</span>
+        </div>
+
+        <div class="feat rise rise-2">
+          <div class="feat-icon">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="6" y="6" width="24" height="24" rx="2" />
+              <line x1="6" y1="13" x2="30" y2="13" />
+              <line x1="12" y1="18" x2="24" y2="18" />
+              <line x1="12" y1="23" x2="20" y2="23" />
+            </svg>
+          </div>
+          <h4>传输中心</h4>
+          <p>集中查看所有进行中与已完成的传输任务,掌握进度与状态,支持多文件并行。</p>
+          <span class="feat-code">// transfer hub</span>
+        </div>
+
+        <div class="feat rise rise-2">
+          <div class="feat-icon">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="6" y="10" width="24" height="16" rx="1" />
+              <line x1="11" y1="16" x2="25" y2="16" stroke-dasharray="2 2" />
+              <line x1="11" y1="20" x2="20" y2="20" stroke-dasharray="2 2" />
+              <path d="M14 26 L14 30 M22 26 L22 30" />
+              <path d="M11 30 L25 30" stroke-width="2" />
+            </svg>
+          </div>
+          <h4>512KiB 分块上传</h4>
+          <p>大文件按 512KiB 分块上传,单块失败自动重试,提升弱网环境下的传输可靠性。</p>
+          <span class="feat-code">// 512KiB chunks</span>
+        </div>
+
+        <div class="feat rise rise-3">
+          <div class="feat-icon">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M18 6 L26 9 L26 18 Q26 25 18 29 Q10 25 10 18 L10 9 Z" />
+              <path d="M14 17 L17 20 L23 13" stroke-width="2" />
+            </svg>
+          </div>
+          <h4>SHA-256 指纹</h4>
+          <p>传输完成后对文件计算 SHA-256 指纹校验,确保送达的文件与源文件逐字节一致。</p>
+          <span class="feat-code">// sha-256 verify</span>
+        </div>
+
+        <div class="feat rise rise-3">
+          <div class="feat-icon">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8">
+              <ellipse cx="18" cy="8" rx="10" ry="3" />
+              <path d="M8 8 L8 18 Q8 21 18 24 Q28 21 28 18 L28 8" />
+              <path d="M8 18 L8 28 Q8 31 18 34 Q28 31 28 28 L28 18" />
+            </svg>
+          </div>
+          <h4>SQLite 本地存储</h4>
+          <p>设备信任记录、传输历史等数据存储在本地 SQLite 数据库,不上传任何外部服务器。</p>
+          <span class="feat-code">// sqlite local</span>
+        </div>
+
+        <div class="feat rise rise-4">
+          <div class="feat-icon">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="18" cy="18" r="4" />
+              <path d="M18 6 Q26 6 26 14" />
+              <path d="M18 30 Q10 30 10 22" />
+              <path d="M6 18 Q6 10 14 10" />
+              <path d="M30 18 Q30 26 22 26" />
+              <path d="M18 6 Q10 6 10 14" opacity="0.5" />
+              <path d="M18 30 Q26 30 26 22" opacity="0.5" />
+            </svg>
+          </div>
+          <h4>mDNS 发现</h4>
+          <p>通过 mDNS 在局域网内自动发现运行 LanNook 的设备,减少手动输入地址的步骤。</p>
+          <span class="feat-code">// mdns discovery</span>
+        </div>
+
+        <div class="feat rise rise-4">
+          <div class="feat-icon">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M10 14 L10 26 Q10 30 14 30 L24 30 Q28 30 28 26 L28 14" />
+              <path d="M8 14 L28 14" />
+              <path d="M14 14 Q14 8 18 8 Q22 8 22 14" />
+              <circle cx="18" cy="22" r="2" fill="currentColor" />
+            </svg>
+          </div>
+          <h4>系统托盘</h4>
+          <p>程序最小化到系统托盘常驻后台,关闭窗口不退出服务,随时等待设备接入。</p>
+          <span class="feat-code">// system tray</span>
+        </div>
+
+        <div class="feat rise rise-5">
+          <div class="feat-icon">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="18" cy="18" r="12" />
+              <path d="M18 10 L18 18 L24 22" stroke-width="2" />
+            </svg>
+          </div>
+          <h4>开机自启</h4>
+          <p>支持设置开机自动启动,开机即就绪,无需每次手动打开程序。</p>
+          <span class="feat-code">// autostart</span>
+        </div>
+
+        <div class="feat rise rise-5">
+          <div class="feat-icon">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M18 6 L30 11 L30 20 Q30 27 18 31 Q6 27 6 20 L6 11 Z" />
+              <path d="M13 18 L17 22 L24 14" stroke-width="2" />
+              <path d="M14 24 L22 24" stroke-dasharray="2 2" opacity="0.5" />
+            </svg>
+          </div>
+          <h4>签名更新</h4>
+          <p>程序内置更新检查,新版本通过签名校验后自动推送,保证更新包来源可信。</p>
+          <span class="feat-code">// signed update</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== § 04 下载 ========== -->
+  <section class="sec" id="download">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>下<span class="ital">载</span></h2>
+        <span class="num">§ 04</span>
+      </div>
+
+      <div class="dl-wrap rise rise-1">
+        <table class="dl-table">
+          <thead>
+            <tr>
+              <th>平台</th>
+              <th>架构</th>
+              <th>格式</th>
+              <th>获取</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="plat">Windows<span class="sub">10 及以上</span></td>
+              <td class="arch">x64</td>
+              <td class="fmt"><span>.exe</span><span>.msi</span></td>
+              <td><a class="dl-link" href="https://github.com/by-fengqiao/lannook/releases" target="_blank" rel="noopener">Releases</a></td>
+            </tr>
+            <tr>
+              <td class="plat">macOS<span class="sub">11 及以上</span></td>
+              <td class="arch">aarch64 · Apple Silicon</td>
+              <td class="fmt"><span>.dmg</span></td>
+              <td><a class="dl-link" href="https://github.com/by-fengqiao/lannook/releases" target="_blank" rel="noopener">Releases</a></td>
+            </tr>
+            <tr>
+              <td class="plat">macOS<span class="sub">11 及以上</span></td>
+              <td class="arch">x64 · Intel</td>
+              <td class="fmt"><span>.dmg</span></td>
+              <td><a class="dl-link" href="https://github.com/by-fengqiao/lannook/releases" target="_blank" rel="noopener">Releases</a></td>
+            </tr>
+            <tr>
+              <td class="plat">Linux<span class="sub">主流发行版</span></td>
+              <td class="arch">amd64</td>
+              <td class="fmt"><span>.AppImage</span><span>.deb</span></td>
+              <td><a class="dl-link" href="https://github.com/by-fengqiao/lannook/releases" target="_blank" rel="noopener">Releases</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="dl-note">所有发行版均托管在 GitHub Releases。macOS 首次打开如遇安全提示,请在系统设置 → 隐私与安全性中允许运行。</p>
+    </div>
+  </section>
+
+  <!-- ========== § 05 安全边界 ========== -->
+  <section class="sec" id="security">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>安全<span class="ital">边界</span></h2>
+        <span class="num">§ 05</span>
+      </div>
+
+      <div class="security">
+        <div class="sec-item rise rise-1">
+          <div class="badge">
+            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 6 L32 11 L32 20 Q32 29 20 34 Q8 29 8 20 L8 11 Z" />
+              <path d="M15 20 L19 24 L26 16" stroke-width="2.5" />
+            </svg>
+          </div>
+          <div>
+            <h4>新设备默认需审批</h4>
+            <p>任何新设备首次接入时,电脑端默认弹出审批请求。可选择 <span class="em">仅本次允许</span> 或 <span class="em">信任此设备</span>,被信任的设备后续不再询问。</p>
+          </div>
+        </div>
+
+        <div class="sec-item rise rise-1">
+          <div class="badge">
+            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="8" y="8" width="24" height="24" rx="2" />
+              <rect x="13" y="13" width="6" height="6" />
+              <rect x="21" y="13" width="6" height="6" />
+              <rect x="13" y="21" width="6" height="6" />
+              <rect x="21" y="21" width="3" height="3" />
+              <rect x="24" y="24" width="3" height="3" />
+            </svg>
+          </div>
+          <div>
+            <h4>二维码含配对参数</h4>
+            <p>二维码内嵌的地址携带配对参数,扫码即建立关联会话,降低手动输入地址时被旁人窥探的风险。</p>
+          </div>
+        </div>
+
+        <div class="sec-item rise rise-2">
+          <div class="badge">
+            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="6" y="10" width="28" height="20" rx="2" />
+              <path d="M14 20 L18 24 L26 15" stroke-width="2.5" />
+              <path d="M14 20 Q14 16 18 16" opacity="0.4" stroke-dasharray="2 2" />
+            </svg>
+          </div>
+          <div>
+            <h4>局域网明文传输</h4>
+            <p>HTTP 与 WebSocket 均为明文通信,未使用 TLS。这是局域网点对点传输的取舍 — 不引入证书管理复杂度,但请确保只在可信网络中使用。</p>
+          </div>
+        </div>
+
+        <div class="sec-item rise rise-2">
+          <div class="badge">
+            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 14 Q8 8 14 8 L26 8 Q32 8 32 14 L32 26 Q32 32 26 32 L14 32 Q8 32 8 26 Z" />
+              <line x1="14" y1="16" x2="26" y2="16" />
+              <line x1="14" y1="20" x2="26" y2="20" />
+              <line x1="14" y1="24" x2="22" y2="24" />
+              <path d="M20 4 L20 8" stroke-width="2" />
+              <path d="M16 4 L24 4" stroke-width="2" />
+            </svg>
+          </div>
+          <div>
+            <h4>默认不上传公共云</h4>
+            <p>官方发行版的设计原则是数据不离开局域网。文件在设备间直接传输,不经由任何公共云服务器中转或存储。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== § 06 代码位置 ========== -->
+  <section class="sec" id="code">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>代码<span class="ital">位置</span></h2>
+        <span class="num">§ 06</span>
+      </div>
+
+      <div class="code-wrap rise rise-1">
+        <table class="code-table">
+          <thead>
+            <tr>
+              <th>目录</th>
+              <th>职责</th>
+              <th>主要语言</th>
+              <th>占比</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="path">src/</td>
+              <td class="desc">Vue 用户界面、传输中心页面、组件与交互逻辑,运行于 Tauri WebView 内。</td>
+              <td><span class="lang">Vue</span> <span class="lang">TypeScript</span></td>
+              <td class="pct">~57%</td>
+            </tr>
+            <tr>
+              <td class="path">src-tauri/</td>
+              <td class="desc">Rust 后端命令、HTTP/WebSocket 服务、文件分块、SHA-256 校验、SQLite 存储、mDNS 发现、托盘与自启等系统级能力。</td>
+              <td><span class="lang">Rust</span></td>
+              <td class="pct">~41.5%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="dl-note">完整源码与构建说明见仓库 README:github.com/by-fengqiao/lannook</p>
+    </div>
+  </section>
+
+  <!-- ========== § 07 CTA ========== -->
+  <section class="cta-sec" id="cta">
+    <div class="wrap">
+      <div class="cta-grid">
+        <div class="rise rise-1">
+          <h2>拿来<span class="ital">就用</span></h2>
+          <p class="cta-desc">电脑装一次,手机扫码即用。开源、跨平台、不上云 — 你的文件只在你自己的局域网里走。</p>
+          <p class="cta-stamp">GPL-3.0 · Rust + Vue + Tauri 2 · v26.2.1</p>
+        </div>
+        <div class="cta-actions rise rise-2">
+          <a class="btn btn-primary" href="https://github.com/by-fengqiao/lannook" target="_blank" rel="noopener">查看源码 · GitHub</a>
+          <a class="btn" href="https://github.com/by-fengqiao/lannook/releases" target="_blank" rel="noopener">下载发行版 · Releases</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 页脚 -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <span>© 2026 by-fengqiao · Workshop</span>
+      <span><a href="index.html">返回索引</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

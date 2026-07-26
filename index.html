@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工坊 · 三个项目</title>
+<meta name="description" content="BlueTidy、LanNook、CTF 乾坤袋 — 三个独立项目的介绍页">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* 首页专属 */
+  .hero {
+    padding: var(--space-9) 0 var(--space-8);
+    border-bottom: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+    align-items: end;
+  }
+
+  .hero h1 {
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    margin-bottom: var(--space-5);
+  }
+
+  .hero h1 .ital {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .hero h1 .stroke {
+    -webkit-text-stroke: 2px var(--ink);
+    color: transparent;
+  }
+
+  .hero-meta {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--ink-3);
+    border-left: 2px solid var(--ink);
+    padding-left: var(--space-4);
+    line-height: 1.8;
+  }
+
+  .hero-meta strong { color: var(--ink); font-weight: 500; }
+
+  /* 标尺装饰 */
+  .ruler {
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 100%;
+    border-left: var(--border-2);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 23px,
+      var(--line) 23px,
+      var(--line) 24px
+    );
+    pointer-events: none;
+  }
+
+  .ruler::before {
+    content: '01 — 03';
+    position: absolute;
+    top: 50%; right: 24px;
+    transform: rotate(90deg) translateY(-50%);
+    transform-origin: right center;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--ink-4);
+    white-space: nowrap;
+  }
+
+  /* 项目索引区 */
+  .index-section {
+    padding: var(--space-8) 0;
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: var(--border);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-7);
+  }
+
+  .section-head h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.6rem;
+    letter-spacing: -0.02em;
+  }
+
+  .section-head .count {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-3);
+  }
+
+  /* 项目卡片 */
+  .projects {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  .proj-card {
+    border: var(--border);
+    background: var(--paper);
+    display: grid;
+    grid-template-columns: 120px 1fr 220px;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    position: relative;
+    transition: all .25s cubic-bezier(.2,.7,.2,1);
+    cursor: pointer;
+  }
+
+  .proj-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+
+  .proj-card::after {
+    content: '查看 →';
+    position: absolute;
+    bottom: var(--space-4); right: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--ink-4);
+    opacity: 0;
+    transition: opacity .2s, transform .2s;
+    transform: translateX(-8px);
+  }
+
+  .proj-card:hover::after {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--c);
+  }
+
+  .proj-num {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    border-top: 2px solid var(--c);
+    padding-top: var(--space-2);
+  }
+
+  .proj-num strong {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 3rem;
+    color: var(--c);
+    line-height: 1;
+    margin-top: var(--space-2);
+    letter-spacing: -0.04em;
+  }
+
+  .proj-body h3 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 2.4rem;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: var(--space-3);
+  }
+
+  .proj-body h3 .sub {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 1rem;
+    color: var(--ink-3);
+    display: block;
+    margin-top: var(--space-2);
+    letter-spacing: 0;
+  }
+
+  .proj-body p {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+    max-width: 52ch;
+    margin-bottom: var(--space-4);
+  }
+
+  .proj-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border: 1px solid var(--line);
+    background: var(--paper-2);
+    color: var(--ink-2);
+  }
+
+  .proj-spec {
+    border-left: var(--border-2);
+    padding-left: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.9;
+    color: var(--ink-3);
+  }
+
+  .proj-spec dt {
+    color: var(--ink-4);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .proj-spec dd {
+    color: var(--ink);
+    margin-bottom: var(--space-3);
+  }
+
+  .proj-spec dd:last-child { margin-bottom: 0; }
+
+  /* 工坊说明区 */
+  .manifesto {
+    padding: var(--space-9) 0;
+    border-top: var(--border);
+    border-bottom: var(--border);
+    background: var(--paper-2);
+  }
+
+  .manifesto-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--space-8);
+  }
+
+  .manifesto h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+
+  .manifesto h2 .ital {
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .manifesto p {
+    font-size: 1.05rem;
+    color: var(--ink-2);
+    margin-bottom: var(--space-4);
+    max-width: 60ch;
+  }
+
+  .manifesto .signature {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: var(--border-2);
+  }
+
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: var(--space-6); }
+    .ruler { display: none; }
+    .proj-card { grid-template-columns: 1fr; gap: var(--space-4); }
+    .proj-spec { border-left: none; border-top: var(--border-2); padding-left: 0; padding-top: var(--space-4); }
+    .manifesto-grid { grid-template-columns: 1fr; gap: var(--space-5); }
+  }
+</style>
+</head>
+<body>
+
+<!-- 导航 -->
+<header class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">工</span>
+      <span>Workshop</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#projects">项目</a>
+      <a href="#manifesto">关于</a>
+      <a href="https://github.com/by-fengqiao" target="_blank" rel="noopener">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="ruler"></div>
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow rise rise-1">PROJECT INDEX · 2026</p>
+          <h1 class="display rise rise-2">
+            三个<span class="ital">独立</span><br>
+            <span class="stroke">项目</span>工坊
+          </h1>
+        </div>
+        <div class="hero-meta rise rise-3">
+          <strong>维护者</strong>　by-fengqiao<br>
+          <strong>形态</strong>　桌面应用 / 浏览器工具箱<br>
+          <strong>技术</strong>　Rust · Tauri · Vue · React<br>
+          <strong>许可</strong>　MIT / GPL-3.0<br>
+          <strong>更新</strong>　2026-07-26
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 项目索引 -->
+  <section class="index-section" id="projects">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>项目清单</h2>
+        <span class="count">N° 01 — 03 / 共 3 项</span>
+      </div>
+
+      <div class="projects">
+
+        <!-- BlueTidy -->
+        <a href="bluetidy.html" class="proj-card theme-bluetidy rise rise-1">
+          <div class="proj-num">
+            N° 01
+            <strong>BT</strong>
+          </div>
+          <div class="proj-body">
+            <h3>
+              BlueTidy
+              <span class="sub">先看清空间,再安全处理。</span>
+            </h3>
+            <p>面向 Windows 的磁盘空间分析、软件资产治理与可回滚迁移工具。文件夹模式找空间去哪了,应用模式判断软件能否清理或迁移,所有操作可回滚。</p>
+            <div class="proj-tags">
+              <span class="tag">Rust</span>
+              <span class="tag">React</span>
+              <span class="tag">Tauri 2</span>
+              <span class="tag">Windows</span>
+              <span class="tag">MIT</span>
+            </div>
+          </div>
+          <dl class="proj-spec">
+            <dt>版本</dt><dd>0.2.0 Preview</dd>
+            <dt>模式</dt><dd>文件夹 / 应用</dd>
+            <dt>状态</dt><dd>活跃开发</dd>
+          </dl>
+        </a>
+
+        <!-- LanNook -->
+        <a href="lannook.html" class="proj-card theme-lannook rise rise-2">
+          <div class="proj-num">
+            N° 02
+            <strong>LN</strong>
+          </div>
+          <div class="proj-body">
+            <h3>
+              LanNook
+              <span class="sub">在同一局域网里,用手机浏览器和电脑互传文件。</span>
+            </h3>
+            <p>手机不用装 App,也不用注册账号。电脑运行后提供二维码和局域网地址,手机打开页面即可双向传文件。官方发行版不会把文件上传到公共云盘。</p>
+            <div class="proj-tags">
+              <span class="tag">Rust</span>
+              <span class="tag">Vue</span>
+              <span class="tag">Tauri 2</span>
+              <span class="tag">跨平台</span>
+              <span class="tag">GPL-3.0</span>
+            </div>
+          </div>
+          <dl class="proj-spec">
+            <dt>版本</dt><dd>v26.2.1</dd>
+            <dt>平台</dt><dd>Win / macOS / Linux</dd>
+            <dt>状态</dt><dd>活跃开发</dd>
+          </dl>
+        </a>
+
+        <!-- CTF 乾坤袋 -->
+        <a href="ctf-qiankun.html" class="proj-card theme-ctf rise rise-3">
+          <div class="proj-num">
+            N° 03
+            <strong>CTF</strong>
+          </div>
+          <div class="proj-body">
+            <h3>
+              CTF 乾坤袋
+              <span class="sub">浏览器端 CTF 工具箱。</span>
+            </h3>
+            <p>提供编码转换、密码学辅助、Web 数据处理、文件分析、隐写分析、取证、OSINT、PWN 与逆向等工具。开源版只保留客户端工具,输入默认在浏览器本地处理。</p>
+            <div class="proj-tags">
+              <span class="tag">TypeScript</span>
+              <span class="tag">Vue</span>
+              <span class="tag">NestJS</span>
+              <span class="tag">浏览器端</span>
+              <span class="tag">MIT</span>
+            </div>
+          </div>
+          <dl class="proj-spec">
+            <dt>版本</dt><dd>开源客户端</dd>
+            <dt>形态</dt><dd>静态站点</dd>
+            <dt>状态</dt><dd>已发布</dd>
+          </dl>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 工坊说明 -->
+  <section class="manifesto" id="manifesto">
+    <div class="wrap">
+      <div class="manifesto-grid">
+        <div>
+          <h2>关于<br><span class="ital">这个工坊</span></h2>
+        </div>
+        <div>
+          <p>这里收录的三个项目,各自解决一个具体而真实的问题:Windows 系统盘满了该怎么办、手机和电脑之间怎么直接传文件、CTF 比赛和研究中常用工具怎么快速调用。</p>
+          <p>它们不是大而全的平台,而是带有明确边界的小工具 — 先看清空间再处理、只在可信局域网工作、输入默认不离开浏览器。每个项目都开源,接受 Issue 和贡献。</p>
+          <p class="signature">— by-fengqiao · 2026-07-27</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 页脚 -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <span>© 2026 by-fengqiao · Workshop</span>
+      <span>BlueTidy · LanNook · CTF 乾坤袋</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

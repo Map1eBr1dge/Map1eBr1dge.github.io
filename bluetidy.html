@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlueTidy · 先看清空间,再安全处理</title>
+<meta name="description" content="BlueTidy — 面向 Windows 的磁盘空间分析、软件资产治理与可回滚迁移工具">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* ============ BlueTidy 页面专属样式 ============ */
+
+  /* ---------- Hero 区 ---------- */
+  .hero {
+    padding: var(--space-8) 0 var(--space-7);
+    border-bottom: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero .ruler-left {
+    position: absolute;
+    top: 0; left: 0;
+    width: 56px; height: 100%;
+    border-right: var(--border-2);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 23px,
+      var(--line) 23px,
+      var(--line) 24px
+    );
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  .hero .ruler-left::before {
+    content: 'BT · 0.2.0';
+    position: absolute;
+    top: 50%; left: 12px;
+    transform: rotate(-90deg);
+    transform-origin: left center;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.3em;
+    color: var(--ink-4);
+    white-space: nowrap;
+  }
+
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: var(--space-8);
+    align-items: end;
+    padding-left: 56px;
+  }
+
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .hero-eyebrow .dot {
+    width: 10px; height: 10px;
+    background: var(--c);
+    border: 1.5px solid var(--ink);
+  }
+
+  .hero h1 {
+    font-size: clamp(3.8rem, 11vw, 9rem);
+    margin-bottom: var(--space-4);
+    color: var(--ink);
+  }
+
+  .hero h1 .accent {
+    color: var(--c);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .hero-tagline {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+    color: var(--ink-2);
+    max-width: 28ch;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+
+  /* Hero 元信息卡 */
+  .hero-meta {
+    border: var(--border);
+    background: var(--paper);
+    padding: var(--space-5);
+    box-shadow: var(--shadow-hard);
+    position: relative;
+  }
+
+  .hero-meta::before {
+    content: 'SPECIFICATION';
+    position: absolute;
+    top: -1px; left: var(--space-4);
+    background: var(--paper);
+    padding: 0 var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    color: var(--ink-3);
+    transform: translateY(-50%);
+  }
+
+  .hero-meta dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2) var(--space-5);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.7;
+  }
+
+  .hero-meta dt {
+    color: var(--ink-4);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    align-self: center;
+  }
+
+  .hero-meta dd {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .hero-meta dd .pill {
+    display: inline-block;
+    font-size: 0.68rem;
+    padding: 1px 6px;
+    border: 1px solid var(--line);
+    background: var(--paper-2);
+    margin-right: 4px;
+    color: var(--ink-2);
+    font-weight: 400;
+  }
+
+  /* 磁盘扇区装饰 SVG */
+  .hero-disk {
+    position: absolute;
+    right: -60px; top: 40px;
+    width: 320px; height: 320px;
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ---------- 通用 section ---------- */
+  .sec {
+    padding: var(--space-8) 0;
+    border-bottom: var(--border-2);
+  }
+
+  .sec:last-of-type { border-bottom: none; }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: var(--border);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-7);
+  }
+
+  .section-head h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    letter-spacing: -0.025em;
+  }
+
+  .section-head h2 .ital {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--c);
+  }
+
+  .section-head .sec-num {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+  }
+
+  /* ---------- 问题与方案 ---------- */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-7);
+    align-items: start;
+  }
+
+  .problem-lead {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.3rem, 2.8vw, 1.85rem);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .problem-lead .hl {
+    background: var(--c);
+    color: var(--paper);
+    padding: 0 6px;
+  }
+
+  .problem-lead .strike {
+    text-decoration: line-through;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 3px;
+    color: var(--ink-3);
+  }
+
+  .problem-body p {
+    color: var(--ink-2);
+    font-size: 0.98rem;
+    margin-bottom: var(--space-4);
+    max-width: 48ch;
+  }
+
+  .problem-body .two-judgements {
+    border: var(--border-2);
+    background: var(--paper-2);
+    padding: var(--space-4) var(--space-5);
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.9;
+  }
+
+  .problem-body .two-judgements strong {
+    color: var(--c);
+    font-weight: 700;
+  }
+
+  /* ---------- 两个模式卡片 ---------- */
+  .modes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+  }
+
+  .mode-card {
+    border: var(--border);
+    background: var(--paper);
+    padding: var(--space-6);
+    position: relative;
+    transition: all .25s cubic-bezier(.2,.7,.2,1);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mode-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+
+  .mode-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-4);
+    border-bottom: var(--border-2);
+  }
+
+  .mode-card h3 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.75rem;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+  }
+
+  .mode-card h3 .en {
+    display: block;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.72rem;
+    color: var(--ink-4);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: var(--space-2);
+  }
+
+  .mode-icon {
+    width: 48px; height: 48px;
+    border: var(--border);
+    background: var(--paper-2);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  .mode-card p.desc {
+    color: var(--ink-2);
+    font-size: 0.93rem;
+    margin-bottom: var(--space-5);
+    line-height: 1.65;
+  }
+
+  .mode-features {
+    list-style: none;
+    flex: 1;
+  }
+
+  .mode-features li {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    padding: var(--space-2) 0;
+    border-bottom: 1px dashed var(--line-2);
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    color: var(--ink-2);
+  }
+
+  .mode-features li:last-child { border-bottom: none; }
+
+  .mode-features li::before {
+    content: '▸';
+    color: var(--c);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .mode-features li strong {
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .mode-card-foot {
+    margin-top: var(--space-5);
+    padding-top: var(--space-3);
+    border-top: var(--border-2);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-4);
+    letter-spacing: 0.05em;
+  }
+
+  /* 模式区小 SVG 示意 */
+  .mode-diagram {
+    margin: var(--space-3) 0 var(--space-5);
+    padding: var(--space-4);
+    background: var(--paper-2);
+    border: var(--border-2);
+  }
+
+  /* ---------- 安全边界(规格表) ---------- */
+  .safety-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+  }
+
+  .safety-card {
+    border: var(--border);
+    background: var(--paper);
+    padding: var(--space-5);
+    position: relative;
+    transition: all .2s ease;
+  }
+
+  .safety-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: var(--shadow-hard);
+  }
+
+  .safety-card::before {
+    content: attr(data-tag);
+    position: absolute;
+    top: -1px; left: var(--space-4);
+    background: var(--paper);
+    padding: 0 var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--c);
+    font-weight: 700;
+    transform: translateY(-50%);
+  }
+
+  .safety-card .safety-num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--ink-4);
+    margin-bottom: var(--space-2);
+  }
+
+  .safety-card h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.015em;
+    margin-bottom: var(--space-3);
+    line-height: 1.2;
+  }
+
+  .safety-card p {
+    font-size: 0.85rem;
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+
+  .safety-card .check-mark {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--c);
+    color: var(--c);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-align: center;
+    line-height: 14px;
+    margin-right: 4px;
+    font-weight: 700;
+  }
+
+  /* ---------- TidyPilot ---------- */
+  .pilot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: var(--space-7);
+    align-items: center;
+  }
+
+  .pilot-text h3 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin-bottom: var(--space-4);
+  }
+
+  .pilot-text h3 .ai {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--c);
+  }
+
+  .pilot-text p {
+    color: var(--ink-2);
+    font-size: 0.98rem;
+    margin-bottom: var(--space-4);
+    max-width: 46ch;
+  }
+
+  .pilot-rules {
+    border: var(--border);
+    background: var(--paper-2);
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .pilot-rules .rule-head {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: var(--border-2);
+  }
+
+  .pilot-rules .rule {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    padding: 5px 0;
+    color: var(--ink-2);
+  }
+
+  .pilot-rules .rule .r-tag {
+    font-size: 0.66rem;
+    padding: 1px 5px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink-3);
+    flex-shrink: 0;
+    letter-spacing: 0.05em;
+  }
+
+  .pilot-rules .rule .r-tag.local { border-color: var(--c); color: var(--c); }
+  .pilot-rules .rule .r-tag.ai { border-color: var(--ink-3); color: var(--ink-3); }
+
+  .pilot-diagram {
+    border: var(--border);
+    background: var(--paper);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-hard);
+  }
+
+  .pilot-diagram .pd-title {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: var(--space-4);
+    text-align: center;
+  }
+
+  /* ---------- 下载与安装 ---------- */
+  .download-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--space-5);
+    margin-bottom: var(--space-7);
+  }
+
+  .dl-card {
+    border: var(--border);
+    background: var(--paper);
+    padding: var(--space-5);
+    position: relative;
+    transition: all .2s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dl-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: var(--shadow-hard);
+  }
+
+  .dl-card .dl-type {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--c);
+    font-weight: 700;
+    margin-bottom: var(--space-2);
+  }
+
+  .dl-card h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-2);
+  }
+
+  .dl-card .dl-size {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--ink-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .dl-card .dl-desc {
+    font-size: 0.85rem;
+    color: var(--ink-2);
+    margin-bottom: var(--space-4);
+    flex: 1;
+    line-height: 1.55;
+  }
+
+  .dl-card .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dl-card .btn::after { content: '↓'; }
+
+  .requirements {
+    border: var(--border);
+    background: var(--paper-2);
+    padding: var(--space-5) var(--space-6);
+  }
+
+  .requirements h4 {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: var(--space-3);
+  }
+
+  .requirements ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2) var(--space-6);
+  }
+
+  .requirements li {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--ink-2);
+    padding-left: var(--space-4);
+    position: relative;
+  }
+
+  .requirements li::before {
+    content: '◇';
+    position: absolute;
+    left: 0;
+    color: var(--c);
+  }
+
+  /* ---------- 项目结构 ---------- */
+  .tree-block {
+    border: var(--border);
+    background: var(--ink);
+    color: var(--paper);
+    padding: var(--space-6) var(--space-7);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.75;
+    overflow-x: auto;
+    box-shadow: var(--shadow-hard);
+    position: relative;
+  }
+
+  .tree-block::before {
+    content: 'DIRECTORY TREE';
+    position: absolute;
+    top: -1px; left: var(--space-5);
+    background: var(--ink);
+    color: var(--ink-4);
+    padding: 0 var(--space-2);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    transform: translateY(-50%);
+  }
+
+  .tree-block .t-root { color: var(--paper); font-weight: 700; }
+  .tree-block .t-dir { color: #8fc4e8; }
+  .tree-block .t-file { color: var(--paper-3); }
+  .tree-block .t-comment { color: var(--ink-4); font-style: italic; }
+  .tree-block .t-highlight { color: #e8b864; }
+
+  .tree-legend {
+    display: flex;
+    gap: var(--space-5);
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-3);
+  }
+
+  .tree-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .tree-legend .swatch {
+    width: 12px; height: 12px;
+    display: inline-block;
+  }
+
+  /* ---------- CTA ---------- */
+  .cta {
+    padding: var(--space-9) 0;
+    background: var(--ink);
+    color: var(--paper);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(244,239,228,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(244,239,228,0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+  }
+
+  .cta-inner {
+    position: relative;
+    z-index: 2;
+  }
+
+  .cta h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: var(--space-4);
+  }
+
+  .cta h2 .ital {
+    font-style: italic;
+    font-weight: 400;
+    color: #5b9bc8;
+  }
+
+  .cta p {
+    font-size: 1.05rem;
+    color: var(--paper-3);
+    margin-bottom: var(--space-7);
+    max-width: 50ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .cta .btn {
+    background: var(--paper);
+    color: var(--ink);
+    border-color: var(--paper);
+  }
+
+  .cta .btn:hover {
+    background: var(--c);
+    color: var(--paper);
+    border-color: var(--c);
+    box-shadow: 4px 4px 0 var(--paper);
+  }
+
+  .cta .btn-ghost {
+    background: transparent;
+    color: var(--paper);
+    border-color: var(--paper-3);
+  }
+
+  .cta .btn-ghost:hover {
+    background: var(--paper);
+    color: var(--ink);
+    border-color: var(--paper);
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 960px) {
+    .hero-inner { grid-template-columns: 1fr; gap: var(--space-6); }
+    .problem-grid { grid-template-columns: 1fr; }
+    .modes { grid-template-columns: 1fr; }
+    .safety-grid { grid-template-columns: 1fr 1fr; }
+    .pilot-grid { grid-template-columns: 1fr; }
+    .download-grid { grid-template-columns: 1fr; }
+    .requirements ul { grid-template-columns: 1fr; }
+    .hero-disk { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .safety-grid { grid-template-columns: 1fr; }
+    .hero .ruler-left { display: none; }
+    .hero-inner { padding-left: 0; }
+  }
+</style>
+</head>
+<body class="theme-bluetidy">
+
+<!-- 导航 -->
+<header class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand"><span class="brand-mark">工</span><span>Workshop</span></a>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-back">返回索引</a>
+      <a href="https://github.com/by-fengqiao/BlueTidy" target="_blank" rel="noopener">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ========== Hero ========== -->
+  <section class="hero" id="top">
+    <div class="ruler-left"></div>
+
+    <!-- 磁盘扇区装饰 SVG -->
+    <svg class="hero-disk" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="95" stroke="#1e5b8a" stroke-width="1.5"/>
+      <circle cx="100" cy="100" r="72" stroke="#1e5b8a" stroke-width="1"/>
+      <circle cx="100" cy="100" r="48" stroke="#1e5b8a" stroke-width="1"/>
+      <circle cx="100" cy="100" r="24" stroke="#1e5b8a" stroke-width="1"/>
+      <line x1="100" y1="5" x2="100" y2="195" stroke="#1e5b8a" stroke-width="1"/>
+      <line x1="5" y1="100" x2="195" y2="100" stroke="#1e5b8a" stroke-width="1"/>
+      <line x1="33" y1="33" x2="167" y2="167" stroke="#1e5b8a" stroke-width="0.5"/>
+      <line x1="167" y1="33" x2="33" y2="167" stroke="#1e5b8a" stroke-width="0.5"/>
+      <path d="M100 100 L100 28 A72 72 0 0 1 151 49 Z" fill="#1e5b8a" opacity="0.3"/>
+      <path d="M100 100 L151 49 A72 72 0 0 1 172 100 Z" fill="#1e5b8a" opacity="0.15"/>
+      <circle cx="100" cy="100" r="6" fill="#1e5b8a"/>
+    </svg>
+
+    <div class="wrap">
+      <div class="hero-inner">
+        <div>
+          <div class="hero-eyebrow rise rise-1">
+            <span class="dot"></span>
+            <span class="eyebrow">PROJECT N° 01 · DISK & ASSET TOOL</span>
+          </div>
+          <h1 class="display rise rise-2">
+            Blue<span class="accent">Tidy</span>
+          </h1>
+          <p class="hero-tagline rise rise-3">先看清空间,再安全处理。</p>
+        </div>
+
+        <div class="hero-meta rise rise-4">
+          <dl>
+            <dt>版本</dt>
+            <dd>0.2.0 <span style="color:var(--ink-4);font-weight:400">Preview</span></dd>
+            <dt>许可</dt>
+            <dd>MIT</dd>
+            <dt>平台</dt>
+            <dd>Windows 10 / 11</dd>
+            <dt>技术栈</dt>
+            <dd>
+              <span class="pill">Rust 44%</span>
+              <span class="pill">TS 34.5%</span>
+              <span class="pill">CSS 19.8%</span>
+              <span class="pill">Py 1.6%</span>
+            </dd>
+            <dt>框架</dt>
+            <dd>Tauri 2 · React</dd>
+            <dt>更新</dt>
+            <dd>2026-07-27</dd>
+            <dt>仓库</dt>
+            <dd><a href="https://github.com/by-fengqiao/BlueTidy" target="_blank" rel="noopener" style="color:var(--c);text-decoration:underline;text-underline-offset:3px">github.com/by-fengqiao/BlueTidy</a></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 问题与方案 ========== -->
+  <section class="sec" id="problem">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>问题与<span class="ital">方案</span></h2>
+        <span class="sec-num">§ 01</span>
+      </div>
+
+      <div class="problem-grid">
+        <div class="problem-lead rise rise-1">
+          系统盘满了,<br>
+          真正麻烦的不是<span class="strike">删一个大文件</span>,<br>
+          而是<span class="hl">两个判断</span>。
+        </div>
+
+        <div class="problem-body rise rise-2">
+          <p>当 C 盘飘红,大多数人第一反应是找一个大文件删掉。但这往往治标不治本 — 真正要回答的是两个问题:</p>
+
+          <div class="two-judgements">
+            <strong>判断一</strong>　空间被谁占了?<br>
+            <strong>判断二</strong>　哪些东西可以动?
+          </div>
+
+          <p style="margin-top:var(--space-4)">BlueTidy 把这两件事拆开做。文件夹模式回答"空间去哪了",应用模式回答"软件能不能清理或迁移"。所有操作可回滚 — 你可以放心试,试错了退回来。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 两个模式 ========== -->
+  <section class="sec" id="modes">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>两个<span class="ital">模式</span></h2>
+        <span class="sec-num">§ 02</span>
+      </div>
+
+      <div class="modes">
+        <!-- 文件夹模式 -->
+        <div class="mode-card rise rise-1">
+          <div class="mode-card-head">
+            <div>
+              <h3>
+                文件夹模式
+                <span class="en">FOLDER MODE</span>
+              </h3>
+            </div>
+            <div class="mode-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1e5b8a" stroke-width="1.8">
+                <path d="M3 7h6l2 2h10v10H3z"/>
+                <rect x="6" y="12" width="4" height="4" fill="#1e5b8a" opacity="0.3"/>
+                <rect x="12" y="12" width="6" height="4" fill="#1e5b8a" opacity="0.5"/>
+              </svg>
+            </div>
+          </div>
+
+          <p class="desc">找空间去哪了,决定是否迁移数据目录。扫描任意卷或目录,用矩形图直观呈现占用分布。</p>
+
+          <!-- 矩形图示意 -->
+          <div class="mode-diagram">
+            <svg viewBox="0 0 280 120" width="100%" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="180" height="70" fill="#1e5b8a" opacity="0.85" stroke="#1a1714" stroke-width="1"/>
+              <rect x="180" y="0" width="60" height="40" fill="#1e5b8a" opacity="0.55" stroke="#1a1714" stroke-width="1"/>
+              <rect x="180" y="40" width="40" height="30" fill="#1e5b8a" opacity="0.4" stroke="#1a1714" stroke-width="1"/>
+              <rect x="220" y="0" width="60" height="70" fill="#1e5b8a" opacity="0.3" stroke="#1a1714" stroke-width="1"/>
+              <rect x="0" y="70" width="100" height="50" fill="#1e5b8a" opacity="0.25" stroke="#1a1714" stroke-width="1"/>
+              <rect x="100" y="70" width="120" height="50" fill="#1e5b8a" opacity="0.18" stroke="#1a1714" stroke-width="1"/>
+              <rect x="220" y="70" width="60" height="50" fill="#1e5b8a" opacity="0.12" stroke="#1a1714" stroke-width="1"/>
+              <text x="6" y="14" font-family="JetBrains Mono" font-size="8" fill="#f4efe4">AppData 42.3 GB</text>
+              <text x="186" y="12" font-family="JetBrains Mono" font-size="7" fill="#1a1714">Steam</text>
+              <text x="6" y="84" font-family="JetBrains Mono" font-size="7" fill="#1a1714">node_modules</text>
+              <text x="110" y="84" font-family="JetBrains Mono" font-size="7" fill="#1a1714">Docker</text>
+            </svg>
+          </div>
+
+          <ul class="mode-features">
+            <li><span><strong>矩形图(Treemap)</strong>　按目录层级嵌套呈现占用比例</span></li>
+            <li><span><strong>占用排行</strong>　按体积排序,一眼锁定最大目录</span></li>
+            <li><span><strong>CSV 导出</strong>　扫描结果可导出供外部分析</span></li>
+            <li><span><strong>快照对比</strong>　不同时间点快照,看空间变化趋势</span></li>
+            <li><span><strong>目录迁移</strong>　将数据目录迁移到其他卷并建链接</span></li>
+          </ul>
+
+          <div class="mode-card-foot">SCAN → ANALYZE → DECIDE → MIGRATE</div>
+        </div>
+
+        <!-- 应用模式 -->
+        <div class="mode-card rise rise-2">
+          <div class="mode-card-head">
+            <div>
+              <h3>
+                应用模式
+                <span class="en">APP MODE</span>
+              </h3>
+            </div>
+            <div class="mode-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1e5b8a" stroke-width="1.8">
+                <rect x="3" y="4" width="18" height="16" rx="1"/>
+                <line x1="3" y1="9" x2="21" y2="9"/>
+                <circle cx="6" cy="6.5" r="0.8" fill="#1e5b8a"/>
+                <rect x="6" y="12" width="5" height="5" fill="#1e5b8a" opacity="0.3"/>
+                <rect x="13" y="12" width="5" height="5" fill="#1e5b8a" opacity="0.5"/>
+              </svg>
+            </div>
+          </div>
+
+          <p class="desc">判断软件能否清理、迁移或回滚。从多个来源发现已安装的软件资产,给出每项的可操作建议。</p>
+
+          <!-- 来源示意 -->
+          <div class="mode-diagram">
+            <svg viewBox="0 0 280 120" width="100%" xmlns="http://www.w3.org/2000/svg">
+              <g font-family="JetBrains Mono" font-size="8" fill="#1a1714">
+                <rect x="0" y="5" width="90" height="20" fill="#1e5b8a" opacity="0.15" stroke="#1a1714" stroke-width="1"/>
+                <text x="6" y="18">Uninstall Reg</text>
+                <rect x="0" y="30" width="90" height="20" fill="#1e5b8a" opacity="0.2" stroke="#1a1714" stroke-width="1"/>
+                <text x="6" y="43">winget</text>
+                <rect x="0" y="55" width="90" height="20" fill="#1e5b8a" opacity="0.25" stroke="#1a1714" stroke-width="1"/>
+                <text x="6" y="68">Scoop</text>
+                <rect x="0" y="80" width="90" height="20" fill="#1e5b8a" opacity="0.3" stroke="#1a1714" stroke-width="1"/>
+                <text x="6" y="93">Steam / Epic</text>
+              </g>
+              <g stroke="#1a1714" stroke-width="1" fill="none">
+                <path d="M90 15 L140 30 M90 40 L140 35 M90 65 L140 45 M90 90 L140 55" stroke-dasharray="3 2"/>
+              </g>
+              <rect x="140" y="20" width="140" height="50" fill="#1e5b8a" opacity="0.6" stroke="#1a1714" stroke-width="1.5"/>
+              <text x="150" y="40" font-family="Fraunces" font-weight="700" font-size="12" fill="#f4efe4">BlueTidy</text>
+              <text x="150" y="56" font-family="JetBrains Mono" font-size="8" fill="#f4efe4">资产聚合 · 建议</text>
+              <g font-family="JetBrains Mono" font-size="7" fill="#1a1714">
+                <rect x="140" y="80" width="44" height="16" fill="#1e5b8a" opacity="0.2" stroke="#1a1714" stroke-width="0.8"/>
+                <text x="146" y="91">清理</text>
+                <rect x="188" y="80" width="44" height="16" fill="#1e5b8a" opacity="0.2" stroke="#1a1714" stroke-width="0.8"/>
+                <text x="194" y="91">迁移</text>
+                <rect x="236" y="80" width="44" height="16" fill="#1e5b8a" opacity="0.2" stroke="#1a1714" stroke-width="0.8"/>
+                <text x="242" y="91">回滚</text>
+              </g>
+            </svg>
+          </div>
+
+          <ul class="mode-features">
+            <li><span><strong>多来源发现</strong>　卸载注册表 / winget / Scoop / Steam / Epic</span></li>
+            <li><span><strong>占用归因</strong>　定位每个应用在磁盘上的实际体积</span></li>
+            <li><span><strong>可操作建议</strong>　清理 / 迁移 / 回滚 三种操作判定</span></li>
+            <li><span><strong>跨卷迁移</strong>　把大型应用搬到其他卷并保留可用性</span></li>
+            <li><span><strong>操作回滚</strong>　迁移失败或反悔时一键退回原状态</span></li>
+          </ul>
+
+          <div class="mode-card-foot">DISCOVER → ASSESS → ACT → ROLLBACK</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 安全边界 ========== -->
+  <section class="sec" id="safety">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>安全<span class="ital">边界</span></h2>
+        <span class="sec-num">§ 03</span>
+      </div>
+
+      <p style="max-width:62ch;color:var(--ink-2);margin-bottom:var(--space-7);font-size:0.98rem">
+        BlueTidy 在执行任何操作前会跑一遍预检流程。下面每一项都是一道闸门 — 任何一道不通过,操作就不会执行。
+      </p>
+
+      <div class="safety-grid">
+        <div class="safety-card rise rise-1" data-tag="GATE 01">
+          <div class="safety-num">01 / 06</div>
+          <h4>阻止受保护路径</h4>
+          <p><span class="check-mark">✓</span>系统目录、Program Files、用户配置等受保护路径默认不可操作,防止误删关键文件。</p>
+        </div>
+
+        <div class="safety-card rise rise-2" data-tag="GATE 02">
+          <div class="safety-num">02 / 06</div>
+          <h4>检查目标卷空间</h4>
+          <p><span class="check-mark">✓</span>迁移前计算目标卷可用空间,不足则提前终止,避免写到一半磁盘爆满。</p>
+        </div>
+
+        <div class="safety-card rise rise-3" data-tag="GATE 03">
+          <div class="safety-num">03 / 06</div>
+          <h4>检测运行中进程</h4>
+          <p><span class="check-mark">✓</span>操作前检测目标目录或应用是否有进程占用,避免文件被锁导致损坏。</p>
+        </div>
+
+        <div class="safety-card rise rise-1" data-tag="GATE 04">
+          <div class="safety-num">04 / 06</div>
+          <h4>跨卷复制后核对</h4>
+          <p><span class="check-mark">✓</span>跨卷迁移采用"先复制再核对最后删除"三步法,核对通过才删除源文件。</p>
+        </div>
+
+        <div class="safety-card rise rise-2" data-tag="GATE 05">
+          <div class="safety-num">05 / 06</div>
+          <h4>单操作锁</h4>
+          <p><span class="check-mark">✓</span>同一时间只允许一个破坏性操作运行,防止并发写入造成状态不一致。</p>
+        </div>
+
+        <div class="safety-card rise rise-3" data-tag="GATE 06">
+          <div class="safety-num">06 / 06</div>
+          <h4>完整操作回滚</h4>
+          <p><span class="check-mark">✓</span>每个破坏性操作记录回滚信息,失败或手动撤销时恢复到操作前状态。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== TidyPilot ========== -->
+  <section class="sec" id="tidypilot">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Tidy<span class="ital">Pilot</span></h2>
+        <span class="sec-num">§ 04</span>
+      </div>
+
+      <div class="pilot-grid">
+        <div class="pilot-text rise rise-1">
+          <h3>本地规则优先,<br><span class="ai">AI 只解释</span>不绕过。</h3>
+          <p>TidyPilot 是 BlueTidy 内置的辅助引擎。它先跑本地预检规则给出确定性判断,再可选调用 OpenAI 兼容接口生成自然语言解释 — 告诉你"为什么建议这样做"。</p>
+          <p>AI 永远不能绕过本地预检。它只负责把工程判断翻译成人话,不负责做决定。</p>
+
+          <div class="pilot-rules">
+            <div class="rule-head">RULE PRIORITY</div>
+            <div class="rule">
+              <span class="r-tag local">LOCAL</span>
+              <span>受保护路径拦截 — 硬性阻断,不可覆盖</span>
+            </div>
+            <div class="rule">
+              <span class="r-tag local">LOCAL</span>
+              <span>目标卷空间核算 — 不足即终止</span>
+            </div>
+            <div class="rule">
+              <span class="r-tag local">LOCAL</span>
+              <span>进程占用检测 — 锁定文件不可动</span>
+            </div>
+            <div class="rule">
+              <span class="r-tag ai">AI</span>
+              <span>生成操作解释与建议文案(只读)</span>
+            </div>
+            <div class="rule">
+              <span class="r-tag ai">AI</span>
+              <span>回答用户关于扫描结果的提问</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pilot-diagram rise rise-2">
+          <div class="pd-title">TIDYPILOT · DECISION FLOW</div>
+          <svg viewBox="0 0 360 280" width="100%" xmlns="http://www.w3.org/2000/svg">
+            <!-- 用户输入 -->
+            <rect x="130" y="5" width="100" height="34" fill="#f4efe4" stroke="#1a1714" stroke-width="1.5"/>
+            <text x="180" y="26" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#1a1714">用户操作请求</text>
+
+            <!-- 箭头 -->
+            <line x1="180" y1="39" x2="180" y2="60" stroke="#1a1714" stroke-width="1.5"/>
+            <polygon points="180,64 176,56 184,56" fill="#1a1714"/>
+
+            <!-- 本地预检 -->
+            <rect x="110" y="64" width="140" height="50" fill="#1e5b8a" stroke="#1a1714" stroke-width="1.5"/>
+            <text x="180" y="84" text-anchor="middle" font-family="Fraunces" font-weight="700" font-size="13" fill="#f4efe4">本地预检</text>
+            <text x="180" y="100" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#f4efe4">LOCAL RULES</text>
+
+            <!-- 分叉 -->
+            <line x1="180" y1="114" x2="180" y2="130" stroke="#1a1714" stroke-width="1.5"/>
+            <line x1="80" y1="130" x2="280" y2="130" stroke="#1a1714" stroke-width="1.5"/>
+            <line x1="80" y1="130" x2="80" y2="146" stroke="#1a1714" stroke-width="1.5"/>
+            <line x1="280" y1="130" x2="280" y2="146" stroke="#1a1714" stroke-width="1.5"/>
+            <polygon points="80,150 76,142 84,142" fill="#1a1714"/>
+            <polygon points="280,150 276,142 284,142" fill="#1a1714"/>
+
+            <!-- 阻断 -->
+            <rect x="20" y="150" width="120" height="44" fill="#b8341a" stroke="#1a1714" stroke-width="1.5"/>
+            <text x="80" y="170" text-anchor="middle" font-family="Fraunces" font-weight="700" font-size="12" fill="#f4efe4">阻断</text>
+            <text x="80" y="184" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#f4efe4">BLOCK</text>
+
+            <!-- 通过 -->
+            <rect x="220" y="150" width="120" height="44" fill="#3a6b2a" stroke="#1a1714" stroke-width="1.5"/>
+            <text x="280" y="170" text-anchor="middle" font-family="Fraunces" font-weight="700" font-size="12" fill="#f4efe4">通过</text>
+            <text x="280" y="184" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#f4efe4">PASS</text>
+
+            <!-- AI 解释(从通过分支引出) -->
+            <line x1="280" y1="194" x2="280" y2="210" stroke="#1a1714" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <rect x="200" y="210" width="160" height="50" fill="#f4efe4" stroke="#1a1714" stroke-width="1.5" stroke-dasharray="4 2"/>
+            <text x="280" y="230" text-anchor="middle" font-family="Fraunces" font-weight="700" font-size="12" fill="#1e5b8a">AI 生成解释</text>
+            <text x="280" y="246" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#1a1714">只读 · 不可覆盖预检</text>
+
+            <!-- 阻断也走 AI 解释 -->
+            <line x1="80" y1="194" x2="80" y2="225" stroke="#1a1714" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <line x1="80" y1="225" x2="200" y2="235" stroke="#1a1714" stroke-width="1.5" stroke-dasharray="3 2"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 下载与安装 ========== -->
+  <section class="sec" id="download">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>下载与<span class="ital">安装</span></h2>
+        <span class="sec-num">§ 05</span>
+      </div>
+
+      <p style="max-width:60ch;color:var(--ink-2);margin-bottom:var(--space-7);font-size:0.98rem">
+        v0.2.0 Preview 提供三种发行形态,按需选择。所有下载来自 GitHub Releases。
+      </p>
+
+      <div class="download-grid">
+        <div class="dl-card rise rise-1">
+          <div class="dl-type">INSTALLER · 推荐</div>
+          <h4>安装版</h4>
+          <div class="dl-size">BlueTidy_0.2.0_x64-setup.exe</div>
+          <p class="dl-desc">标准 Windows 安装程序,带开始菜单快捷方式和卸载注册。适合大多数用户。</p>
+          <a class="btn btn-primary" href="https://github.com/by-fengqiao/BlueTidy/releases/tag/v0.2.0" target="_blank" rel="noopener">下载安装版</a>
+        </div>
+
+        <div class="dl-card rise rise-2">
+          <div class="dl-type">MSI · 企业部署</div>
+          <h4>MSI 包</h4>
+          <div class="dl-size">BlueTidy_0.2.0_x64_en-US.msi</div>
+          <p class="dl-desc">MSI 安装包,支持组策略部署和静默安装。适合需要批量分发的场景。</p>
+          <a class="btn btn-primary" href="https://github.com/by-fengqiao/BlueTidy/releases/tag/v0.2.0" target="_blank" rel="noopener">下载 MSI</a>
+        </div>
+
+        <div class="dl-card rise rise-3">
+          <div class="dl-type">PORTABLE · 免安装</div>
+          <h4>便携版</h4>
+          <div class="dl-size">BlueTidy_0.2.0_x64_portable.zip</div>
+          <p class="dl-desc">解压即用,不写注册表,不创建快捷方式。适合 U 盘携带或临时使用。</p>
+          <a class="btn btn-primary" href="https://github.com/by-fengqiao/BlueTidy/releases/tag/v0.2.0" target="_blank" rel="noopener">下载便携版</a>
+        </div>
+      </div>
+
+      <div class="requirements">
+        <h4>运行要求 · REQUIREMENTS</h4>
+        <ul>
+          <li>Windows 10 1809+ 或 Windows 11</li>
+          <li>64 位系统(x64 架构)</li>
+          <li>Edge WebView2 Runtime(系统通常已内置)</li>
+          <li>至少 200 MB 可用磁盘空间</li>
+          <li>管理员权限(迁移系统目录时需要)</li>
+          <li>可选:OpenAI 兼容 API Key(用于 TidyPilot)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 项目结构 ========== -->
+  <section class="sec" id="structure">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>项目<span class="ital">结构</span></h2>
+        <span class="sec-num">§ 06</span>
+      </div>
+
+      <div class="tree-block rise rise-1"><span class="t-root">BlueTidy/</span>
+├── <span class="t-dir">src-tauri/</span>            <span class="t-comment"># Rust 后端 · 核心逻辑</span>
+│   ├── <span class="t-dir">src/</span>
+│   │   ├── <span class="t-file">main.rs</span>         <span class="t-comment"># Tauri 入口</span>
+│   │   ├── <span class="t-dir">scanner/</span>        <span class="t-highlight"># 磁盘扫描引擎</span>
+│   │   ├── <span class="t-dir">migrator/</span>       <span class="t-highlight"># 跨卷迁移与回滚</span>
+│   │   ├── <span class="t-dir">safety/</span>         <span class="t-highlight"># 预检闸门 · 六道安全边界</span>
+│   │   ├── <span class="t-dir">apps/</span>           <span class="t-comment"># 应用资产发现</span>
+│   │   └── <span class="t-dir">pilot/</span>          <span class="t-comment"># TidyPilot 本地规则</span>
+│   ├── <span class="t-file">Cargo.toml</span>
+│   └── <span class="t-file">tauri.conf.json</span>
+├── <span class="t-dir">src/</span>                  <span class="t-comment"># React 前端</span>
+│   ├── <span class="t-dir">components/</span>
+│   ├── <span class="t-dir">pages/</span>
+│   │   ├── <span class="t-file">FolderMode.tsx</span>  <span class="t-highlight"># 文件夹模式 UI</span>
+│   │   └── <span class="t-file">AppMode.tsx</span>     <span class="t-highlight"># 应用模式 UI</span>
+│   ├── <span class="t-dir">hooks/</span>
+│   └── <span class="t-file">App.tsx</span>
+├── <span class="t-dir">scripts/</span>               <span class="t-comment"># Python 辅助脚本</span>
+├── <span class="t-file">package.json</span>
+├── <span class="t-file">README.md</span>
+└── <span class="t-file">LICENSE</span>               <span class="t-comment"># MIT</span></div>
+
+      <div class="tree-legend">
+        <span><span class="swatch" style="background:#8fc4e8"></span>目录</span>
+        <span><span class="swatch" style="background:#e3dcc8"></span>文件</span>
+        <span><span class="swatch" style="background:#e8b864"></span>核心模块</span>
+        <span><span class="swatch" style="background:#6b6358"></span>注释</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA ========== -->
+  <section class="cta" id="cta">
+    <div class="wrap">
+      <div class="cta-inner">
+        <h2 class="rise rise-1">看清空间,<br><span class="ital">再动手。</span></h2>
+        <p class="rise rise-2">BlueTidy 是开源工具,永久免费。欢迎在 GitHub 上提 Issue、提建议,或直接贡献代码。</p>
+        <div class="cta-buttons rise rise-3">
+          <a class="btn" href="https://github.com/by-fengqiao/BlueTidy" target="_blank" rel="noopener">查看源码</a>
+          <a class="btn btn-ghost" href="https://github.com/by-fengqiao/BlueTidy/releases/tag/v0.2.0" target="_blank" rel="noopener">下载 Releases</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 页脚 -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <span>© 2026 by-fengqiao · Workshop</span>
+      <span><a href="index.html">返回索引</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
