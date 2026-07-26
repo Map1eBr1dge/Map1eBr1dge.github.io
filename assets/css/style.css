@@ -1,5 +1,5 @@
 /* ============================================================
-   Workshop 工坊 — 明亮工程图纸设计系统
+   FqWork — 明亮工程图纸设计系统
    暖白纸张 + 网格纸纹理 + 墨黑排版 + 项目独立标识色
    ============================================================ */
 
@@ -150,15 +150,30 @@ a { color: inherit; text-decoration: none; }
 }
 
 .brand-mark {
-  width: 28px; height: 28px;
+  min-width: 36px;
   background: var(--ink);
   color: var(--paper);
-  display: grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 0 6px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.brand-mark .b1 {
+  color: #5b9bd5;
   font-family: var(--font-mono);
   font-size: 0.85rem;
   font-weight: 700;
-  transform: rotate(-3deg);
+}
+
+.brand-mark .b2 {
+  color: #e89046;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
 .nav-links {
