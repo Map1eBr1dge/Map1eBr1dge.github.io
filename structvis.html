@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StructVis · 数据结构与数据库自学工具 — zep4yrs</title>
+<meta name="description" content="StructVis — 教材对齐的数据结构与数据库自学工具。跟着李春葆《数据结构教程》和杨宏霞《数据库技术及应用》的章节走,交互式步进可视化,即时反馈练习,本地进度追踪。">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* ============================================================
+     StructVis 详情页专属样式
+     继承 zep4yrs 共享变量,启用学术深蓝标识色
+     ============================================================ */
+
+  /* ---------- 开发阶段横幅 ---------- */
+  .dev-banner {
+    background: var(--ink);
+    color: var(--paper);
+    padding: var(--space-2) var(--space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    border-bottom: 2px solid var(--c);
+  }
+
+  .dev-banner-icon {
+    color: var(--c);
+    font-size: 1rem;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+
+  .dev-banner-text { color: var(--paper-3); }
+  .dev-banner-text strong { color: var(--c); font-weight: 700; }
+
+  @media (max-width: 768px) {
+    .dev-banner { font-size: 0.7rem; padding: var(--space-2) var(--space-4); }
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    padding: var(--space-9) 0 var(--space-8);
+    border-bottom: var(--border);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(27,73,101,0.07), transparent 60%);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: var(--space-8);
+    align-items: end;
+  }
+
+  .hero h1 {
+    font-size: clamp(3.2rem, 9vw, 7.5rem);
+    margin: var(--space-3) 0 var(--space-5);
+    line-height: 0.9;
+  }
+
+  .hero h1 .ital { font-style: italic; font-weight: 400; color: var(--c); }
+  .hero h1 .stroke { -webkit-text-stroke: 2px var(--ink); color: transparent; }
+  .hero h1 .sm {
+    display: block; font-size: 0.3em; font-weight: 500; font-style: normal;
+    color: var(--ink-3); letter-spacing: 0.02em; margin-top: var(--space-2);
+    -webkit-text-stroke: 0;
+  }
+
+  .hero-tagline {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+    color: var(--ink-2);
+    letter-spacing: -0.01em;
+    border-left: 3px solid var(--c);
+    padding-left: var(--space-4);
+    margin-top: var(--space-4);
+    max-width: 36ch;
+    line-height: 1.4;
+  }
+
+  /* 元信息表 */
+  .meta-card {
+    border: var(--border);
+    background: var(--paper);
+    box-shadow: var(--shadow-hard);
+    padding: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.9;
+  }
+
+  .meta-card-head {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: var(--border-2); padding-bottom: var(--space-3);
+    margin-bottom: var(--space-3);
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3);
+  }
+
+  .meta-card-head .dot {
+    width: 8px; height: 8px; background: var(--c);
+    display: inline-block; margin-right: var(--space-2); vertical-align: middle;
+  }
+
+  .meta-card dl { display: grid; grid-template-columns: auto 1fr; gap: var(--space-1) var(--space-5); }
+  .meta-card dt { color: var(--ink-4); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .meta-card dd { color: var(--ink); }
+
+  .meta-card dd .pill {
+    display: inline-block; font-size: 0.66rem; padding: 1px 6px;
+    border: 1px solid var(--line); background: var(--paper-2);
+    color: var(--ink-2); margin-right: 4px; font-weight: 400;
+  }
+
+  .meta-card dd .pill.live {
+    border-color: var(--c); color: var(--c); background: rgba(27,73,101,0.08);
+  }
+
+  /* Logo 标记 */
+  .logo-mark {
+    width: 56px; height: 56px; flex-shrink: 0;
+  }
+
+  .hero-mark {
+    display: flex; align-items: flex-end; gap: var(--space-4); margin-bottom: var(--space-2);
+  }
+
+  /* 标尺装饰 */
+  .ruler {
+    position: absolute; top: 0; right: 0; width: 64px; height: 100%;
+    border-left: var(--border-2);
+    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 23px, var(--line) 23px, var(--line) 24px);
+    pointer-events: none;
+  }
+
+  .ruler::before {
+    content: 'SV · 07'; position: absolute; top: 50%; right: 20px;
+    transform: rotate(90deg) translateY(-50%); transform-origin: right center;
+    font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.3em;
+    color: var(--ink-4); white-space: nowrap;
+  }
+
+  /* ---------- 通用 section ---------- */
+  section.block { padding: var(--space-8) 0; border-bottom: var(--border-2); }
+  section.block.shaded { background: var(--paper-2); }
+
+  .section-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: var(--border); padding-bottom: var(--space-3); margin-bottom: var(--space-7);
+  }
+
+  .section-head h2 {
+    font-family: var(--font-display); font-weight: 900;
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem); letter-spacing: -0.025em; line-height: 1;
+  }
+
+  .section-head h2 .ital { font-style: italic; font-weight: 400; color: var(--c); }
+  .section-head .num { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-3); letter-spacing: 0.1em; }
+
+  /* ---------- 正文 ---------- */
+  .prose { font-size: 1.02rem; color: var(--ink-2); max-width: 62ch; }
+  .prose p + p { margin-top: var(--space-4); }
+  .prose strong { color: var(--ink); font-weight: 700; }
+
+  .lead {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: clamp(1.3rem, 2.4vw, 1.7rem); line-height: 1.4;
+    letter-spacing: -0.015em; color: var(--ink); max-width: 32ch; margin-bottom: var(--space-6);
+  }
+
+  .lead .hl { background: linear-gradient(180deg, transparent 60%, rgba(27,73,101,0.2) 60%); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); align-items: start; }
+
+  /* ---------- 终端模拟 ---------- */
+  .terminal { border: var(--border); background: #0d1517; box-shadow: var(--shadow-hard); overflow: hidden; }
+
+  .terminal-bar {
+    display: flex; align-items: center; gap: var(--space-2);
+    padding: var(--space-3) var(--space-4); background: #14201f;
+    border-bottom: 1px solid #2a3a3a; font-family: var(--font-mono);
+    font-size: 0.72rem; color: #a8c0b8; letter-spacing: 0.1em;
+  }
+
+  .terminal-bar .ttdot { width: 10px; height: 10px; border-radius: 50%; background: #2a3a3a; }
+  .terminal-bar .ttdot:nth-child(1) { background: #b8341a; }
+  .terminal-bar .ttdot:nth-child(2) { background: #8a6d1e; }
+  .terminal-bar .ttdot:nth-child(3) { background: var(--c); }
+  .terminal-bar .tttitle { margin-left: var(--space-3); color: #7a9a92; }
+
+  .terminal pre {
+    font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.7;
+    color: #c8d8d4; padding: var(--space-5); overflow-x: auto; margin: 0;
+  }
+
+  .terminal pre .cmt { color: #4a6a62; }
+  .terminal pre .cmd { color: #7ad4c0; }
+  .terminal pre .out { color: #a8c0b8; }
+  .terminal pre .ps1 { color: var(--c); }
+  .terminal pre .kw { color: #e0b070; }
+  .terminal pre .ok { color: #6BCB77; }
+  .terminal pre .warn { color: #D4A04A; }
+  .terminal pre .dim { color: #5a7068; }
+  .terminal pre .hl { color: #7ad4c0; font-weight: 700; }
+
+  /* ---------- 教材对齐表 ---------- */
+  .textbook-table {
+    border: var(--border); background: var(--paper);
+    width: 100%; border-collapse: collapse; font-size: 0.82rem;
+  }
+
+  .textbook-table th, .textbook-table td {
+    padding: var(--space-2) var(--space-3); border-bottom: var(--border-2); text-align: left;
+  }
+
+  .textbook-table th {
+    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--c); font-weight: 700;
+    background: var(--paper-2);
+  }
+
+  .textbook-table td { color: var(--ink-2); }
+  .textbook-table td:first-child { font-family: var(--font-mono); font-weight: 700; color: var(--c); width: 56px; }
+  .textbook-table td:nth-child(4) { font-family: var(--font-mono); font-size: 0.75rem; text-align: center; width: 80px; }
+  .textbook-table tr:last-child td { border-bottom: none; }
+
+  .prio-v01 { color: var(--c); font-weight: 700; }
+  .prio-v02 { color: var(--ink-2); }
+  .prio-later { color: var(--ink-4); }
+
+  /* ---------- 架构层 ---------- */
+  .arch-stack { display: flex; flex-direction: column; gap: var(--space-2); }
+
+  .arch-layer {
+    border: var(--border-2); background: var(--paper); padding: var(--space-4) var(--space-5);
+    position: relative; transition: all .2s ease;
+  }
+
+  .arch-layer:hover { border-color: var(--c); transform: translateX(4px); }
+
+  .arch-layer-tag {
+    position: absolute; top: -1px; right: var(--space-4);
+    background: var(--paper-2); padding: 0 6px;
+    font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--c); transform: translateY(-50%); font-weight: 700;
+  }
+
+  .arch-layer h4 {
+    font-family: var(--font-display); font-weight: 700; font-size: 1rem;
+    margin-bottom: var(--space-1); color: var(--ink);
+  }
+
+  .arch-layer p { font-size: 0.82rem; color: var(--ink-3); line-height: 1.5; }
+
+  .arch-flow { text-align: center; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-4); letter-spacing: 0.2em; }
+
+  /* ---------- 技术选型表 ---------- */
+  .tech-table {
+    border: var(--border); background: var(--paper);
+    width: 100%; border-collapse: collapse; font-size: 0.82rem;
+  }
+
+  .tech-table th, .tech-table td {
+    padding: var(--space-2) var(--space-3); border-bottom: var(--border-2); text-align: left;
+  }
+
+  .tech-table th {
+    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--c); font-weight: 700; background: var(--paper-2);
+  }
+
+  .tech-table td { color: var(--ink-2); }
+  .tech-table td:first-child { font-family: var(--font-mono); font-weight: 700; color: var(--c); width: 80px; }
+  .tech-table td:nth-child(2) { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink); font-weight: 500; }
+  .tech-table tr:last-child td { border-bottom: none; }
+
+  /* ---------- 引擎设计卡片 ---------- */
+  .engine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); }
+
+  .engine-card {
+    border: var(--border-2); background: var(--paper);
+    padding: var(--space-5); transition: all .2s ease;
+  }
+
+  .engine-card:hover { border-color: var(--c); transform: translate(-2px, -2px); box-shadow: var(--shadow-soft); }
+
+  .engine-card h4 {
+    font-family: var(--font-display); font-weight: 700; font-size: 1rem;
+    margin-bottom: var(--space-2); color: var(--ink);
+  }
+
+  .engine-card .ec-tag {
+    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em;
+    color: var(--c); font-weight: 700; margin-bottom: var(--space-2); text-transform: uppercase;
+  }
+
+  .engine-card p { font-size: 0.82rem; color: var(--ink-3); line-height: 1.6; }
+  .engine-card .ec-code {
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-2);
+    background: var(--paper-2); padding: var(--space-2) var(--space-3);
+    margin-top: var(--space-3); border-left: 2px solid var(--c); line-height: 1.6;
+  }
+
+  /* ---------- 渲染器表 ---------- */
+  .renderer-table {
+    border: var(--border); background: var(--paper);
+    width: 100%; border-collapse: collapse; font-size: 0.82rem;
+  }
+
+  .renderer-table th, .renderer-table td {
+    padding: var(--space-2) var(--space-3); border-bottom: var(--border-2); text-align: left;
+  }
+
+  .renderer-table th {
+    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--c); font-weight: 700; background: var(--paper-2);
+  }
+
+  .renderer-table td { color: var(--ink-2); }
+  .renderer-table td:first-child { font-family: var(--font-mono); font-weight: 700; color: var(--c); }
+  .renderer-table td:nth-child(3) { font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-3); }
+  .renderer-table tr:last-child td { border-bottom: none; }
+
+  /* ---------- 安全边界 ---------- */
+  .boundary { display: grid; grid-template-columns: 1.2fr 1fr; gap: var(--space-8); align-items: center; }
+
+  .check-list { list-style: none; border: var(--border); background: var(--paper); }
+
+  .check-list li {
+    display: flex; gap: var(--space-3); padding: var(--space-4) var(--space-5);
+    border-bottom: var(--border-2); font-size: 0.92rem; color: var(--ink-2); align-items: flex-start;
+  }
+
+  .check-list li:last-child { border-bottom: none; }
+  .check-list .mk { font-family: var(--font-mono); font-weight: 700; color: var(--c); flex-shrink: 0; width: 1.2em; }
+  .check-list .mk.x { color: var(--accent); }
+
+  /* ---------- 功能网格 ---------- */
+  .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+
+  .feat-card {
+    border: var(--border-2); background: var(--paper);
+    padding: var(--space-4) var(--space-5); transition: all .2s ease;
+  }
+
+  .feat-card:hover { border-color: var(--c); transform: translate(-2px, -2px); box-shadow: var(--shadow-soft); }
+
+  .feat-card h4 {
+    font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--c); font-weight: 700; margin-bottom: var(--space-2);
+  }
+
+  .feat-card p { font-size: 0.82rem; color: var(--ink-3); line-height: 1.5; }
+
+  /* ---------- 示例数据库表 ---------- */
+  .db-table {
+    border: var(--border); background: var(--paper);
+    width: 100%; border-collapse: collapse; font-size: 0.82rem;
+  }
+
+  .db-table th, .db-table td {
+    padding: var(--space-2) var(--space-3); border-bottom: var(--border-2); text-align: left;
+  }
+
+  .db-table th {
+    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--c); font-weight: 700; background: var(--paper-2);
+  }
+
+  .db-table td { color: var(--ink-2); }
+  .db-table td:first-child { font-family: var(--font-mono); font-weight: 700; color: var(--c); }
+  .db-table tr:last-child td { border-bottom: none; }
+
+  /* ---------- 路线图 ---------- */
+  .roadmap-wrap { overflow-x: auto; }
+
+  .roadmap {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2);
+    position: relative; min-width: 700px;
+  }
+
+  .roadmap::before {
+    content: ''; position: absolute; top: 28px; left: 5%; right: 5%;
+    height: 2px; background: var(--line); z-index: 0;
+  }
+
+  .rm-step { text-align: center; position: relative; z-index: 1; }
+
+  .rm-dot {
+    width: 16px; height: 16px; border: 2px solid var(--c); background: var(--paper);
+    border-radius: 50%; margin: 20px auto var(--space-3); position: relative;
+  }
+
+  .rm-step.current .rm-dot { background: var(--c); }
+
+  .rm-step.current .rm-dot::after {
+    content: ''; position: absolute; inset: -6px;
+    border: 1px solid var(--c); border-radius: 50%; opacity: 0.3;
+  }
+
+  .rm-ver { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; color: var(--c); margin-bottom: var(--space-1); }
+  .rm-label { font-size: 0.68rem; color: var(--ink-3); line-height: 1.4; padding: 0 2px; }
+
+  /* ---------- 里程碑表 ---------- */
+  .milestone-table {
+    border: var(--border); background: var(--paper);
+    width: 100%; border-collapse: collapse; font-size: 0.82rem;
+  }
+
+  .milestone-table th, .milestone-table td {
+    padding: var(--space-2) var(--space-3); border-bottom: var(--border-2); text-align: left;
+  }
+
+  .milestone-table th {
+    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--c); font-weight: 700; background: var(--paper-2);
+  }
+
+  .milestone-table td { color: var(--ink-2); }
+  .milestone-table td:first-child { font-family: var(--font-mono); font-weight: 700; color: var(--c); width: 56px; }
+  .milestone-table td:nth-child(3) { font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-3); text-align: center; width: 80px; }
+  .milestone-table tr:last-child td { border-bottom: none; }
+
+  /* ---------- 作品集整合 ---------- */
+  .chain { display: flex; flex-direction: column; gap: var(--space-3); max-width: 480px; margin: 0 auto; }
+
+  .chain-item {
+    border: var(--border-2); background: var(--paper);
+    padding: var(--space-3) var(--space-5); display: flex; align-items: center;
+    justify-content: space-between; font-family: var(--font-mono); font-size: 0.85rem;
+    transition: all .2s ease;
+  }
+
+  .chain-item:hover { border-color: var(--c); transform: translateX(4px); }
+
+  .chain-item.current { border: var(--border); border-color: var(--c); background: rgba(27,73,101,0.06); }
+  .chain-item .ci-label { color: var(--ink-3); }
+  .chain-item.current .ci-label { color: var(--c); font-weight: 700; }
+  .chain-item .ci-proj { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; color: var(--ink); }
+  .chain-item.current .ci-proj { color: var(--c); }
+  .chain-arrow { text-align: center; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-4); }
+
+  /* ---------- CTA ---------- */
+  .cta {
+    padding: var(--space-9) 0; border-top: var(--border);
+    background: var(--paper-2); position: relative; overflow: hidden;
+  }
+
+  .cta-inner { display: grid; grid-template-columns: 1.4fr auto; gap: var(--space-8); align-items: center; }
+
+  .cta h2 {
+    font-family: var(--font-display); font-weight: 900;
+    font-size: clamp(2.2rem, 5vw, 3.8rem); line-height: 0.95; letter-spacing: -0.03em;
+  }
+
+  .cta h2 .ital { font-style: italic; font-weight: 400; color: var(--c); }
+
+  .cta p { margin-top: var(--space-4); color: var(--ink-2); max-width: 48ch; font-size: 1.02rem; }
+
+  .cta-actions { display: flex; flex-direction: column; gap: var(--space-3); }
+
+  .cta .btn-primary { background: var(--c); border-color: var(--c); color: var(--paper); }
+  .cta .btn-primary:hover { background: var(--ink); border-color: var(--ink); }
+
+  .cta-note {
+    font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-3);
+    margin-top: var(--space-3); display: flex; gap: var(--space-2); align-items: flex-start;
+  }
+
+  .cta-note::before { content: '※'; color: var(--c); font-weight: 700; }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .ruler { display: none; }
+    .two-col, .boundary { grid-template-columns: 1fr; }
+    .engine-grid { grid-template-columns: 1fr; }
+    .feat-grid { grid-template-columns: 1fr 1fr; }
+    .cta-inner { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .feat-grid { grid-template-columns: 1fr; }
+    .textbook-table, .tech-table, .renderer-table, .db-table, .milestone-table { font-size: 0.75rem; }
+    .textbook-table th, .textbook-table td,
+    .tech-table th, .tech-table td,
+    .renderer-table th, .renderer-table td,
+    .db-table th, .db-table td,
+    .milestone-table th, .milestone-table td { padding: var(--space-1) var(--space-2); }
+  }
+</style>
+</head>
+<body class="theme-structvis">
+
+<!-- 导航 -->
+<header class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-mark"><span class="b1">z4</span><span class="b2">rs</span></span>
+      <span>zep4yrs</span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html#projects">项目</a>
+      <a href="#concept">定位</a>
+      <a href="#roadmap">路线图</a>
+      <a href="https://github.com/zep4yrs" target="_blank" rel="noopener">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- 开发阶段横幅 -->
+  <div class="dev-banner">
+    <span class="dev-banner-icon">⚠</span>
+    <span class="dev-banner-text">本项目处于 v0.1 规划阶段,页面展示的教材对齐清单、架构设计与版本路线<strong>不代表最终版本</strong>。功能可能随时调整、重构或移除。</span>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="ruler"></div>
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-mark rise rise-1">
+            <svg class="logo-mark" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="14" y="8" width="3" height="40" rx="1.5" fill="var(--ink)" />
+              <rect x="8" y="16" width="8" height="2.5" rx="1.25" fill="var(--ink)" />
+              <rect x="4" y="32" width="12" height="2.5" rx="1.25" fill="var(--ink)" />
+              <rect x="15" y="24" width="8" height="2.5" rx="1.25" fill="var(--ink)" />
+              <circle cx="15.5" cy="6" r="3" fill="#D97706" />
+              <circle cx="6" cy="14" r="3" fill="var(--c)" />
+              <circle cx="24" cy="22" r="3" fill="var(--c)" />
+              <circle cx="2.5" cy="30" r="3" fill="#2D6A4F" />
+              <rect x="30" y="8" width="22" height="8" rx="2" fill="var(--ink)" opacity="0.08" />
+              <rect x="30" y="8" width="22" height="8" rx="2" stroke="var(--ink)" stroke-width="1.5" />
+              <line x1="34" y1="12" x2="48" y2="12" stroke="var(--ink)" stroke-width="1.2" stroke-linecap="round" />
+              <rect x="30" y="20" width="22" height="8" rx="2" fill="var(--ink)" opacity="0.08" />
+              <rect x="30" y="20" width="22" height="8" rx="2" stroke="var(--ink)" stroke-width="1.5" />
+              <line x1="34" y1="24" x2="48" y2="24" stroke="var(--ink)" stroke-width="1.2" stroke-linecap="round" />
+              <rect x="30" y="32" width="22" height="8" rx="2" fill="var(--ink)" opacity="0.08" />
+              <rect x="30" y="32" width="22" height="8" rx="2" stroke="var(--ink)" stroke-width="1.5" />
+              <line x1="34" y1="36" x2="48" y2="36" stroke="var(--ink)" stroke-width="1.2" stroke-linecap="round" />
+              <rect x="30" y="44" width="22" height="8" rx="2" fill="var(--ink)" opacity="0.08" />
+              <rect x="30" y="44" width="22" height="8" rx="2" stroke="var(--ink)" stroke-width="1.5" />
+              <line x1="34" y1="48" x2="48" y2="48" stroke="var(--ink)" stroke-width="1.2" stroke-linecap="round" />
+            </svg>
+            <p class="eyebrow" style="margin: 0;">PROJECT N° 07 · WEB · SELF-LEARNING TOOL</p>
+          </div>
+          <h1 class="display rise rise-2">
+            Struct<span class="ital">Vis</span>
+            <span class="sm">数据结构与数据库自学工具</span>
+          </h1>
+          <p class="hero-tagline rise rise-3">
+            把抽象的算法过程变成可交互、可步进、可自己动手试的可视化练习,让自学者不靠老师也能把每个步骤搞明白。
+          </p>
+        </div>
+        <div class="meta-card rise rise-4">
+          <div class="meta-card-head">
+            <span><span class="dot"></span>SPECIFICATION</span>
+            <span>v0.1 规划中</span>
+          </div>
+          <dl>
+            <dt>定位</dt><dd>教材对齐自学工具</dd>
+            <dt>形态</dt><dd>纯前端 + 可选服务</dd>
+            <dt>教材</dt><dd><span class="pill">数据结构教程</span><span class="pill">MySQL 教程</span></dd>
+            <dt>框架</dt><dd><span class="pill">Svelte 5</span><span class="pill">SvelteKit</span></dd>
+            <dt>可视化</dt><dd><span class="pill">Canvas 2D</span><span class="pill">GSAP</span></dd>
+            <dt>SQL</dt><dd><span class="pill">sql.js</span><span class="pill">SQLite WASM</span></dd>
+            <dt>编辑器</dt><dd><span class="pill">CodeMirror 6</span></dd>
+            <dt>部署</dt><dd>GitHub Pages</dd>
+            <dt>状态</dt><dd><span class="pill live">v0.1 规划中</span></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- § 01 定位与目标 -->
+  <section class="block" id="concept">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>定位与<span class="ital">目标</span></h2>
+        <span class="num">§ 01 · PURPOSE</span>
+      </div>
+      <div class="two-col">
+        <div>
+          <p class="lead">脑子里想象不出过程,<span class="hl">这才是自学的核心痛点</span>。</p>
+          <div class="prose">
+            <p>自学数据结构和数据库时,最痛苦的不是语法记不住,而是脑子里想象不出过程。看书上的静态图示,看完好像懂了,一做题就错;跟着视频学,看起来很顺,自己写就卡壳。</p>
+            <p>StructVis 把抽象的算法过程变成<strong>可交互、可步进、可自己动手试</strong>的可视化练习。不是看动画,是每一步都可以暂停、可以自己操作、可以试错。做错了立刻告诉你为什么错,不是只给一个答案。</p>
+            <p>工具跟着教材走 — 李春葆《数据结构教程》第5版和杨宏霞《数据库技术及应用(MySQL)》。不是通用算法可视化网站,不是在线 IDE,不是题库平台,不是课程平台。</p>
+          </div>
+        </div>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="ttdot"></span><span class="ttdot"></span><span class="ttdot"></span>
+            <span class="tttitle">learner@structvis · quicksort · step 7/23</span>
+          </div>
+<pre><span class="cmt">// 步进模式:每一步都可以暂停、操作、试错</span>
+<span class="ps1">learner@sv:~$</span> <span class="cmd">step next</span>
+<span class="kw">[step 7]</span> <span class="out">partition: pivot = arr[4] = 3</span>
+<span class="out">  [5, <span class="hl">2</span>, 8, <span class="hl">1</span>, <span class="hl">3</span>, 7, 4, 6]</span>
+<span class="dim">         ↑i         ↑j  ↑pivot</span>
+<span class="out">  比较 arr[1]=2 < pivot=3, 交换到左侧</span>
+<span class="out">  比较 arr[3]=1 < pivot=3, 交换到左侧</span>
+
+<span class="ps1">learner@sv:~$</span> <span class="cmd">practice --choose-next</span>
+<span class="warn">[quiz] 分区完成后,pivot 3 的最终位置是?</span>
+<span class="dim">  A) index 1   B) index 2</span>
+<span class="dim">  C) index 3   D) index 4</span>
+
+<span class="ps1">learner@sv:~$</span> <span class="cmd">answer B</span>
+<span class="ok">[correct] 小于 pivot 的有 2,1 共 2 个</span>
+<span class="ok">         pivot 落在 index 2,左侧全 < 3 ✓</span></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- § 02 教材对齐清单 -->
+  <section class="block shaded" id="curriculum">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>教材<span class="ital">对齐清单</span></h2>
+        <span class="num">§ 02 · TEXTBOOK ALIGNED</span>
+      </div>
+      <div class="two-col" style="margin-bottom: var(--space-7);">
+        <div>
+          <p class="lead">跟着教材章节走,<span class="hl">不是给所有人看的炫技 Demo</span>。</p>
+          <div class="prose">
+            <p>StructVis 不追求覆盖所有算法,而是严格对齐两本教材的章节顺序。每个知识点标注可视化价值、自学练习价值和实现优先级,确保先做最有用的内容。</p>
+            <p>数据结构以李春葆《数据结构教程》第5版为主线,数据库以杨宏霞《数据库技术及应用(MySQL)》为主线。v0.1 聚焦线性表、栈和队列、树和二叉树、内排序四个数据结构章节,以及建表和查询两个数据库章节。</p>
+          </div>
+        </div>
+        <div>
+          <p class="eyebrow" style="margin-bottom: var(--space-3);">TARGET USERS</p>
+          <div class="feat-grid" style="grid-template-columns: 1fr;">
+            <div class="feat-card">
+              <h4>自学者(你自己)</h4>
+              <p>学得懂、记得住、做得出题。v0.1 唯一用户,100% 围绕自学效率设计。</p>
+            </div>
+            <div class="feat-card">
+              <h4>同校学生</h4>
+              <p>跟着教材学,做题不会了来练。未来可能的用户,教材对齐降低上手门槛。</p>
+            </div>
+            <div class="feat-card">
+              <h4>授课老师</h4>
+              <p>课堂演示用,代替黑板画图。附加价值,v0.3 开始考虑教学辅助功能。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="eyebrow" style="margin-bottom: var(--space-3);">数据结构 — 李春葆《数据结构教程》第5版</p>
+      <table class="textbook-table" style="margin-bottom: var(--space-7);">
+        <thead>
+          <tr>
+            <th>章节</th>
+            <th>内容</th>
+            <th>可视化</th>
+            <th>练习</th>
+            <th>优先级</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>第1章</td><td>基本概念、时间复杂度</td><td>★</td><td>★★</td><td class="prio-later">后期</td></tr>
+          <tr><td>第2章</td><td>顺序表、链表(单/双/循环)</td><td>★★★★</td><td>★★★★★</td><td class="prio-v01">v0.1</td></tr>
+          <tr><td>第3章</td><td>顺序栈、链栈、队列、串匹配</td><td>★★★★</td><td>★★★★★</td><td class="prio-v01">v0.1</td></tr>
+          <tr><td>第4章</td><td>KMP、稀疏矩阵</td><td>★★★</td><td>★★★</td><td class="prio-v02">v0.2</td></tr>
+          <tr><td>第5章</td><td>二叉树遍历、线索树、哈夫曼、BST</td><td>★★★★★</td><td>★★★★★</td><td class="prio-v01">v0.1</td></tr>
+          <tr><td>第6章</td><td>存储、遍历、最小生成树、最短路径</td><td>★★★★</td><td>★★★★</td><td class="prio-v02">v0.2</td></tr>
+          <tr><td>第7章</td><td>二分查找、BST、哈希表、B树</td><td>★★★</td><td>★★★★</td><td class="prio-v02">v0.2</td></tr>
+          <tr><td>第8章</td><td>插入/交换/选择/归并/基数排序</td><td>★★★★★</td><td>★★★★★</td><td class="prio-v01">v0.1</td></tr>
+          <tr><td>第9章</td><td>多路归并、置换选择</td><td>★★</td><td>★★</td><td class="prio-later">远期</td></tr>
+          <tr><td>第10章</td><td>顺序/索引/哈希文件</td><td>★</td><td>★</td><td class="prio-later">远期</td></tr>
+        </tbody>
+      </table>
+
+      <p class="eyebrow" style="margin-bottom: var(--space-3);">数据库 — 杨宏霞《数据库技术及应用(MySQL)》</p>
+      <table class="textbook-table">
+        <thead>
+          <tr>
+            <th>章节</th>
+            <th>内容</th>
+            <th>sql.js 适配</th>
+            <th>练习</th>
+            <th>优先级</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>第1章</td><td>概念、数据模型、E-R图</td><td>100%</td><td>★★★</td><td class="prio-v02">v0.2</td></tr>
+          <tr><td>第2章</td><td>安装、配置、客户端</td><td>N/A</td><td>★</td><td class="prio-later">不做</td></tr>
+          <tr><td>第3章</td><td>CREATE/ALTER/DROP、数据类型</td><td>85%</td><td>★★★★</td><td class="prio-v01">v0.1</td></tr>
+          <tr><td>第4章</td><td>SELECT、JOIN、子查询、分组</td><td>95%</td><td>★★★★★</td><td class="prio-v01">v0.1</td></tr>
+          <tr><td>第5章</td><td>INSERT/UPDATE/DELETE</td><td>95%</td><td>★★★</td><td class="prio-v02">v0.2</td></tr>
+          <tr><td>第6章</td><td>索引原理、B+树、视图创建</td><td>70%</td><td>★★★★</td><td class="prio-v02">v0.2</td></tr>
+          <tr><td>第7章</td><td>存储过程、函数、触发器</td><td>0%</td><td>★★</td><td class="prio-later">等后端</td></tr>
+          <tr><td>第8章</td><td>ACID、隔离级别、锁</td><td>60%</td><td>★★★</td><td class="prio-later">远期</td></tr>
+          <tr><td>第9章</td><td>E-R图、范式、模式转换</td><td>100%</td><td>★★★★</td><td class="prio-v02">v0.2</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- § 03 技术架构 -->
+  <section class="block" id="architecture">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>技术<span class="ital">架构</span></h2>
+        <span class="num">§ 03 · ARCHITECTURE</span>
+      </div>
+      <div class="two-col">
+        <div>
+          <p class="lead">算法引擎是<span class="hl">唯一真相源</span>。</p>
+          <div class="prose">
+            <p>四层架构严格分层:UI 层只管渲染,State 层管进度和设置,Engine 层是核心 — 算法引擎和 SQL 引擎适配器各司其职,Data 层存放教材数据、题库和示例数据库。</p>
+            <p>单向数据流:只有控制面板能修改引擎状态(调用 next/prev/goTo/play/pause),所有其他模块都是只读视图。引擎状态变了,所有视图自动重绘。数据流永远是单向的:控制面板 → 引擎 → 所有视图。</p>
+            <p>动画系统采用两层结构 — 引擎只产出离散关键帧,渲染层在两个关键帧之间做平滑补间插值。步进模式和自动播放共享同一条 GSAP 时间线,不管怎么操作动画永远丝滑。</p>
+          </div>
+        </div>
+        <div class="arch-stack">
+          <div class="arch-layer">
+            <div class="arch-layer-tag">L4</div>
+            <h4>UI Layer (Svelte)</h4>
+            <p>页面组件 · 可视化组件 · 练习组件 · 导航/布局组件</p>
+          </div>
+          <div class="arch-flow">↓</div>
+          <div class="arch-layer">
+            <div class="arch-layer-tag">L3</div>
+            <h4>State Layer</h4>
+            <p>Svelte Stores · 进度/掌握度 · 错题本 · 设置</p>
+          </div>
+          <div class="arch-flow">↓</div>
+          <div class="arch-layer">
+            <div class="arch-layer-tag">L2</div>
+            <h4>Engine Layer</h4>
+            <p>Algo Engine(步进控制) · SQL Engine Adapter(sql.js / MySQL 待)</p>
+          </div>
+          <div class="arch-flow">↓</div>
+          <div class="arch-layer">
+            <div class="arch-layer-tag">L1</div>
+            <h4>Data Layer</h4>
+            <p>教材章节数据 · 算法题库 · SQL 示例库 · 示例数据库</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="eyebrow" style="margin-top: var(--space-7); margin-bottom: var(--space-3);">TECH STACK</p>
+      <table class="tech-table" style="margin-bottom: var(--space-7);">
+        <thead>
+          <tr><th>层级</th><th>技术</th><th>选型理由</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>框架</td><td>Svelte 5 + SvelteKit</td><td>Runes 响应式简洁,文件路由方便,编译后体积小</td></tr>
+          <tr><td>构建</td><td>Vite</td><td>快,Svelte 官方推荐</td></tr>
+          <tr><td>样式</td><td>Tailwind CSS 3.4 + CSS 变量</td><td>快速开发,主题切换方便</td></tr>
+          <tr><td>组件库</td><td>Skeleton UI</td><td>Svelte 生态最接近 shadcn 理念的组件库</td></tr>
+          <tr><td>可视化</td><td>Canvas 2D + d3-shape</td><td>Canvas 做步进动画,d3 辅助布局计算</td></tr>
+          <tr><td>动画</td><td>GSAP (core 免费版)</td><td>时间线控制步进动画非常顺手</td></tr>
+          <tr><td>SQL 引擎</td><td>sql.js (SQLite WASM)</td><td>纯前端,零后端,离线可用</td></tr>
+          <tr><td>编辑器</td><td>CodeMirror 6</td><td>轻量,Svelte 集成成熟</td></tr>
+          <tr><td>状态管理</td><td>Svelte stores + localStorage</td><td>简单够用,进度本地持久化</td></tr>
+          <tr><td>测试</td><td>Vitest + @testing-library/svelte</td><td>Vite 生态原生支持</td></tr>
+          <tr><td>部署</td><td>adapter-static → GitHub Pages</td><td>纯静态,零运维成本</td></tr>
+        </tbody>
+      </table>
+
+      <!-- 引擎设计 -->
+      <div class="engine-grid">
+        <div class="engine-card">
+          <div class="ec-tag">ALGORITHM ENGINE</div>
+          <h4>步进状态机</h4>
+          <p>每个算法是一个独立的步进状态机,自己生成完整的步骤序列。UI 层只管播放和渲染,算法逻辑和可视化完全解耦。</p>
+          <div class="ec-code">
+interface AlgorithmEngine {<br>
+&nbsp;&nbsp;name: string;<br>
+&nbsp;&nbsp;pseudocode: string[];<br>
+&nbsp;&nbsp;totalSteps: number;<br>
+&nbsp;&nbsp;init(input): void;<br>
+&nbsp;&nbsp;next(): AlgorithmStep;<br>
+&nbsp;&nbsp;prev(): AlgorithmStep;<br>
+&nbsp;&nbsp;goTo(step): void;<br>
+&nbsp;&nbsp;reset(): void;<br>
+}
+          </div>
+        </div>
+        <div class="engine-card">
+          <div class="ec-tag">SQL ENGINE ADAPTER</div>
+          <h4>统一接口 · 双实现</h4>
+          <p>sql.js 模式下执行前经过方言适配层,让学生写 MySQL 方言也能跑。遇到不支持的语法明确提示"需 MySQL 模式"。</p>
+          <div class="ec-code">
+interface SQLEngine {<br>
+&nbsp;&nbsp;execute(sql): Promise&lt;QueryResult&gt;;<br>
+&nbsp;&nbsp;explain(sql): Promise&lt;ExplainNode&gt;;<br>
+&nbsp;&nbsp;getDialect(): 'mysql' | 'sqlite';<br>
+&nbsp;&nbsp;loadDatabase(name): Promise&lt;void&gt;;<br>
+&nbsp;&nbsp;listDatabases(): string[];<br>
+}
+          </div>
+        </div>
+        <div class="engine-card">
+          <div class="ec-tag">UNIFIED PLAYER</div>
+          <h4>一套播放器 + N 个引擎</h4>
+          <p>所有算法引擎实现同一个接口,外面套一个通用 AlgoPlayer 容器。加新算法只需写一个 Engine 类,不用改播放器。渲染器按数据结构类型独立,引擎声明 renderType 后自动匹配。</p>
+          <div class="ec-code">
+type PracticeType =<br>
+&nbsp;&nbsp;'choose-next' | 'fill-array'<br>
+&nbsp;&nbsp;| 'drag-pointer' | 'fill-code';<br>
+<br>
+// 检测到练习题自动暂停
+          </div>
+        </div>
+        <div class="engine-card">
+          <div class="ec-tag">ANIMATION SYSTEM</div>
+          <h4>两层结构 — 关键帧 + 补间</h4>
+          <p>引擎层只产出离散关键帧,渲染层做平滑补间插值。播放控制器用浮点数 playbackPos 驱动,不是整数 step。步骤时长不一致,比较快、交换慢、关键节点给消化时间。</p>
+          <div class="ec-code">
+// GSAP Timeline 统一调度<br>
+tl.play()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 播放<br>
+tl.tweenTo(5)&nbsp;&nbsp;&nbsp;&nbsp;// 平滑到第5步<br>
+tl.seek(3.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 拖拽进度条<br>
+tl.timeScale(2)&nbsp;&nbsp;&nbsp;// 2倍速
+          </div>
+        </div>
+      </div>
+
+      <p class="eyebrow" style="margin-top: var(--space-7); margin-bottom: var(--space-3);">RENDERER PLUGINS</p>
+      <table class="renderer-table">
+        <thead>
+          <tr><th>渲染器</th><th>适用算法</th><th>技术</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ArrayRenderer</td><td>排序、数组操作</td><td>Canvas 2D(柱状图)</td></tr>
+          <tr><td>TreeRenderer</td><td>二叉树、BST、AVL</td><td>SVG + d3-shape(布局计算)</td></tr>
+          <tr><td>LinkedListRenderer</td><td>单/双/循环链表</td><td>Canvas 2D(节点+箭头)</td></tr>
+          <tr><td>GraphRenderer</td><td>图的遍历、最短路径</td><td>Canvas 2D(节点+边)</td></tr>
+          <tr><td>SqlTableRenderer</td><td>SQL 分步执行</td><td>DOM 表格(高亮行/列变化)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- § 04 内容生产体系 -->
+  <section class="block shaded" id="content">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>内容<span class="ital">生产体系</span></h2>
+        <span class="num">§ 04 · CONTENT</span>
+      </div>
+      <div class="boundary">
+        <div>
+          <p class="lead">每个知识点统一包含<span class="hl">三种模式</span>。</p>
+          <div class="prose">
+            <p>数据结构知识点统一包含动画演示、分步练习和测试三个 Tab。动画演示可自定义输入,分步练习在每步暂停出题并即时反馈,测试模式做完出分数和错题解析。</p>
+            <p>SQL 知识点统一包含分步学习、练习题和挑战三个 Tab。分步学习展示每步中间结果和文字解释,练习模式运行校验并给提示,挑战模式不给提示且计时统计。</p>
+            <p>预置四个教学常用示例数据库,学生打开就能练,每个数据库十几到几十行数据,保证查询结果有意义但不复杂。</p>
+          </div>
+        </div>
+        <ul class="check-list">
+          <li>
+            <span class="mk">✓</span>
+            <div><strong>动画演示模式</strong> — 可视化画布 + 伪代码同步高亮 + 播放控制条 + 自定义输入</div>
+          </li>
+          <li>
+            <span class="mk">✓</span>
+            <div><strong>分步练习模式</strong> — 每步暂停出题、即时反馈(对/错/为什么)、提示系统</div>
+          </li>
+          <li>
+            <span class="mk">✓</span>
+            <div><strong>测试模式</strong> — 3~5 道题,做完出分数 + 错题解析</div>
+          </li>
+          <li>
+            <span class="mk">✓</span>
+            <div><strong>SQL 分步执行</strong> — FROM→WHERE→GROUP BY→SELECT→ORDER BY 逐步展示中间结果</div>
+          </li>
+          <li>
+            <span class="mk">✓</span>
+            <div><strong>键盘优先</strong> — 步进用左右箭头,空格播放/暂停,所有操作键盘可完成</div>
+          </li>
+          <li>
+            <span class="mk x">✗</span>
+            <div><strong>不靠颜色 alone</strong> — 状态除了颜色还有图标或文字标注</div>
+          </li>
+        </ul>
+      </div>
+
+      <p class="eyebrow" style="margin-top: var(--space-7); margin-bottom: var(--space-3);">SAMPLE DATABASES</p>
+      <table class="db-table">
+        <thead>
+          <tr><th>数据库</th><th>表</th><th>适用章节</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>company</td><td>departments, employees, projects</td><td>基础查询、JOIN、分组</td></tr>
+          <tr><td>school</td><td>students, courses, scores, teachers</td><td>多表联查、子查询</td></tr>
+          <tr><td>shop</td><td>products, orders, order_items, customers</td><td>综合练习</td></tr>
+          <tr><td>library</td><td>books, borrowers, records</td><td>中等难度练习</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- § 05 版本路线图 -->
+  <section class="block" id="roadmap">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>版本<span class="ital">路线图</span></h2>
+        <span class="num">§ 05 · v0.1 → v1.0</span>
+      </div>
+      <p class="prose" style="margin-bottom: var(--space-7); max-width: 62ch;">
+        先做出来能用的,比按计划做完更重要。时间只是粗估,以自己的学习和开发节奏为准。v0.1 聚焦验证"交互式自学"这个方向真的能提升效率,v1.0 达到两本教材核心章节全覆盖。
+      </p>
+      <div class="roadmap-wrap">
+        <div class="roadmap">
+          <div class="rm-step current">
+            <div class="rm-ver">V0.1</div>
+            <div class="rm-dot"></div>
+            <div class="rm-label">最小可用:3个数据结构 + 2个数据库 + 进度系统</div>
+          </div>
+          <div class="rm-step">
+            <div class="rm-ver">V0.2</div>
+            <div class="rm-dot"></div>
+            <div class="rm-label">内容扩充:栈队列、排序对比、图遍历、更多 SQL 练习</div>
+          </div>
+          <div class="rm-step">
+            <div class="rm-ver">V0.3</div>
+            <div class="rm-dot"></div>
+            <div class="rm-label">教学辅助:演示投影模式、讲授剧本、可选 MySQL 后端</div>
+          </div>
+          <div class="rm-step">
+            <div class="rm-ver">V1.0</div>
+            <div class="rm-dot"></div>
+            <div class="rm-label">完整版本:两本教材核心章节全覆盖</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="eyebrow" style="margin-top: var(--space-7); margin-bottom: var(--space-3);">MILESTONES</p>
+      <table class="milestone-table">
+        <thead>
+          <tr><th>里程碑</th><th>内容</th><th>预期时间</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>M0</td><td>工程骨架:SvelteKit + Tailwind + Skeleton + 基础布局</td><td>第1周</td></tr>
+          <tr><td>M1</td><td>算法样板:快速排序可视化 + 练习</td><td>第2~3周</td></tr>
+          <tr><td>M2</td><td>SQL 样板:SQL 分步执行 + 基础查询</td><td>第4~5周</td></tr>
+          <tr><td>M3</td><td>v0.1 发布:3个数据结构 + 2个数据库 + 进度系统</td><td>第6~8周</td></tr>
+          <tr><td>M4</td><td>v0.2 扩充:排序对比 + 栈队列 + 更多 SQL 练习</td><td>第9~14周</td></tr>
+          <tr><td>M5</td><td>v0.3 教学:演示模式 + 可选后端</td><td>第15~20周</td></tr>
+        </tbody>
+      </table>
+      <p class="prose" style="margin-top: var(--space-6); font-size: 0.9rem; color: var(--ink-3);">
+        最终目标:李春葆数据结构第2~8章全部可视化 + 练习,杨宏霞 MySQL 第1、3~6、9章全部覆盖,完整的错题本/掌握度/复习系统,演示模式 + 剧本系统,可选 MySQL 后端模式。
+      </p>
+    </div>
+  </section>
+
+  <!-- § 06 作品集整合 -->
+  <section class="block shaded" id="integration">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>作品集<span class="ital">整合</span></h2>
+        <span class="num">§ 06 · PORTFOLIO</span>
+      </div>
+      <div class="two-col">
+        <div>
+          <p class="lead">补全作品集中<span class="hl">「基础教学」</span>这一层。</p>
+          <div class="prose">
+            <p>StructVis 补全了 zep4yrs 作品集整条链路中的"数据结构与数据库基础"层,让作品集从"会用什么工具"延伸到"从零理解底层原理"。</p>
+            <p>与 CryptoVis 形成互补:CryptoVis 专注密码学算法原理,StructVis 专注数据结构与数据库基础;两者都采用步进可视化 + 即时反馈的学习模式,但教材对齐和目标用户不同。</p>
+          </div>
+        </div>
+        <div class="chain">
+          <div class="chain-item">
+            <span class="ci-label">安全自动化</span>
+            <span class="ci-proj">Polaris</span>
+          </div>
+          <div class="chain-arrow">↓</div>
+          <div class="chain-item">
+            <span class="ci-label">综合工具</span>
+            <span class="ci-proj">CTF 乾坤袋</span>
+          </div>
+          <div class="chain-arrow">↓</div>
+          <div class="chain-item">
+            <span class="ci-label">密码学原理</span>
+            <span class="ci-proj">CryptoVis</span>
+          </div>
+          <div class="chain-arrow">↓</div>
+          <div class="chain-item current">
+            <span class="ci-label">数据结构基础 ★ 新增</span>
+            <span class="ci-proj">StructVis</span>
+          </div>
+          <div class="chain-arrow">↓</div>
+          <div class="chain-item">
+            <span class="ci-label">安全教育</span>
+            <span class="ci-proj">零号告警</span>
+          </div>
+          <div class="chain-arrow">↓</div>
+          <div class="chain-item">
+            <span class="ci-label">系统工具</span>
+            <span class="ci-proj">BlueTidy / LanNook</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="wrap">
+      <div class="cta-inner">
+        <div>
+          <h2>v0.1<br><span class="ital">规划中</span></h2>
+          <p>StructVis 目前处于 v0.1 规划阶段。首要行动是完成工程骨架搭建和快速排序可视化样板,验证"交互式自学"这个方向真的能提升效率。先做出来能用的,比按计划做完更重要。</p>
+          <p class="cta-note">教学实现仅用于自学辅助,sql.js 方言适配层处理 MySQL → SQLite 常见语法转换,遇到不支持的语法明确提示。</p>
+        </div>
+        <div class="cta-actions">
+          <a href="https://github.com/zep4yrs" target="_blank" rel="noopener" class="btn btn-primary">关注开发进度 ↗</a>
+          <a href="index.html" class="btn">返回作品集 ←</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 页脚 -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <span>© 2026 zep4yrs</span>
+      <span>StructVis · v0.1 规划中 · 数据结构与数据库自学工具</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
