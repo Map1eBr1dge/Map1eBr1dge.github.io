@@ -1,5 +1,5 @@
-/* ============================================================
-   FqWork — 明亮工程图纸设计系统
+﻿/* ============================================================
+   zep4yrs — 明亮工程图纸设计系统
    暖白纸张 + 网格纸纹理 + 墨黑排版 + 项目独立标识色
    ============================================================ */
 
@@ -23,6 +23,10 @@
   --c-bluetidy: #1e5b8a;
   --c-lannook: #9c4a1e;
   --c-ctf: #3a6b2a;
+  --c-autopen: #6b2a5e;
+  --c-alertzero: #8a1c28;
+  --c-cryptovis: #1a6b7a;
+  --c-structvis: #1b4965;
 
   /* 功能色 */
   --accent: #b8341a;
@@ -270,6 +274,10 @@ a { color: inherit; text-decoration: none; }
 .theme-bluetidy { --c: var(--c-bluetidy); }
 .theme-lannook { --c: var(--c-lannook); }
 .theme-ctf { --c: var(--c-ctf); }
+.theme-autopen { --c: var(--c-autopen); }
+.theme-alertzero { --c: var(--c-alertzero); }
+.theme-cryptovis { --c: var(--c-cryptovis); }
+.theme-structvis { --c: var(--c-structvis); }
 
 /* ---------- 页脚 ---------- */
 .footer {

@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FqWork · 三个项目</title>
-<meta name="description" content="BlueTidy、LanNook、CTF 乾坤袋 — 三个独立项目的介绍页">
+<title>zep4yrs · 项目集</title>
+<meta name="description" content="BlueTidy、LanNook、CTF 乾坤袋、Polaris、零号告警、CryptoVis、StructVis — 独立项目介绍页">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
   /* 首页专属 */
@@ -66,7 +66,7 @@
   }
 
   .ruler::before {
-    content: '01 — 03';
+    content: 'PROJECTS';
     position: absolute;
     top: 50%; right: 24px;
     transform: rotate(90deg) translateY(-50%);
@@ -288,13 +288,12 @@
 <header class="nav">
   <div class="nav-inner">
     <a href="index.html" class="brand">
-      <span class="brand-mark"><span class="b1">Fq</span><span class="b2">W</span></span>
-      <span>FqWork</span>
+      <span class="brand-mark"><span class="b1">z4</span><span class="b2">rs</span></span>
+      <span>zep4yrs</span>
     </a>
     <nav class="nav-links">
       <a href="#projects">项目</a>
-      <a href="#manifesto">关于</a>
-      <a href="https://github.com/by-fengqiao" target="_blank" rel="noopener">GitHub ↗</a>
+      <a href="https://github.com/zep4yrs" target="_blank" rel="noopener">GitHub ↗</a>
     </nav>
   </div>
 </header>
@@ -308,16 +307,16 @@
         <div>
           <p class="eyebrow rise rise-1">PROJECT INDEX · 2026</p>
           <h1 class="display rise rise-2">
-            三个<span class="ital">独立</span><br>
-            <span class="stroke">项目</span>集
+            zep4yrs<br>
+            <span class="ital">项目</span><span class="stroke">集</span>
           </h1>
         </div>
         <div class="hero-meta rise rise-3">
-          <strong>维护者</strong>　by-fengqiao<br>
-          <strong>形态</strong>　桌面应用 / 浏览器工具箱<br>
-          <strong>技术</strong>　Rust · Tauri · Vue · React<br>
+          <strong>维护者</strong>　zep4yrs<br>
+          <strong>形态</strong>　桌面应用 / 浏览器工具箱 / Web 平台 / Steam 游戏 / 课程百科<br>
+          <strong>技术</strong>　Rust · Tauri · Vue · React · Svelte · Go · Godot · TypeScript<br>
           <strong>许可</strong>　MIT / GPL-3.0<br>
-          <strong>更新</strong>　2026-07-26
+          <strong>更新</strong>　2026-07-31
         </div>
       </div>
     </div>
@@ -328,7 +327,7 @@
     <div class="wrap">
       <div class="section-head">
         <h2>项目清单</h2>
-        <span class="count">N° 01 — 03 / 共 3 项</span>
+        <span class="count">PROJECT INDEX</span>
       </div>
 
       <div class="projects">
@@ -414,22 +413,119 @@
           </dl>
         </a>
 
-      </div>
-    </div>
-  </section>
+        <!-- Polaris -->
+        <a href="autopen.html" class="proj-card theme-autopen rise rise-4">
+          <div class="proj-num">
+            N° 04
+            <strong>PL</strong>
+          </div>
+          <div class="proj-body">
+            <h3>
+              Polaris
+              <span class="sub">AI 安全自动化平台 · AutoPen 渗透测试模式。</span>
+            </h3>
+            <p>AutoPen 模式用自然语言发起已授权测试任务,系统自主完成从意图澄清到修复复测的全流程。九业务智能体事件驱动协作,用户外部工具受控执行,高危操作人工审批,全量审计闭环。后续规划 AutoCTF 模式。<strong style="color:var(--c)">0.1.0-preview.1 预览版开发完成,不代表最终版本。</strong></p>
+            <div class="proj-tags">
+              <span class="tag">Tauri 2</span>
+              <span class="tag">React</span>
+              <span class="tag">TypeScript</span>
+              <span class="tag">Go</span>
+              <span class="tag">Windows 桌面</span>
+              <span class="tag">预览版完成</span>
+            </div>
+          </div>
+          <dl class="proj-spec">
+            <dt>版本</dt><dd>0.1.0-preview.1</dd>
+            <dt>架构</dt><dd>Tauri 2 + Go Sidecar</dd>
+            <dt>状态</dt><dd>预览版完成</dd>
+          </dl>
+        </a>
 
-  <!-- 说明区 -->
-  <section class="manifesto" id="manifesto">
-    <div class="wrap">
-      <div class="manifesto-grid">
-        <div>
-          <h2>关于<br><span class="ital">FqWork</span></h2>
-        </div>
-        <div>
-          <p>这里收录的三个项目,各自解决一个具体而真实的问题:Windows 系统盘满了该怎么办、手机和电脑之间怎么直接传文件、CTF 比赛和研究中常用工具怎么快速调用。</p>
-          <p>它们不是大而全的平台,而是带有明确边界的小工具 — 先看清空间再处理、只在可信局域网工作、输入默认不离开浏览器。每个项目都开源,接受 Issue 和贡献。</p>
-          <p class="signature">— by-fengqiao · 2026-07-27</p>
-        </div>
+        <!-- 零号告警 -->
+        <a href="alertzero.html" class="proj-card theme-alertzero rise rise-5">
+          <div class="proj-num">
+            N° 05
+            <strong>AZ</strong>
+          </div>
+          <div class="proj-body">
+            <h3>
+              零号告警
+              <span class="sub">校园安全中心 · Steam 网络安全学习游戏。</span>
+            </h3>
+            <p>Godot 4 + C# 的 Steam 单机游戏。玩家扮演学校网络安全中心负责老师,在虚拟校园沙箱中完成从告警到报告的完整事件分析。开放式 CRT 终端、五大技术方向、9 模块 4 层架构、隐藏方向分析报告,所有操作在游戏沙箱内完成。<strong style="color:var(--c)">阶段0～V0.5 接口签名设计全部完成,进入实施编码,不代表最终版本。</strong></p>
+            <div class="proj-tags">
+              <span class="tag">Godot 4.x Mono</span>
+              <span class="tag">C# 11</span>
+              <span class="tag">Steam</span>
+              <span class="tag">网络安全</span>
+              <span class="tag">设计完成</span>
+            </div>
+          </div>
+          <dl class="proj-spec">
+            <dt>版本</dt><dd>V0.5 设计完成</dd>
+            <dt>引擎</dt><dd>Godot 4.x Mono</dd>
+            <dt>状态</dt><dd>进入编码</dd>
+          </dl>
+        </a>
+
+        <!-- CryptoVis -->
+        <a href="cryptovis.html" class="proj-card theme-cryptovis rise rise-5">
+          <div class="proj-num">
+            N° 06
+            <strong>CV</strong>
+          </div>
+          <div class="proj-body">
+            <h3>
+              CryptoVis
+              <span class="sub">密码学课程百科。</span>
+            </h3>
+            <p>以交互可视化为核心媒介的密码学课程百科。13 个课程域、120 个核心知识点,五层架构驱动从计算到教学的完整链路。算法状态独立于动画,语义执行轨迹可追踪、可验证、可治理,每一层中间状态都暴露出来。<strong style="color:var(--c)">处于开发前规格稿阶段,不代表最终版本。</strong></p>
+            <div class="proj-tags">
+              <span class="tag">React 19</span>
+              <span class="tag">TypeScript</span>
+              <span class="tag">anime.js 4</span>
+              <span class="tag">KaTeX</span>
+              <span class="tag">13 课程域</span>
+              <span class="tag">120 知识点</span>
+              <span class="tag">开发前规格稿</span>
+            </div>
+          </div>
+          <dl class="proj-spec">
+            <dt>版本</dt><dd>v2.0 路线</dd>
+            <dt>架构</dt><dd>五层 · 语义轨迹</dd>
+            <dt>状态</dt><dd>开发前</dd>
+          </dl>
+        </a>
+
+        <!-- StructVis -->
+        <a href="structvis.html" class="proj-card theme-structvis rise rise-5">
+          <div class="proj-num">
+            N° 07
+            <strong>SV</strong>
+          </div>
+          <div class="proj-body">
+            <h3>
+              StructVis
+              <span class="sub">数据结构与数据库自学工具。</span>
+            </h3>
+            <p>教材对齐的数据结构与数据库自学工具。跟着李春葆《数据结构教程》和杨宏霞《数据库技术及应用》的章节走,交互式步进可视化,即时反馈练习,本地进度追踪。算法引擎是唯一真相源,步进模式和自动播放共享同一条 GSAP 时间线。<strong style="color:var(--c)">处于 v0.1 规划阶段,不代表最终版本。</strong></p>
+            <div class="proj-tags">
+              <span class="tag">Svelte 5</span>
+              <span class="tag">SvelteKit</span>
+              <span class="tag">TypeScript</span>
+              <span class="tag">GSAP</span>
+              <span class="tag">sql.js</span>
+              <span class="tag">CodeMirror 6</span>
+              <span class="tag">v0.1 规划中</span>
+            </div>
+          </div>
+          <dl class="proj-spec">
+            <dt>版本</dt><dd>v0.1 规划中</dd>
+            <dt>架构</dt><dd>四层 · 引擎驱动</dd>
+            <dt>状态</dt><dd>规划中</dd>
+          </dl>
+        </a>
+
       </div>
     </div>
   </section>
@@ -439,8 +535,8 @@
 <footer class="footer">
   <div class="wrap">
     <div class="footer-inner">
-      <span>© 2026 by-fengqiao · FqWork</span>
-      <span>BlueTidy · LanNook · CTF 乾坤袋</span>
+      <span>© 2026 zep4yrs</span>
+      <span>BlueTidy · LanNook · CTF 乾坤袋 · Polaris · 零号告警 · CryptoVis · StructVis</span>
     </div>
   </div>
 </footer>
