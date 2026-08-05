@@ -1,0 +1,13 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BlueTidy">
+  <!-- 磁盘：三层同心圆代表扇区 -->
+  <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="2"/>
+  <circle cx="50" cy="50" r="28" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <circle cx="50" cy="50" r="16" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <circle cx="50" cy="50" r="4" fill="currentColor"/>
+  <!-- 扫除线：对角线 + 箭头，表示清理 -->
+  <line x1="22" y1="22" x2="78" y2="78" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  <polyline points="70,72 78,78 72,70" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 扫除痕迹：平行细线 -->
+  <line x1="18" y1="30" x2="26" y2="38" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+  <line x1="30" y1="18" x2="38" y2="26" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+</svg>

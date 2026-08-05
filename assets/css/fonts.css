@@ -1,0 +1,40 @@
+/* ============================================================
+   字体自托管 —— 子集化后 1.1MB（原 91MB）
+   只含站点实际用到的 726 个码点
+   ============================================================ */
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/NotoSerifSC-Regular.subset.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/NotoSerifSC-Bold.subset.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('../fonts/NotoSerifSC-Black.subset.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Sarasa Mono SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/SarasaMonoSC-Regular.subset.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Sarasa Mono SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/SarasaMonoSC-Bold.subset.ttf') format('truetype');
+}
+/* Playfair Display 仍用 Google Fonts（拉丁字符，小） */

@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>能力 · 四时工坊</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,500&amp;family=Noto+Sans+SC:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/css/fonts.css" rel="stylesheet"/>
+<link href="assets/css/mimo.css" rel="stylesheet"/>
+<link href="assets/css/search.css" rel="stylesheet"/>
+<style>
+  .cap-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border: 1px solid var(--line); border-bottom: none; }
+  .cap-card {
+    padding: 40px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line);
+    background: var(--card); transition: background .15s;
+  }
+  .cap-card:nth-child(2n) { border-right: none; }
+  .cap-card:hover { background: var(--bg); }
+  .cap-card .cc-num { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.15em; margin-bottom: 16px; }
+  .cap-card h3 { font-family: var(--font-sans); font-weight: 700; font-size: 22px; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .cap-card h3 .en { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--ink-3); font-size: 0.7em; margin-left: 8px; }
+  .cap-card p { font-size: 14px; color: var(--ink-2); line-height: 1.7; margin-bottom: 16px; }
+  .cap-card .cc-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cap-card .cc-tag { font-family: var(--font-mono); font-size: 11px; color: var(--ink-2); border: 1px solid var(--line); padding: 3px 8px; }
+  @media (max-width: 768px) { .cap-grid { grid-template-columns: 1fr; } .cap-card { border-right: none; } }
+</style>
+<link href="https://work.feng-qiao.top/capabilities.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="能力 · 四时工坊" property="og:title"/>
+<meta content="六个方向：桌面开发、Web工具、安全工程、教学可视化、游戏化学习、基础设施。" property="og:description"/>
+<meta content="https://work.feng-qiao.top/capabilities.html" property="og:url"/>
+<meta content="四时工坊" property="og:site_name"/>
+<meta content="zh_CN" property="og:locale"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="能力 · 四时工坊" name="twitter:title"/>
+<meta content="六个方向：桌面开发、Web工具、安全工程、教学可视化、游戏化学习、基础设施。" name="twitter:description"/>
+<link href="manifest.json" rel="manifest"/>
+<meta content="#1A1A1A" name="theme-color"/>
+<link href="assets/svg/logo-zep4yrs.svg" rel="icon" type="image/svg+xml"/>
+<link href="feed.xml" rel="alternate" title="四时工坊公告" type="application/rss+xml"/>
+<script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"四时工坊","alternateName":"Four Seasons Workshop","url":"https://work.feng-qiao.top","logo":"https://work.feng-qiao.top/assets/svg/logo-zep4yrs.svg","founder":"枫桥","foundingDate":"2024","sameAs":["https://github.com/zep4yrs"]}
+  </script>
+<meta content="https://work.feng-qiao.top/assets/og/og-capabilities.png" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+</head>
+<body>
+<div class="notice">
+  六个技术方向 · 桌面 / Web / 安全 / 教学 / 游戏 / 基础设施
+  <span class="dot"></span>
+<a href="projects.html">查看项目 →</a>
+</div>
+<header class="nav">
+<div class="nav-inner">
+<a class="brand" href="index.html">
+<span class="brand-mark">z4</span>
+<span>四时工坊</span>
+</a>
+<nav class="nav-links">
+<a href="index.html">首页</a>
+<a href="about.html">关于</a>
+<a href="projects.html">项目</a>
+<a href="capabilities.html">能力</a>
+<a href="pipeline.html">管线</a>
+<a href="bulletin.html">公告</a>
+<a href="contact.html">联系</a>
+<span class="nav-dropdown">
+<button class="nav-dropdown-btn">在线体验 <span class="arrow-down">▼</span></button>
+<span class="nav-dropdown-menu">
+<a href="https://work.feng-qiao.top/crypto/">CryptoVis<span class="dd-desc">密码学可视化</span></a>
+<a href="https://work.feng-qiao.top/struct/">StructVis<span class="dd-desc">数据结构可视化</span></a>
+<a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋<span class="dd-desc">CTF 工具箱</span></a>
+</span>
+</span>
+<a class="nav-cta" href="https://github.com/zep4yrs" rel="noopener" target="_blank">GitHub ↗</a>
+</nav>
+
+  <button class="hamburger" aria-label="菜单"><span></span><span></span><span></span></button>
+</div>
+</header>
+<div class="mobile-menu">
+  <a href="index.html">首页</a>
+  <a href="index.html#matrix">项目矩阵</a>
+  <a href="index.html#ecosystem">生态</a>
+  <a href="about.html">关于</a>
+  <a href="projects.html">项目</a>
+  <a href="capabilities.html">能力</a>
+  <a href="pipeline.html">管线</a>
+  <a href="bulletin.html">公告</a>
+  <a href="contact.html">联系</a>
+  <div class="mm-dropdown">
+    <button class="mm-dropdown-btn">在线体验 ▼</button>
+    <div class="mm-dropdown-menu">
+      <a href="https://work.feng-qiao.top/crypto/">CryptoVis</a>
+      <a href="https://work.feng-qiao.top/struct/">StructVis</a>
+      <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋</a>
+    </div>
+  </div>
+  <a href="https://github.com/zep4yrs" class="mm-cta" target="_blank">GitHub ↗</a>
+</div>
+
+<main>
+<section class="hero" style="padding:80px 0 56px">
+<div class="hero-watermark">CAPABILITIES</div>
+<div class="wrap">
+<div class="kicker">CAPABILITIES · 能力</div>
+<h1>六个方向<span class="en">six directions</span></h1>
+<p class="sub">工坊覆盖六个技术方向，从桌面到 Web，从安全到教学，再到游戏和基础设施。每个方向都有对应的项目落地。</p>
+</div>
+</section>
+<section class="section">
+<div class="wrap">
+<div class="cap-grid">
+<div class="cap-card">
+<div class="cc-num">N°01 · DESKTOP</div>
+<h3>桌面开发<span class="en">desktop</span></h3>
+<p>跨平台桌面应用，Rust + Tauri 为主。重视本地体验、离线可用、系统级集成。BlueTidy、LanNook 是这个方向的代表。</p>
+<div class="cc-tags"><span class="cc-tag">Rust</span><span class="cc-tag">Tauri</span><span class="cc-tag">React</span></div>
+</div>
+<div class="cap-card">
+<div class="cc-num">N°02 · WEB</div>
+<h3>Web 工具<span class="en">web tools</span></h3>
+<p>在线工具，零安装即用。覆盖 CTF、教学、可视化场景。CTF 乾坤袋、CryptoVis、StructVis 都在这个方向。</p>
+<div class="cc-tags"><span class="cc-tag">JavaScript</span><span class="cc-tag">Browser</span><span class="cc-tag">Canvas</span><span class="cc-tag">WebGL</span></div>
+</div>
+<div class="cap-card">
+<div class="cc-num">N°03 · SECURITY</div>
+<h3>安全工程<span class="en">security</span></h3>
+<p>渗透测试自动化、CTF 工具、安全教学。把安全流程从手工操作变成可复现的工程。Polaris、CTF 乾坤袋、零号告警覆盖这个方向。</p>
+<div class="cc-tags"><span class="cc-tag">Pentest</span><span class="cc-tag">CTF</span><span class="cc-tag">Automation</span><span class="cc-tag">Education</span></div>
+</div>
+<div class="cap-card">
+<div class="cc-num">N°04 · TEACHING</div>
+<h3>教学可视化<span class="en">teaching</span></h3>
+<p>把抽象概念变成可操作的动画。保持一致教材章节，跟着课本走，不自说自话。CryptoVis、StructVis 是这个方向的核心。</p>
+<div class="cc-tags"><span class="cc-tag">Visualization</span><span class="cc-tag">Animation</span><span class="cc-tag">Textbook-aligned</span></div>
+</div>
+<div class="cap-card">
+<div class="cc-num">N°05 · GAME</div>
+<h3>游戏化学习<span class="en">game learning</span></h3>
+<p>Godot 4 + C# 开发 Steam 单机游戏，在虚拟场景里走完整专业流程。零号告警是第一个，扮演网络安全中心老师处理告警。</p>
+<div class="cc-tags"><span class="cc-tag">Godot 4</span><span class="cc-tag">C#</span><span class="cc-tag">Steam</span><span class="cc-tag">Serious Game</span></div>
+</div>
+<div class="cap-card">
+<div class="cc-num">N°06 · INFRA</div>
+<h3>基础设施<span class="en">infrastructure</span></h3>
+<p>自动化管线、构建工具、内部工具链，支撑项目从设计到发布的全流程。不对外发布，但所有项目都跑在上面。</p>
+<div class="cc-tags"><span class="cc-tag">CI/CD</span><span class="cc-tag">Build Tools</span><span class="cc-tag">Automation</span></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer>
+<div class="wrap">
+<div class="footer-inner">
+<span>© 2026 四时工坊 · zep4yrs</span>
+<span>CAPABILITIES · 能力</span>
+<span>DESKTOP · WEB · SECURITY · TEACHING · GAME · INFRA</span>
+</div>
+</div>
+</footer>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<script src="assets/js/mimo.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+<script>
+    window.pagefind = new Promise(function(resolve) {
+          var s = document.createElement('script');
+          s.src = 'pagefind/pagefind-ui.js';
+          s.onload = function() { resolve(window.pagefind); };
+          s.onerror = function() { resolve(null); };
+          document.head.appendChild(s);
+        });
+    </script>
+<script src="assets/js/search.js"></script>
+</body>
+</html>

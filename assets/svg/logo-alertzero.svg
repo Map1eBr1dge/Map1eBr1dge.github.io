@@ -1,0 +1,14 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="零号告警">
+  <!-- 外圆：零 -->
+  <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="2"/>
+  <!-- 告警三角：内嵌 -->
+  <path d="M 50 28 L 72 66 L 28 66 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  <!-- 感叹号 -->
+  <line x1="50" y1="42" x2="50" y2="56" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="50" cy="62" r="2.5" fill="currentColor"/>
+  <!-- 零的刻度：四方位小线 -->
+  <line x1="50" y1="8" x2="50" y2="14" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="50" y1="86" x2="50" y2="92" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="8" y1="50" x2="14" y2="50" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="86" y1="50" x2="92" y2="50" stroke="currentColor" stroke-width="1.5"/>
+</svg>

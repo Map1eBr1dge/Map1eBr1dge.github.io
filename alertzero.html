@@ -1,0 +1,324 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>零号告警 · 四时工坊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,500&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/fonts.css">
+  <link rel="stylesheet" href="assets/css/mimo.css">
+  <link rel="stylesheet" href="assets/css/search.css">
+  <link rel="stylesheet" href="assets/css/project.css">
+  <link rel="canonical" href="https://work.feng-qiao.top/alertzero.html">
+  <meta property="og:type" content="software">
+  <meta property="og:title" content="零号告警 · 网络安全学习游戏 · 四时工坊">
+  <meta property="og:description" content="Steam 网络安全学习游戏。Godot 4 + C#。商业软件。">
+  <meta property="og:url" content="https://work.feng-qiao.top/alertzero.html">
+  <meta property="og:site_name" content="四时工坊">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="零号告警 · 网络安全学习游戏 · 四时工坊">
+  <meta name="twitter:description" content="Steam 网络安全学习游戏。Godot 4 + C#。商业软件。">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1A1A1A">
+  <link rel="icon" type="image/svg+xml" href="assets/svg/logo-zep4yrs.svg">
+  <link rel="alternate" type="application/rss+xml" title="四时工坊公告" href="feed.xml">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"四时工坊","alternateName":"Four Seasons Workshop","url":"https://work.feng-qiao.top","logo":"https://work.feng-qiao.top/assets/svg/logo-zep4yrs.svg","founder":"枫桥","foundingDate":"2024","sameAs":["https://github.com/zep4yrs"]}
+  </script>
+  <meta property="og:image" content="https://work.feng-qiao.top/assets/og/og-alertzero.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+</head>
+<body class="theme-alertzero">
+
+<div class="notice">
+  零号告警 · 商业软件
+  <span class="dot"></span>
+  <a href="bulletin.html">最新动态 →</a>
+</div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">z4</span><span>四时工坊</span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="about.html">关于</a>
+      <a href="projects.html">项目</a>
+      <a href="capabilities.html">能力</a>
+      <a href="pipeline.html">管线</a>
+      <a href="bulletin.html">公告</a>
+      <a href="contact.html">联系</a>
+      <span class="nav-dropdown">
+        <button class="nav-dropdown-btn">在线体验 <span class="arrow-down">▼</span></button>
+        <span class="nav-dropdown-menu">
+          <a href="https://work.feng-qiao.top/crypto/">CryptoVis<span class="dd-desc">密码学可视化</span></a>
+          <a href="https://work.feng-qiao.top/struct/">StructVis<span class="dd-desc">数据结构可视化</span></a>
+          <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋<span class="dd-desc">CTF 工具箱</span></a>
+        </span>
+      </span>
+      <a href="https://github.com/zep4yrs" target="_blank" rel="noopener" class="nav-cta">GitHub ↗</a>
+    </nav>
+  
+  <button class="hamburger" aria-label="菜单"><span></span><span></span><span></span></button>
+</div>
+</header>
+<div class="mobile-menu">
+  <a href="index.html">首页</a>
+  <a href="index.html#matrix">项目矩阵</a>
+  <a href="index.html#ecosystem">生态</a>
+  <a href="about.html">关于</a>
+  <a href="projects.html">项目</a>
+  <a href="capabilities.html">能力</a>
+  <a href="pipeline.html">管线</a>
+  <a href="bulletin.html">公告</a>
+  <a href="contact.html">联系</a>
+  <div class="mm-dropdown">
+    <button class="mm-dropdown-btn">在线体验 ▼</button>
+    <div class="mm-dropdown-menu">
+      <a href="https://work.feng-qiao.top/crypto/">CryptoVis</a>
+      <a href="https://work.feng-qiao.top/struct/">StructVis</a>
+      <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋</a>
+    </div>
+  </div>
+  <a href="https://github.com/zep4yrs" class="mm-cta" target="_blank">GitHub ↗</a>
+</div>
+
+
+<main>
+<section class="proj-hero section scroll-reveal">
+  <div class="wrap">
+    <div class="ph-top">
+      <img src="assets/svg/logo-alertzero.svg" class="ph-logo" alt="零号告警">
+      <div class="ph-num">N°05 · ALERT ZERO</div>
+    </div>
+    <h1>零号告警<span class="en">alert zero</span></h1>
+    <p class="ph-desc">一款在 Steam 上架的网络安全学习游戏，用 Godot 4 和 C# 写的。你扮演学校网络安全中心的老师，在虚拟校园里从收到告警开始，一路调查分析、处置事件、写报告，把整个安全事件处理流程走完。</p>
+    <div class="ph-cta">
+      <a href="https://store.steampowered.com" class="primary" target="_blank" rel="noopener">Steam 商店 →</a>
+      <a href="bulletin.html">开发日志 →</a>
+    </div>
+    
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">SPEC · 规格</div>
+      <h2>规格表<span class="en">specification</span></h2>
+    </div>
+    <div class="spec-table">
+      <div class="spec-row"><div class="sk">VERSION</div><div class="sv">V0.5 · 设计完成</div></div>
+      <div class="spec-row"><div class="sk">STACK</div><div class="sv">Godot 4.x Mono · C# 11</div></div>
+      <div class="spec-row"><div class="sk">PLATFORM</div><div class="sv">Steam · Windows / macOS</div></div>
+      <div class="spec-row"><div class="sk">LICENSE</div><div class="sv">商业软件</div></div>
+      <div class="spec-row"><div class="sk">STATUS</div><div class="sv">设计完成，编码中</div></div>
+      <div class="spec-row"><div class="sk">FORM</div><div class="sv">单机游戏</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">FEATURES · 特性</div>
+      <h2>核心特性<span class="en">key features</span></h2>
+    </div>
+    <div class="feat-list">
+      <div class="feat-item"><div class="fn">N°01</div><div><h3>终端模拟<span class="en">terminal sim</span></h3><p>游戏里嵌了一个完整的 Bash 终端模拟器，不是菜单点选的假把式。你得自己敲 ls、cd、cat 这些命令，看输出日志，在文件系统里翻找线索。每个关卡的操作都跟真实安全分析场景对得上，玩完是真能学会怎么查日志、怎么搜文件。</p><p>终端里还能跑 Python 脚本和系统工具，比如用 curl 模拟 HTTP 请求，用 grep 过滤日志关键字。碰到复杂任务，你可以在终端里写几行脚本处理数据，跟在真实电脑上干活一样顺手。</p></div></div>
+      <div class="feat-item"><div class="fn">N°02</div><div><h3>五大方向<span class="en">five tracks</span></h3><p>Web 安全、逆向工程、密码学、数字取证、渗透测试，五个方向各自有独立的关卡和剧情线。每个方向从基础到进阶递进，你选一个方向深入玩也不会觉得枯燥，方向之间还有交叉知识点串起来。</p><p>比如数字取证方向里找到的加密文件，到密码学方向才能解开。渗透测试里发现的漏洞，在 Web 安全方向会看到同样的攻击原理。五个方向串着玩一遍，基本功就摸了个七七八八。</p></div></div>
+      <div class="feat-item"><div class="fn">N°03</div><div><h3>事件流程<span class="en">incident flow</span></h3><p>从安全告警弹出来的那一刻开始，你就要走完一整套事件处置流程。第一件事是定位问题范围，然后分析攻击链路，做应急响应处置，最后写事件报告。每个环节都有对应的工具和操作，不是走个过场。</p><p>这套流程参考了真实安全运营中心的标准作业流程设计。玩通一遍，你就知道安全分析师接到告警后第一步做什么、第二步做什么，是真正能迁移到工作中的经验。</p></div></div>
+      <div class="feat-item"><div class="fn">N°04</div><div><h3>虚拟校园<span class="en">virtual campus</span></h3><p>整个校园做成了一个开放沙箱，教学楼、实验室、图书馆、宿舍楼，每个区域都有独立场景和可交互的物件。线索散落在各个角落，有的藏在电脑文件里，有的需要跟 NPC 对话才能触发，到处走走总能发现新东西。</p><p>校园里的 NPC 各自有日常行动路线和对话内容，不同时间段的台词也不一样。有的老师知道内幕消息，有的学生看到了不该看的东西，多聊几次能拼出完整的线索链。</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">SCENARIOS · 适用场景</div>
+      <h2>适用场景<span class="en">use cases</span></h2>
+    </div>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="sc-icon">SC·01</div>
+        <h4>安全入门</h4>
+        <p>零基础想学网络安全的人最适合这个游戏。不用对着八百页的教材硬啃，也不用翻那堆劝退的技术博客。游戏里每一步都有剧情撑着你走，从终端命令到事件分析，跟着故事节奏就学会了，不知不觉就上手了。</p>
+      </div>
+      <div class="scenario-card">
+        <div class="sc-icon">SC·02</div>
+        <h4>高校教学</h4>
+        <p>高校老师拿它当教学辅助工具特别好使。布置几个关卡让学生自己闯，比在讲台上念一学期理论效果强多了。学生在游戏里动手实践，老师后台看闯关数据，哪个方向卡住了一目了然，针对性地补课就行，省时省力。</p>
+      </div>
+      <div class="scenario-card">
+        <div class="sc-icon">SC·03</div>
+        <h4>安全意识培训</h4>
+        <p>企业做员工安全意识培训，与其放 PPT 念经，不如让员工玩一局游戏。员工愿意主动参加，闯关还有成就感，培训不再是签到走人。安全意识玩着玩着就提升了，效果比传统方式好得多。</p>
+      </div>
+      <div class="scenario-card">
+        <div class="sc-icon">SC·04</div>
+        <h4>安全团队内训</h4>
+        <p>团队内部做安全培训，用它来做实战演练。新人在虚拟校园里一步步走完事件处理流程，老队员在旁边指导，比光讲 PPT 效果好得多。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">WHY CHOOSE · 为什么选择</div>
+      <h2>为什么选择<span class="en">why alert zero</span></h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="wc-num">01</div>
+        <h4>游戏化学习</h4>
+        <p>传统教程看十分钟就犯困，但游戏不会。每一关通关都有成就感，你为了看到下一关的剧情，会自己主动往下钻研，根本不用人催。玩着玩着就把安全分析的基本功练熟了。</p>
+      </div>
+      <div class="why-card">
+        <div class="wc-num">02</div>
+        <h4>真实流程</h4>
+        <p>游戏里学的每个操作都是真实安全工作中用得上的。终端命令怎么用、日志怎么看、事件怎么处置，这些在真实安全运营中心里每天都在做。学完真的能上手干活的，不靠那种背完就忘的理论知识。</p>
+      </div>
+      <div class="why-card">
+        <div class="wc-num">03</div>
+        <h4>Steam 分发</h4>
+        <p>走 Steam 平台发布，更新方便，社区互动也直接。玩家反馈问题能快速修，新内容能持续加，不会像传统课件那样发出去就不管了，几年不更新。社区里还能互相交流经验。</p>
+      </div>
+      <div class="why-card">
+        <div class="wc-num">04</div>
+        <h4>沉浸式体验</h4>
+        <p>虚拟校园+终端模拟+剧情线，整个学习过程像在玩游戏而不是在上课。沉浸感强，学习动力自然就来了。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">CHANGELOG · 更新日志</div>
+      <h2>版本历史<span class="en">changelog</span></h2>
+    </div>
+    <div class="changelog">
+            <div class="cl-item"><span class="cl-ver">V0.5</span><span class="cl-date">2026-07</span><span class="cl-desc">设计阶段完成，进入编码实现</span></div>
+      <div class="cl-item"><span class="cl-ver">V0.3</span><span class="cl-date">2026-01</span><span class="cl-desc">核心玩法设计，校园场景原型</span></div>
+      <div class="cl-item"><span class="cl-ver">V0.1</span><span class="cl-date">2025-09</span><span class="cl-desc">概念原型，Godot 引擎选型</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">ROADMAP · 路线图</div>
+      <h2>下一步<span class="en">what's next</span></h2>
+    </div>
+    <div class="roadmap-list">
+            <div class="rm-item"><span class="rm-num">N°01</span><span class="rm-title">Steam 抢先体验</span><span class="rm-status ">计划</span></div>
+      <div class="rm-item"><span class="rm-num">N°02</span><span class="rm-title">多人模式</span><span class="rm-status ">计划</span></div>
+      <div class="rm-item"><span class="rm-num">N°03</span><span class="rm-title">9 模块开发</span><span class="rm-status ">进行中</span></div>
+      <div class="rm-item"><span class="rm-num">N°04</span><span class="rm-title">设计完成</span><span class="rm-status done">已完成</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">RELATED · 相关</div>
+      <h2>同类项目<span class="en">related</span></h2>
+    </div>
+    <div class="related-grid">
+            <a class="related-card" href="ctf-qiankun.html"><img src="assets/svg/logo-ctf-qiankun.svg" alt="CTF乾坤袋"><h4>CTF乾坤袋</h4><p>安全学习方向</p></a>
+      <a class="related-card" href="autopen.html"><img src="assets/svg/logo-autopen.svg" alt="AutoPen"><h4>AutoPen</h4><p>安全自动化</p></a>
+      <a class="related-card" href="cryptovis.html"><img src="assets/svg/logo-cryptovis.svg" alt="CryptoVis"><h4>CryptoVis</h4><p>安全教学</p></a>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">COMMENTS · 评论</div>
+      <h2>讨论<span class="en">discussion</span></h2>
+    </div>
+    <div class="share-bar">
+      <span class="share-label">SHARE · 分享</span>
+      <a class="share-btn" href="https://connect.qq.com/widget/shareqq/index.html?url=https://work.feng-qiao.top/alertzero.html&title=%E9%9B%B6%E5%8F%B7%E5%91%8A%E8%AD%A6%20%C2%B7%20%E7%BD%91%E5%AE%89%E5%AD%A6%E4%B9%A0" target="_blank" rel="noopener" title="分享到 QQ">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/></svg>
+        <span class="share-label-text">QQ</span>
+      </a>
+      <a class="share-btn" href="https://service.weibo.com/share/share.php?url=https://work.feng-qiao.top/alertzero.html&title=%E9%9B%B6%E5%8F%B7%E5%91%8A%E8%AD%A6%20%C2%B7%20%E7%BD%91%E5%AE%89%E5%AD%A6%E4%B9%A0" target="_blank" rel="noopener" title="分享到微博">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443zM3.027 8.64c-1.109.412-1.866.559-1.866.559s.157-.515.683-1.134c.527-.617 1.174-.999 1.174-.999s-.108.48-.108 1.045c0 .304.058.529.117.529zm-.058-.529c-.002-.228-.046-.336-.046-.336s-.06.167-.06.417c0 .153.022.266.048.336.012.034.026.056.038.068.016.016.028.02.028.02s-.008-.113-.008-.284v-.221zm.877-1.596c-1.054.395-1.773.677-1.773.677s.148-.698.848-1.352c.7-.654 1.48-.923 1.48-.923s-.368.707-.368 1.519c0 .137.027.239.055.304.016.036.034.06.055.077.012.01.024.016.033.019l.008.003s-.114-.094-.254-.246c-.14-.153-.228-.328-.228-.328-.069.096-.201.228-.393.35-.192.12-.428.22-.463.221.001.001 0 .001 0 .001zm-2.33 6.312c0-2.442 1.426-4.375 3.568-4.875l.233-.057C5.593 6.099 5.55 4.8 4.919 4.281c-1.134-.917-3.193-.224-3.193-.224s.511-.732 1.46-.997c.949-.266 1.919.005 2.505.508.89.762.968 2.145.289 3.377 1.622-.216 3.154.238 4.144 1.154.861.798 1.257 1.865 1.257 2.944 0 2.582-3.163 4.612-7.067 4.612-3.905 0-7.069-2.031-7.069-4.612z"/></svg>
+        <span class="share-label-text">微博</span>
+      </a>
+      <a class="share-btn" href="https://www.douban.com/share/service?url=https://work.feng-qiao.top/alertzero.html" target="_blank" rel="noopener" title="分享到豆瓣">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/></svg>
+        <span class="share-label-text">豆瓣</span>
+      </a>
+      <button class="share-btn share-copy-link" data-url="https://work.feng-qiao.top/alertzero.html" title="复制链接">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <span class="share-label-text">复制链接</span>
+      </button>
+    </div>
+    <div class="giscus">
+      <script src="https://giscus.app/client.js"
+        data-repo="zep4yrs/zep4yrs.github.io"
+        data-repo-id="R_kgDOSaXw7A"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOSaXw7M4CkKYP"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <span>© 2026 四时工坊 · zep4yrs</span>
+      <span>零号告警</span>
+      <span>商业软件</span>
+    </div>
+  </div>
+</footer>
+
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<script src="assets/js/mimo.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+<script>
+    window.pagefind = new Promise(function(resolve) {
+          var s = document.createElement('script');
+          s.src = 'pagefind/pagefind-ui.js';
+          s.onload = function() { resolve(window.pagefind); };
+          s.onerror = function() { resolve(null); };
+          document.head.appendChild(s);
+        });
+    </script>
+<script src="assets/js/search.js"></script>
+</body>
+</html>

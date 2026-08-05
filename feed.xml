@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>四时工坊 · 公告</title>
+    <link>https://work.feng-qiao.top/bulletin.html</link>
+    <description>独立软件工作室动态。版本发布、项目进展、计划变更。</description>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 05 Aug 2026 00:00:00 +0800</lastBuildDate>
+    <item>
+      <title>DeepSeek 桌宠立项，桌面额度管家</title>
+      <link>https://work.feng-qiao.top/bulletin.html#deepseek-pet-announce</link>
+      <description>一只常驻桌面的小鲸鱼，实时显示 DeepSeek API 余额与用量，余额告急时主动提醒。</description>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 +0800</pubDate>
+      <category>计划</category>
+      <guid>deepseek-pet-announce</guid>
+    </item>
+    <item>
+      <title>Stellar / 摘星立项，桌面 AI 内容策展</title>
+      <link>https://work.feng-qiao.top/bulletin.html#stellar-announce</link>
+      <description>随手贴一个链接或一段文字，5 秒告诉你值不值得看，然后把精华摘下来存好。</description>
+      <pubDate>Mon, 15 Jun 2026 00:00:00 +0800</pubDate>
+      <category>计划</category>
+      <guid>stellar-announce</guid>
+    </item>
+    <item>
+      <title>StructVis v0.0.1 已发布</title>
+      <link>https://work.feng-qiao.top/bulletin.html#structvis-v001</link>
+      <description>数据结构与数据库自学工具首个版本已部署到 GitHub Pages，对齐李春葆《数据结构教程》章节。</description>
+      <pubDate>Sat, 02 Aug 2026 00:00:00 +0800</pubDate>
+      <category>发布</category>
+      <guid>structvis-v001</guid>
+    </item>
+    <item>
+      <title>零号告警设计完成，进入编码阶段</title>
+      <link>https://work.feng-qiao.top/bulletin.html#alertzero-coding</link>
+      <description>Steam 网络安全学习游戏设计阶段完成（V0.5），正式进入编码实现阶段。规划五大技术方向、9 模块 4 层架构。</description>
+      <pubDate>Wed, 15 Jul 2026 00:00:00 +0800</pubDate>
+      <category>更新</category>
+      <guid>alertzero-coding</guid>
+    </item>
+    <item>
+      <title>CryptoVis 密码学可视化工具上线</title>
+      <link>https://work.feng-qiao.top/bulletin.html#cryptovis-launch</link>
+      <description>把对称加密、哈希、签名等抽象概念变成可操作的动画。教学向工具，对齐密码学教材。</description>
+      <pubDate>Sun, 20 Apr 2026 00:00:00 +0800</pubDate>
+      <category>发布</category>
+      <guid>cryptovis-launch</guid>
+    </item>
+    <item>
+      <title>BlueTidy v0.2.0 Preview 发布</title>
+      <link>https://work.feng-qiao.top/bulletin.html#bluetidy-v020</link>
+      <description>磁盘空间分析与软件资产治理工具 v0.2.0 Preview 发布，新增应用模式与 TidyPilot 本地规则引擎。</description>
+      <pubDate>Mon, 10 Mar 2026 00:00:00 +0800</pubDate>
+      <category>发布</category>
+      <guid>bluetidy-v020</guid>
+    </item>
+    <item>
+      <title>LanNook v26.0.0 发布，跨平台架构重构</title>
+      <link>https://work.feng-qiao.top/bulletin.html#lannook-v26</link>
+      <description>LanNook 从 LYNQO 更名，重构为跨平台桌面应用，支持 Windows/macOS/Linux。</description>
+      <pubDate>Fri, 05 Dec 2025 00:00:00 +0800</pubDate>
+      <category>发布</category>
+      <guid>lannook-v26</guid>
+    </item>
+    <item>
+      <title>CTF 乾坤袋工具数量扩展至 50+</title>
+      <link>https://work.feng-qiao.top/bulletin.html#ctf-50plus</link>
+      <description>CTF 工具箱工具数量扩展至 50+，新增隐写分析与取证模块。</description>
+      <pubDate>Mon, 20 Oct 2025 00:00:00 +0800</pubDate>
+      <category>更新</category>
+      <guid>ctf-50plus</guid>
+    </item>
+    <item>
+      <title>四时工坊站点上线</title>
+      <link>https://work.feng-qiao.top/bulletin.html#site-launch</link>
+      <description>整合全部项目入口，统一品牌视觉。zep4yrs.github.io 正式启用。</description>
+      <pubDate>Fri, 30 May 2025 00:00:00 +0800</pubDate>
+      <category>计划</category>
+      <guid>site-launch</guid>
+    </item>
+  </channel>
+</rss>

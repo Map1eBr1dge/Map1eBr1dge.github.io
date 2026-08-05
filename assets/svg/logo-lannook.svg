@@ -1,0 +1,17 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LanNook">
+  <!-- 顶部节点：圆角矩形 + 实心圆点 -->
+  <rect x="38" y="14" width="24" height="16" rx="8" fill="none" stroke="currentColor" stroke-width="2.5"/>
+  <circle cx="50" cy="22" r="3" fill="currentColor"/>
+  <!-- 左下节点 -->
+  <rect x="12" y="70" width="24" height="16" rx="8" fill="none" stroke="currentColor" stroke-width="2.5"/>
+  <circle cx="24" cy="78" r="3" fill="currentColor"/>
+  <!-- 右下节点 -->
+  <rect x="64" y="70" width="24" height="16" rx="8" fill="none" stroke="currentColor" stroke-width="2.5"/>
+  <circle cx="76" cy="78" r="3" fill="currentColor"/>
+  <!-- 人字形连线：顶部→左下 / 顶部→右下 -->
+  <path d="M 50 30 L 24 70" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 50 30 L 76 70" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <!-- 水平箭头：左下→右下，表示数据流转 -->
+  <line x1="36" y1="78" x2="64" y2="78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <polyline points="58,72 64,78 58,84" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

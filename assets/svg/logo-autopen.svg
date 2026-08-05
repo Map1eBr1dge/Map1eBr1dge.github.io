@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">AutoPen V4 mark for light themes</title>
+  <desc id="desc">An eight-point North Star crossing a segmented authorization ring through a red approval gate.</desc>
+  <defs>
+    <linearGradient id="ring" x1="180" y1="180" x2="844" y2="844" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6B2A5E"/>
+      <stop offset="0.48" stop-color="#8A356F"/>
+      <stop offset="1" stop-color="#6B2A5E"/>
+    </linearGradient>
+    <linearGradient id="star" x1="330" y1="180" x2="700" y2="820" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#26211D"/>
+      <stop offset="1" stop-color="#14110F"/>
+    </linearGradient>
+    <linearGradient id="gate" x1="512" y1="834" x2="512" y2="904" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D63B22"/>
+      <stop offset="1" stop-color="#A92516"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#ring)" stroke-width="64" stroke-linecap="butt">
+    <path d="M557 193 A322 322 0 0 1 831 467"/>
+    <path d="M831 557 A322 322 0 0 1 557 831"/>
+    <path d="M467 831 A322 322 0 0 1 193 557"/>
+    <path d="M193 467 A322 322 0 0 1 467 193"/>
+  </g>
+  <path fill="url(#star)" d="M512 110 568 407 700 321 618 451 906 506 618 563 701 703 576 622 582 733 532 818 512 565 492 818 442 733 448 622 321 703 406 563 117 506 406 451 322 321 456 407Z"/>
+  <path fill="url(#gate)" d="M489 834H535L540 904H484Z"/>
+</svg>

@@ -1,0 +1,14 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CryptoVis">
+  <!-- 钥匙头：圆环 -->
+  <circle cx="28" cy="50" r="14" fill="none" stroke="currentColor" stroke-width="2"/>
+  <circle cx="28" cy="50" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <!-- 钥匙杆 -->
+  <line x1="42" y1="50" x2="82" y2="50" stroke="currentColor" stroke-width="2"/>
+  <!-- 齿 -->
+  <line x1="68" y1="50" x2="68" y2="64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <line x1="76" y1="50" x2="76" y2="60" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <line x1="82" y1="50" x2="82" y2="58" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <!-- 可视化波纹：钥匙头周围弧线，呼应"可视化" -->
+  <path d="M 10 38 A 20 20 0 0 1 18 28" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <path d="M 10 62 A 20 20 0 0 0 18 72" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+</svg>

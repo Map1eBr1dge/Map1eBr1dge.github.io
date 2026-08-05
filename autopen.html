@@ -1,0 +1,324 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoPen · 四时工坊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,500&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/fonts.css">
+  <link rel="stylesheet" href="assets/css/mimo.css">
+  <link rel="stylesheet" href="assets/css/search.css">
+  <link rel="stylesheet" href="assets/css/project.css">
+  <link rel="canonical" href="https://work.feng-qiao.top/autopen.html">
+  <meta property="og:type" content="software">
+  <meta property="og:title" content="AutoPen · 安全自动化 · 四时工坊">
+  <meta property="og:description" content="AI 驱动的安全测试自动化平台。商业软件。">
+  <meta property="og:url" content="https://work.feng-qiao.top/autopen.html">
+  <meta property="og:site_name" content="四时工坊">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="AutoPen · 安全自动化 · 四时工坊">
+  <meta name="twitter:description" content="AI 驱动的安全测试自动化平台。商业软件。">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1A1A1A">
+  <link rel="icon" type="image/svg+xml" href="assets/svg/logo-zep4yrs.svg">
+  <link rel="alternate" type="application/rss+xml" title="四时工坊公告" href="feed.xml">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"四时工坊","alternateName":"Four Seasons Workshop","url":"https://work.feng-qiao.top","logo":"https://work.feng-qiao.top/assets/svg/logo-zep4yrs.svg","founder":"枫桥","foundingDate":"2024","sameAs":["https://github.com/zep4yrs"]}
+  </script>
+  <meta property="og:image" content="https://work.feng-qiao.top/assets/og/og-autopen.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+</head>
+<body class="theme-autopen">
+
+<div class="notice">
+  AutoPen · 商业软件
+  <span class="dot"></span>
+  <a href="bulletin.html">最新动态 →</a>
+</div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">z4</span><span>四时工坊</span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="about.html">关于</a>
+      <a href="projects.html">项目</a>
+      <a href="capabilities.html">能力</a>
+      <a href="pipeline.html">管线</a>
+      <a href="bulletin.html">公告</a>
+      <a href="contact.html">联系</a>
+      <span class="nav-dropdown">
+        <button class="nav-dropdown-btn">在线体验 <span class="arrow-down">▼</span></button>
+        <span class="nav-dropdown-menu">
+          <a href="https://work.feng-qiao.top/crypto/">CryptoVis<span class="dd-desc">密码学可视化</span></a>
+          <a href="https://work.feng-qiao.top/struct/">StructVis<span class="dd-desc">数据结构可视化</span></a>
+          <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋<span class="dd-desc">CTF 工具箱</span></a>
+        </span>
+      </span>
+      <a href="https://github.com/zep4yrs" target="_blank" rel="noopener" class="nav-cta">GitHub ↗</a>
+    </nav>
+  
+  <button class="hamburger" aria-label="菜单"><span></span><span></span><span></span></button>
+</div>
+</header>
+<div class="mobile-menu">
+  <a href="index.html">首页</a>
+  <a href="index.html#matrix">项目矩阵</a>
+  <a href="index.html#ecosystem">生态</a>
+  <a href="about.html">关于</a>
+  <a href="projects.html">项目</a>
+  <a href="capabilities.html">能力</a>
+  <a href="pipeline.html">管线</a>
+  <a href="bulletin.html">公告</a>
+  <a href="contact.html">联系</a>
+  <div class="mm-dropdown">
+    <button class="mm-dropdown-btn">在线体验 ▼</button>
+    <div class="mm-dropdown-menu">
+      <a href="https://work.feng-qiao.top/crypto/">CryptoVis</a>
+      <a href="https://work.feng-qiao.top/struct/">StructVis</a>
+      <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋</a>
+    </div>
+  </div>
+  <a href="https://github.com/zep4yrs" class="mm-cta" target="_blank">GitHub ↗</a>
+</div>
+
+
+<main>
+<section class="proj-hero section scroll-reveal">
+  <div class="wrap">
+    <div class="ph-top">
+      <img src="assets/svg/logo-autopen.svg" class="ph-logo" alt="AutoPen">
+      <div class="ph-num">N°04 · AUTOPEN</div>
+    </div>
+    <h1>AutoPen<span class="en">auto sec</span></h1>
+    <p class="ph-desc">AutoPen 是四时工坊旗下 Polaris 北极星安全自动化平台的渗透测试模式。桌面端 AI 安全工作平台，面向真实渗透测试流程设计，用 AI 串联从资产发现到报告交付的全链路。Tauri 2 做界面，Go 写核心服务，事件驱动多智能体协作跑测试任务。</p>
+    <div class="ph-cta">
+      <a href="#" class="primary" target="_blank" rel="noopener">了解详情 →</a>
+      <a href="#">申请试用 →</a>
+    </div>
+    
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">SPEC · 规格</div>
+      <h2>规格表<span class="en">specification</span></h2>
+    </div>
+    <div class="spec-table">
+      <div class="spec-row"><div class="sk">VERSION</div><div class="sv">V0.5 · 设计完成</div></div>
+      <div class="spec-row"><div class="sk">STACK</div><div class="sv">Python · AI · 自动化引擎</div></div>
+      <div class="spec-row"><div class="sk">PLATFORM</div><div class="sv">Web · SaaS</div></div>
+      <div class="spec-row"><div class="sk">LICENSE</div><div class="sv">商业软件</div></div>
+      <div class="spec-row"><div class="sk">STATUS</div><div class="sv">设计完成，开发中</div></div>
+      <div class="spec-row"><div class="sk">FORM</div><div class="sv">SaaS 平台</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">FEATURES · 特性</div>
+      <h2>核心特性<span class="en">key features</span></h2>
+    </div>
+    <div class="feat-list">
+      <div class="feat-item"><div class="fn">N°01</div><div><h3>AI 驱动<span class="en">ai driven</span></h3><p>渗透测试第一步是搞清楚目标长什么样。Polaris 内部有九个智能体，各管一个阶段，从信息收集、漏洞扫描到利用、提权、横向移动，一个接一个推进。每个智能体专注自己的事，干完了把结果传给下一个。</p><p>智能体之间通过事件总线通信，一个智能体的输出自动成为另一个智能体的输入。比如漏洞扫描智能体发现一个 SQL 注入点，事件总线直接通知利用智能体去验证，不用人工中转。</p></div></div>
+      <div class="feat-item"><div class="fn">N°02</div><div><h3>自动化测试<span class="en">auto test</span></h3><p>SQL 注入、XSS、命令执行、文件包含，这些日常渗透里最常见的漏洞类型，Polaris 能做到自动扫描加验证。扫描引擎不是简单发 payload 看返回码，它会结合页面上下文做判断，一个请求一个请求地分析。</p><p>你还把自己的工具接进来，nmap、sqlmap、Metasploit 都行，在受控环境里跑。Polaris 统一调度这些工具，结果汇总到一个面板上看，不用在多个终端窗口之间切来切去。</p></div></div>
+      <div class="feat-item"><div class="fn">N°03</div><div><h3>报告生成<span class="en">report gen</span></h3><p>渗透测试做完，写报告常常比做测试还花时间。Polaris 根据测试过程自动生成报告，漏洞描述、危害等级、复现步骤、修复建议一条龙写清楚。结构贴合行业标准，不用你从零开始排版。</p><p>报告出来就能直接交付给客户，或者发给开发团队修漏洞。你只需要过一遍确认内容对不对，不用再对着 Word 调格式、整编号。</p></div></div>
+      <div class="feat-item"><div class="fn">N°04</div><div><h3>北极星指引<span class="en">north star</span></h3><p>高危操作过不了自动审批这一关。Polaris 在关键节点设了人工审批，比如要执行漏洞利用或者数据提取，系统会停下来等你确认。你点头它才继续，你摇头它就停。</p><p>每一步操作都有审计日志，谁在什么时间对哪个目标做了什么，全量记录。合规审计的时候直接导出日志就行，不用临时补材料。测试范围也做了授权限制，出了圈系统拦着不让动。</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">SCENARIOS · 适用场景</div>
+      <h2>适用场景<span class="en">use cases</span></h2>
+    </div>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="sc-icon">SC·01</div>
+        <h4>安全团队</h4>
+        <p>团队里总有重复性高的活，每天扫资产、筛告警、验证漏洞。Polaris 把这些接过去，常规扫描和验证自动化跑掉，测试人员腾出手去研究那些需要深度分析的方向。九个智能体分工协作，覆盖从信息收集到报告生成的完整链路。</p>
+      </div>
+      <div class="scenario-card">
+        <div class="sc-icon">SC·02</div>
+        <h4>企业自检</h4>
+        <p>企业的资产每天都在变，新服务上线、旧系统下线，攻击面一直在动。Polaris 可以定期扫描内部资产做安全评估，漏洞从出现到被发现的时间越短，风险越小。不用等到季度审计或者外部渗透才知道有问题。</p>
+      </div>
+      <div class="scenario-card">
+        <div class="sc-icon">SC·03</div>
+        <h4>乙方交付</h4>
+        <p>安全服务公司接渗透测试项目，甲方要的是一份像样的报告。Polaris 从测试到出报告全流程跑通，AI 生成的报告贴合行业标准，能直接拿来交。交付周期缩短，项目经理不用天天追着问报告写完了没。</p>
+      </div>
+      <div class="scenario-card">
+        <div class="sc-icon">SC·04</div>
+        <h4>安全教学</h4>
+        <p>培训新人做渗透测试的时候，用它来演示整个攻击流程，智能体自动执行，新人可以观察每个阶段的操作和输出，学得快。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">WHY CHOOSE · 为什么选择</div>
+      <h2>为什么选择<span class="en">why autopen</span></h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="wc-num">01</div>
+        <h4>AI 增强</h4>
+        <p>九个智能体各管一个测试阶段，通过事件总线自动传递结果。信息收集完了自动通知漏洞扫描，不用人工调度。每个智能体专注自己的领域，比一个人干所有事效率高得多。</p>
+      </div>
+      <div class="why-card">
+        <div class="wc-num">02</div>
+        <h4>全流程覆盖</h4>
+        <p>nmap、sqlmap、Metasploit 这些你熟悉的工具都能接到 Polaris 里来用。系统在受控环境里调度它们，结果汇总到一个界面。不用学新工具，你已有的能力全部保留。</p>
+      </div>
+      <div class="why-card">
+        <div class="wc-num">03</div>
+        <h4>合规设计</h4>
+        <p>高危操作必须人工审批，系统只在授权范围内执行。每一步操作都有审计日志，谁在什么时间做了什么全量记录。合规审计的时候直接导出，不用临时补材料。</p>
+      </div>
+      <div class="why-card">
+        <div class="wc-num">04</div>
+        <h4>扩展性强</h4>
+        <p>支持接入你自己常用的工具（nmap、sqlmap、Burp Suite 等），不限制你用什么工具，你想用的都能集成进来。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">CHANGELOG · 更新日志</div>
+      <h2>版本历史<span class="en">changelog</span></h2>
+    </div>
+    <div class="changelog">
+            <div class="cl-item"><span class="cl-ver">V0.5</span><span class="cl-date">2026-04</span><span class="cl-desc">设计阶段完成，进入编码</span></div>
+      <div class="cl-item"><span class="cl-ver">V0.3</span><span class="cl-date">2025-12</span><span class="cl-desc">核心架构设计，北极星 logo 定稿</span></div>
+      <div class="cl-item"><span class="cl-ver">V0.1</span><span class="cl-date">2025-06</span><span class="cl-desc">概念原型，AI 引擎选型</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">ROADMAP · 路线图</div>
+      <h2>下一步<span class="en">what's next</span></h2>
+    </div>
+    <div class="roadmap-list">
+            <div class="rm-item"><span class="rm-num">N°01</span><span class="rm-title">公测发布</span><span class="rm-status ">计划</span></div>
+      <div class="rm-item"><span class="rm-num">N°02</span><span class="rm-title">企业版</span><span class="rm-status ">计划</span></div>
+      <div class="rm-item"><span class="rm-num">N°03</span><span class="rm-title">AI 引擎训练</span><span class="rm-status ">进行中</span></div>
+      <div class="rm-item"><span class="rm-num">N°04</span><span class="rm-title">设计完成</span><span class="rm-status done">已完成</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">RELATED · 相关</div>
+      <h2>同类项目<span class="en">related</span></h2>
+    </div>
+    <div class="related-grid">
+            <a class="related-card" href="ctf-qiankun.html"><img src="assets/svg/logo-ctf-qiankun.svg" alt="CTF乾坤袋"><h4>CTF乾坤袋</h4><p>安全工具生态</p></a>
+      <a class="related-card" href="alertzero.html"><img src="assets/svg/logo-alertzero.svg" alt="零号告警"><h4>零号告警</h4><p>安全学习方向</p></a>
+      <a class="related-card" href="cryptovis.html"><img src="assets/svg/logo-cryptovis.svg" alt="CryptoVis"><h4>CryptoVis</h4><p>密码学可视化</p></a>
+    </div>
+  </div>
+</section>
+
+<section class="section scroll-reveal">
+  <div class="wrap stream-in">
+    <div class="section-head">
+      <div class="kicker">COMMENTS · 评论</div>
+      <h2>讨论<span class="en">discussion</span></h2>
+    </div>
+    <div class="share-bar">
+      <span class="share-label">SHARE · 分享</span>
+      <a class="share-btn" href="https://connect.qq.com/widget/shareqq/index.html?url=https://work.feng-qiao.top/autopen.html&title=AutoPen%20%C2%B7%20AI%20%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95" target="_blank" rel="noopener" title="分享到 QQ">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/></svg>
+        <span class="share-label-text">QQ</span>
+      </a>
+      <a class="share-btn" href="https://service.weibo.com/share/share.php?url=https://work.feng-qiao.top/autopen.html&title=AutoPen%20%C2%B7%20AI%20%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95" target="_blank" rel="noopener" title="分享到微博">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443zM3.027 8.64c-1.109.412-1.866.559-1.866.559s.157-.515.683-1.134c.527-.617 1.174-.999 1.174-.999s-.108.48-.108 1.045c0 .304.058.529.117.529zm-.058-.529c-.002-.228-.046-.336-.046-.336s-.06.167-.06.417c0 .153.022.266.048.336.012.034.026.056.038.068.016.016.028.02.028.02s-.008-.113-.008-.284v-.221zm.877-1.596c-1.054.395-1.773.677-1.773.677s.148-.698.848-1.352c.7-.654 1.48-.923 1.48-.923s-.368.707-.368 1.519c0 .137.027.239.055.304.016.036.034.06.055.077.012.01.024.016.033.019l.008.003s-.114-.094-.254-.246c-.14-.153-.228-.328-.228-.328-.069.096-.201.228-.393.35-.192.12-.428.22-.463.221.001.001 0 .001 0 .001zm-2.33 6.312c0-2.442 1.426-4.375 3.568-4.875l.233-.057C5.593 6.099 5.55 4.8 4.919 4.281c-1.134-.917-3.193-.224-3.193-.224s.511-.732 1.46-.997c.949-.266 1.919.005 2.505.508.89.762.968 2.145.289 3.377 1.622-.216 3.154.238 4.144 1.154.861.798 1.257 1.865 1.257 2.944 0 2.582-3.163 4.612-7.067 4.612-3.905 0-7.069-2.031-7.069-4.612z"/></svg>
+        <span class="share-label-text">微博</span>
+      </a>
+      <a class="share-btn" href="https://www.douban.com/share/service?url=https://work.feng-qiao.top/autopen.html" target="_blank" rel="noopener" title="分享到豆瓣">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/></svg>
+        <span class="share-label-text">豆瓣</span>
+      </a>
+      <button class="share-btn share-copy-link" data-url="https://work.feng-qiao.top/autopen.html" title="复制链接">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <span class="share-label-text">复制链接</span>
+      </button>
+    </div>
+    <div class="giscus">
+      <script src="https://giscus.app/client.js"
+        data-repo="zep4yrs/zep4yrs.github.io"
+        data-repo-id="R_kgDOSaXw7A"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOSaXw7M4CkKYP"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <span>© 2026 四时工坊 · zep4yrs</span>
+      <span>AutoPen</span>
+      <span>商业软件</span>
+    </div>
+  </div>
+</footer>
+
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<script src="assets/js/mimo.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+<script>
+    window.pagefind = new Promise(function(resolve) {
+          var s = document.createElement('script');
+          s.src = 'pagefind/pagefind-ui.js';
+          s.onload = function() { resolve(window.pagefind); };
+          s.onerror = function() { resolve(null); };
+          document.head.appendChild(s);
+        });
+    </script>
+<script src="assets/js/search.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="四时工坊">
+  <!-- 外圆：工坊边界 -->
+  <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2"/>
+  <!-- 十字分四象限：四季 -->
+  <line x1="50" y1="6" x2="50" y2="94" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <line x1="6" y1="50" x2="94" y2="50" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <!-- 四季弧线：每象限一段加粗弧，呼应"四季同心" -->
+  <path d="M 50 6 A 44 44 0 0 1 94 50" fill="none" stroke="currentColor" stroke-width="3"/>
+  <path d="M 94 50 A 44 44 0 0 1 50 94" fill="none" stroke="currentColor" stroke-width="3"/>
+  <path d="M 50 94 A 44 44 0 0 1 6 50" fill="none" stroke="currentColor" stroke-width="3"/>
+  <path d="M 6 50 A 44 44 0 0 1 50 6" fill="none" stroke="currentColor" stroke-width="3"/>
+  <!-- 中心 z4 抽象：实心圆 -->
+  <circle cx="50" cy="50" r="7" fill="currentColor"/>
+</svg>

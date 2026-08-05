@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StructVis · 四时工坊</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,500&amp;family=Noto+Sans+SC:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/css/fonts.css" rel="stylesheet"/>
+<link href="assets/css/mimo.css" rel="stylesheet"/>
+<link href="assets/css/search.css" rel="stylesheet"/>
+<link href="assets/css/project.css" rel="stylesheet"/>
+<link href="https://work.feng-qiao.top/structvis.html" rel="canonical"/>
+<meta content="software" property="og:type"/>
+<meta content="StructVis · 数据结构自学 · 四时工坊" property="og:title"/>
+<meta content="数据结构与数据库自学工具。对齐教材章节。" property="og:description"/>
+<meta content="https://work.feng-qiao.top/structvis.html" property="og:url"/>
+<meta content="四时工坊" property="og:site_name"/>
+<meta content="zh_CN" property="og:locale"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="StructVis · 数据结构自学 · 四时工坊" name="twitter:title"/>
+<meta content="数据结构与数据库自学工具。对齐教材章节。" name="twitter:description"/>
+<link href="manifest.json" rel="manifest"/>
+<meta content="#1A1A1A" name="theme-color"/>
+<link href="assets/svg/logo-zep4yrs.svg" rel="icon" type="image/svg+xml"/>
+<link href="feed.xml" rel="alternate" title="四时工坊公告" type="application/rss+xml"/>
+<script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"四时工坊","alternateName":"Four Seasons Workshop","url":"https://work.feng-qiao.top","logo":"https://work.feng-qiao.top/assets/svg/logo-zep4yrs.svg","founder":"枫桥","foundingDate":"2024","sameAs":["https://github.com/zep4yrs"]}
+  </script>
+<meta content="https://work.feng-qiao.top/assets/og/og-structvis.png" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+</head>
+<body class="theme-structvis">
+<div class="notice">
+  StructVis · 教学 · 开源
+  <span class="dot"></span>
+<a href="bulletin.html">最新动态 →</a>
+</div>
+<header class="nav">
+<div class="nav-inner">
+<a class="brand" href="index.html">
+<span class="brand-mark">z4</span><span>四时工坊</span>
+</a>
+<nav class="nav-links">
+<a href="index.html">首页</a>
+<a href="about.html">关于</a>
+<a href="projects.html">项目</a>
+<a href="capabilities.html">能力</a>
+<a href="pipeline.html">管线</a>
+<a href="bulletin.html">公告</a>
+<a href="contact.html">联系</a>
+<span class="nav-dropdown">
+<button class="nav-dropdown-btn">在线体验 <span class="arrow-down">▼</span></button>
+<span class="nav-dropdown-menu">
+<a href="https://work.feng-qiao.top/crypto/">CryptoVis<span class="dd-desc">密码学可视化</span></a>
+<a href="https://work.feng-qiao.top/struct/">StructVis<span class="dd-desc">数据结构可视化</span></a>
+<a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋<span class="dd-desc">CTF 工具箱</span></a>
+</span>
+</span>
+<a class="nav-cta" href="https://github.com/zep4yrs" rel="noopener" target="_blank">GitHub ↗</a>
+</nav>
+
+  <button class="hamburger" aria-label="菜单"><span></span><span></span><span></span></button>
+</div>
+</header>
+<div class="mobile-menu">
+  <a href="index.html">首页</a>
+  <a href="index.html#matrix">项目矩阵</a>
+  <a href="index.html#ecosystem">生态</a>
+  <a href="about.html">关于</a>
+  <a href="projects.html">项目</a>
+  <a href="capabilities.html">能力</a>
+  <a href="pipeline.html">管线</a>
+  <a href="bulletin.html">公告</a>
+  <a href="contact.html">联系</a>
+  <div class="mm-dropdown">
+    <button class="mm-dropdown-btn">在线体验 ▼</button>
+    <div class="mm-dropdown-menu">
+      <a href="https://work.feng-qiao.top/crypto/">CryptoVis</a>
+      <a href="https://work.feng-qiao.top/struct/">StructVis</a>
+      <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋</a>
+    </div>
+  </div>
+  <a href="https://github.com/zep4yrs" class="mm-cta" target="_blank">GitHub ↗</a>
+</div>
+
+<main>
+<section class="proj-hero">
+<div class="wrap">
+<div class="ph-top">
+<img alt="StructVis" class="ph-logo" src="assets/svg/logo-structvis.svg"/>
+<div class="ph-num">N°07 · STRUCTVIS</div>
+</div>
+<h1>StructVis<span class="en">struct vis</span></h1>
+<p class="ph-desc">跟着李春葆《数据结构教程》和杨宏霞《数据库技术及应用》的章节走，把链表、树、图、排序这些数据结构算法，还有 SQL 查询的执行过程，都做成一步步看的交互动画。目前实现了 18 个算法引擎、23 个页面，配了 150 个测试用例。不用装软件，打开浏览器就能用。</p>
+<div class="ph-cta">
+<a class="primary" href="https://work.feng-qiao.top/struct/" rel="noopener" target="_blank">在线体验 →</a>
+<a href="https://github.com/zep4yrs">GitHub 源码 →</a>
+</div>
+</div>
+</section>
+<section class="section scroll-reveal">
+<div class="wrap stream-in">
+<div class="section-head">
+<div class="kicker">SPEC · 规格</div>
+<h2>规格表<span class="en">specification</span></h2>
+</div>
+<div class="spec-table">
+<div class="spec-row"><div class="sk">VERSION</div><div class="sv">v0.0.1 · 新</div></div>
+<div class="spec-row"><div class="sk">STACK</div><div class="sv">Svelte 5 · SvelteKit · TypeScript</div></div>
+<div class="spec-row"><div class="sk">PLATFORM</div><div class="sv">Web · 浏览器</div></div>
+<div class="spec-row"><div class="sk">LICENSE</div><div class="sv">教学 · 开源</div></div>
+<div class="spec-row"><div class="sk">STATUS</div><div class="sv">活跃维护中</div></div>
+<div class="spec-row"><div class="sk">FORM</div><div class="sv">在线工具</div></div>
+</div>
+</div>
+</section>
+<section class="section scroll-reveal">
+<div class="wrap stream-in">
+<div class="section-head">
+<div class="kicker">FEATURES · 特性</div>
+<h2>核心特性<span class="en">key features</span></h2>
+</div>
+<div class="feat-list">
+<div class="feat-item"><div class="fn">N°01</div><div><h3>数据结构<span class="en">data structure</span></h3><p>链表插入一个节点，动画会展示指针怎么重新指向、新节点怎么连上去。树结构做旋转操作，节点怎么换位置、子树怎么重新挂接，每一步都画在画布上。亲眼看着结构变化，比光看课本文字在脑子里硬想要清楚得多。</p><p>所有操作在画布上即时反馈，增删改查每走一步旁边的标注就跟着更新，显示当前在做什么、数据变成什么样了。遇到不懂的就把步进条往回拉，反复看同一段操作。</p></div></div>
+<div class="feat-item"><div class="fn">N°02</div><div><h3>算法动画<span class="en">algo anim</span></h3><p>排序算法每一轮比较和交换都做成动画。冒泡排序里较大的元素怎么一步步冒到末尾，快速排序的基准值怎么切分数组，每一步旁边都标注当前操作类型和数据状态，像有个老师在旁边拆解给你看。</p><p>播放速度可以自己调，看不懂的地方放慢看，熟悉了直接跳过。遇到关键步骤随时暂停，仔细看完再继续。不用跟着视频走神，也不用自己画图推演。</p></div></div>
+<div class="feat-item"><div class="fn">N°03</div><div><h3>数据库<span class="en">database</span></h3><p>写一条 SELECT 语句，工具就把数据库内部执行路径画成流程图。JOIN 怎么连接两张表、索引扫描走了哪个索引、排序在哪个阶段做，每个环节各自干了什么，在图上标得清清楚楚。</p><p>哪一步花的时间长、哪一步走了全表扫描，一眼就能看出来。学数据库优化的时候，这个可视化比单纯看 EXPLAIN 输出的文本直观得多，容易理解瓶颈出在哪里。</p></div></div>
+<div class="feat-item"><div class="fn">N°04</div><div><h3>教材保持一致<span class="en">textbook</span></h3><p>内容直接按李春葆《数据结构教程》和杨宏霞《数据库技术及应用》的章节来组织。教材讲到哪一章，工具里就能找到对应的可视化练习，不用自己翻来翻去匹配。</p><p>课上完某个知识点，回来打开工具练一练，课本上的理论马上变成看得见的操作。巩固效果比单看书好很多，省了自己找额外练习材料的时间。</p></div></div>
+</div>
+</div>
+</section>
+<section class="section scroll-reveal">
+<div class="wrap stream-in">
+<div class="section-head">
+<div class="kicker">SCENARIOS · 适用场景</div>
+<h2>适用场景<span class="en">use cases</span></h2>
+</div>
+<div class="scenario-grid">
+<div class="scenario-card">
+<div class="sc-icon">SC·01</div>
+<h4>数据结构课同步使用</h4>
+<p>上课学完链表或者二叉树，转头打开工具把刚学的操作跑一遍。书上静态的图变成动态的动画，插入、删除、遍历每一步都看得见。课后花十几分钟跑一遍，比光看书印象深得多。</p>
+</div>
+<div class="scenario-card">
+<div class="sc-icon">SC·02</div>
+<h4>自学备考</h4>
+<p>考研或者期末复习的时候，打开工具对着算法动画过一遍各种排序和查找。看不懂的地方放慢速度多看几遍，相当于有个动画版辅导书在旁边。比光看文字记得牢，也比自己画图推演省时间。</p>
+</div>
+<div class="scenario-card">
+<div class="sc-icon">SC·03</div>
+<h4>老师课堂演示</h4>
+<p>上课讲数据结构的时候，直接在浏览器里演示操作过程，比在黑板上画图方便很多。学生也能看到每一步的变化，不用凭空想象指针怎么动。课堂互动效果好，也省了准备幻灯片的时间。</p>
+</div>
+<div class="scenario-card">
+<div class="sc-icon">SC·04</div>
+<h4>面试突击</h4>
+<p>面试前把常见的数据结构算法过一遍，看动画比看代码快。B+树、红黑树这些平时用得少容易忘的，看一遍动画就回忆起来了。</p>
+</div>
+</div>
+</div>
+</section>
+<section class="section scroll-reveal">
+<div class="wrap stream-in">
+<div class="section-head">
+<div class="kicker">WHY · 为什么选择</div>
+<h2>为什么选择 StructVis<span class="en">why choose</span></h2>
+</div>
+<div class="why-grid">
+<div class="why-card">
+<div class="wc-num">01</div>
+<h4>教材保持一致</h4>
+<p>内容按李春葆《数据结构教程》和杨宏霞《数据库技术及应用》的章节编排。教材讲到哪一章，工具里就能找到对应的可视化练习，不用自己翻来翻去匹配。课上完直接打开就能练。</p>
+</div>
+<div class="why-card">
+<div class="wc-num">02</div>
+<h4>交互操作</h4>
+<p>自己动手操作，每一步画布上都有实时反馈。结构怎么变、数据怎么走，全都能亲眼看到。动手做一遍比看视频被动接收效果好得多，看过一遍基本就记住了。</p>
+</div>
+<div class="why-card">
+<div class="wc-num">03</div>
+<h4>双科目覆盖</h4>
+<p>一个工具同时覆盖数据结构和数据库两门核心专业课。数据结构部分能处理链表、树、图、排序、查找，数据库部分能处理 SQL 查询和索引。不用在几个工具之间来回切换。</p>
+</div>
+<div class="why-card">
+<div class="wc-num">04</div>
+<h4>双科覆盖</h4>
+<p>数据结构和数据库两门课在一套工具里解决，不用在两个工具之间切来切去。两门课的内容都按教材章节保持一致，学起来顺畅。</p>
+</div>
+</div>
+</div>
+</section>
+<section class="section scroll-reveal">
+<div class="wrap stream-in">
+<div class="section-head">
+<div class="kicker">CHANGELOG · 更新日志</div>
+<h2>版本历史<span class="en">changelog</span></h2>
+</div>
+<div class="changelog">
+<div class="cl-item"><span class="cl-ver">v0.0.1</span><span class="cl-date">2026-08</span><span class="cl-desc">首个版本上线，基础数据结构可视化</span></div>
+</div>
+</div>
+</section>
+<section class="section scroll-reveal">
+<div class="wrap stream-in">
+<div class="section-head">
+<div class="kicker">ROADMAP · 路线图</div>
+<h2>下一步<span class="en">what's next</span></h2>
+</div>
+<div class="roadmap-list">
+<div class="rm-item"><span class="rm-num">N°01</span><span class="rm-title">图算法模块</span><span class="rm-status">计划</span></div>
+<div class="rm-item"><span class="rm-num">N°02</span><span class="rm-title">数据库索引可视化</span><span class="rm-status">计划</span></div>
+<div class="rm-item"><span class="rm-num">N°03</span><span class="rm-title">更多教材章节保持一致</span><span class="rm-status">进行中</span></div>
+<div class="rm-item"><span class="rm-num">N°04</span><span class="rm-title">首个版本上线</span><span class="rm-status done">已完成</span></div>
+</div>
+</div>
+</section>
+<section class="section scroll-reveal">
+<div class="wrap stream-in">
+<div class="section-head">
+<div class="kicker">RELATED · 相关</div>
+<h2>同类项目<span class="en">related</span></h2>
+</div>
+<div class="related-grid">
+<a class="related-card" href="cryptovis.html"><img alt="CryptoVis" src="assets/svg/logo-cryptovis.svg"/><h4>CryptoVis</h4><p>同属教学可视化</p></a>
+<a class="related-card" href="bluetidy.html"><img alt="BlueTidy" src="assets/svg/logo-bluetidy.svg"/><h4>BlueTidy</h4><p>桌面工具</p></a>
+<a class="related-card" href="ctf-qiankun.html"><img alt="CTF乾坤袋" src="assets/svg/logo-ctf-qiankun.svg"/><h4>CTF乾坤袋</h4><p>教学辅助</p></a>
+</div>
+</div>
+</section>
+<section class="section scroll-reveal">
+<div class="wrap stream-in">
+<div class="section-head">
+<div class="kicker">COMMENTS · 评论</div>
+<h2>讨论<span class="en">discussion</span></h2>
+</div>
+<div class="share-bar">
+<span class="share-label">SHARE · 分享</span>
+<a class="share-btn" href="https://connect.qq.com/widget/shareqq/index.html?url=https://work.feng-qiao.top/structvis.html&amp;text=StructVis%20%C2%B7%20%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%AF%E8%A7%86%E5%8C%96" rel="noopener" target="_blank" title="分享到 QQ">
+<svg fill="currentColor" height="14" viewbox="0 0 24 24" width="14"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+<span class="share-label-text">QQ</span>
+</a>
+<a class="share-btn" href="https://service.weibo.com/share/share.php?url=https://work.feng-qiao.top/structvis.html&amp;title=StructVis%20%C2%B7%20%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%AF%E8%A7%86%E5%8C%96" rel="noopener" target="_blank" title="分享到微博">
+<svg fill="currentColor" height="14" viewbox="0 0 24 24" width="14"><path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443zM3.027 8.64c-1.109.412-1.866.559-1.866.559s.157-.515.683-1.134c.527-.617 1.174-.999 1.174-.999s-.108.48-.108 1.045c0 .304.058.529.117.529zm-.058-.529c-.002-.228-.046-.336-.046-.336s-.06.167-.06.417c0 .153.022.266.048.336.012.034.026.056.038.068.016.016.028.02.028.02s-.008-.113-.008-.284v-.221zm.877-1.596c-1.054.395-1.773.677-1.773.677s.148-.698.848-1.352c.7-.654 1.48-.923 1.48-.923s-.368.707-.368 1.519c0 .137.027.239.055.304.016.036.034.06.055.077.012.01.024.016.033.019l.008.003s-.114-.094-.254-.246c-.14-.153-.228-.328-.228-.328-.069.096-.201.228-.393.35-.192.12-.428.22-.463.221.001.001 0 .001 0 .001zm-2.33 6.312c0-2.442 1.426-4.375 3.568-4.875l.233-.057C5.593 6.099 5.55 4.8 4.919 4.281c-1.134-.917-3.193-.224-3.193-.224s.511-.732 1.46-.997c.949-.266 1.919.005 2.505.508.89.762.968 2.145.289 3.377 1.622-.216 3.154.238 4.144 1.154.861.798 1.257 1.865 1.257 2.944 0 2.582-3.163 4.612-7.067 4.612-3.905 0-7.069-2.031-7.069-4.612z"></path></svg>
+<span class="share-label-text">微博</span>
+</a>
+<a class="share-btn" href="https://www.douban.com/share/service?url=https://work.feng-qiao.top/structvis.html" rel="noopener" target="_blank" title="分享到豆瓣">
+<svg fill="currentColor" height="14" viewbox="0 0 24 24" width="14"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg>
+<span class="share-label-text">豆瓣</span>
+</a>
+<button class="share-btn share-copy-link" data-url="https://work.feng-qiao.top/structvis.html" title="复制链接">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+<span class="share-label-text">复制链接</span>
+</button>
+</div>
+<div class="giscus">
+<script async="" crossorigin="anonymous" data-category="Announcements" data-category-id="DIC_kwDOSaXw7M4CkKYP" data-emit-metadata="0" data-input-position="top" data-lang="zh-CN" data-mapping="pathname" data-reactions-enabled="1" data-repo="zep4yrs/zep4yrs.github.io" data-repo-id="R_kgDOSaXw7A" data-strict="0" data-theme="preferred_color_scheme" src="https://giscus.app/client.js">
+</script>
+</div>
+</div>
+</section>
+
+</main>
+<footer>
+<div class="wrap">
+<div class="footer-inner">
+<span>© 2026 四时工坊 · zep4yrs</span>
+<span>StructVis</span>
+<span>教学 · 开源</span>
+</div>
+</div>
+</footer>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<script src="assets/js/mimo.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+<script>
+    window.pagefind = new Promise(function(resolve) {
+          var s = document.createElement('script');
+          s.src = 'pagefind/pagefind-ui.js';
+          s.onload = function() { resolve(window.pagefind); };
+          s.onerror = function() { resolve(null); };
+          document.head.appendChild(s);
+        });
+    </script>
+<script src="assets/js/search.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DeepSeek 桌宠">
+  <!-- 鲸鱼身体：圆润水滴形 -->
+  <path d="M22 50 Q22 22 50 22 Q78 22 78 50 Q78 78 50 78 Q22 78 22 50 Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+  <!-- 鲸鱼尾巴 -->
+  <path d="M78 50 Q90 38 96 30 Q88 46 88 50 Q88 54 96 70 Q90 62 78 50 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  <!-- 眼睛 -->
+  <circle cx="40" cy="44" r="4" fill="currentColor"/>
+  <!-- 微笑 -->
+  <path d="M36 54 Q42 60 50 56" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <!-- 头顶喷水 -->
+  <path d="M56 22 Q60 14 56 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+  <path d="M60 18 Q66 12 62 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+  <!-- 装饰点 -->
+  <circle cx="58" cy="38" r="2" fill="currentColor" opacity="0.3"/>
+</svg>

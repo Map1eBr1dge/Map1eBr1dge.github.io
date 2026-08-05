@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>管线 · 四时工坊</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,500&amp;family=Noto+Sans+SC:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/css/fonts.css" rel="stylesheet"/>
+<link href="assets/css/mimo.css" rel="stylesheet"/>
+<link href="assets/css/search.css" rel="stylesheet"/>
+<style>
+  .gantt { border: 1px solid var(--line); background: var(--card); }
+  .gantt-head { display: grid; grid-template-columns: 160px repeat(12, 1fr); border-bottom: 1px solid var(--line); }
+  .gantt-head .gh-cell { padding: 12px 8px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); text-align: center; border-right: 1px solid var(--line-2); }
+  .gantt-head .gh-name { text-align: left; font-weight: 700; color: var(--ink); }
+  .gantt-row { display: grid; grid-template-columns: 160px repeat(12, 1fr); border-bottom: 1px solid var(--line-2); align-items: center; min-height: 44px; }
+  .gantt-row:last-child { border-bottom: none; }
+  .gantt-row .gr-name { padding: 8px 12px; font-size: 13px; font-weight: 500; border-right: 1px solid var(--line); display: flex; align-items: center; gap: 8px; }
+  .gantt-row .gr-name img { width: 18px; height: 18px; }
+  .gantt-row .gr-bar { height: 16px; margin: 0 2px; }
+  .gantt-row .gr-bar.done { background: var(--ink); }
+  .gantt-row .gr-bar.progress { background: repeating-linear-gradient(45deg, var(--ink), var(--ink) 3px, transparent 3px, transparent 6px); border: 1px solid var(--ink); }
+  .gantt-row .gr-bar.planned { border: 1px dashed var(--ink-3); background: transparent; }
+  .gantt-legend { display: flex; gap: 24px; margin-top: 24px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); flex-wrap: wrap; }
+  .gantt-legend .gl-item { display: flex; align-items: center; gap: 8px; }
+  .gantt-legend .gl-sw { width: 24px; height: 12px; border: 1px solid var(--ink); }
+  .gantt-legend .gl-sw.done { background: var(--ink); }
+  .gantt-legend .gl-sw.progress { background: repeating-linear-gradient(45deg, var(--ink), var(--ink) 2px, transparent 2px, transparent 4px); }
+  .gantt-legend .gl-sw.planned { border-style: dashed; }
+  @media (max-width: 768px) { .gantt-head, .gantt-row { grid-template-columns: 120px repeat(12, 14px); } .gantt-row .gr-name { font-size: 11px; } .gantt-head .gh-cell { font-size: 9px; padding: 8px 2px; } }
+</style>
+<link href="https://work.feng-qiao.top/pipeline.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="管线 · 四时工坊" property="og:title"/>
+<meta content="项目进度甘特图。2024 Q4 → 2027 Q3，九个项目的开发节奏。" property="og:description"/>
+<meta content="https://work.feng-qiao.top/pipeline.html" property="og:url"/>
+<meta content="四时工坊" property="og:site_name"/>
+<meta content="zh_CN" property="og:locale"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="管线 · 四时工坊" name="twitter:title"/>
+<meta content="项目进度甘特图。2024 Q4 → 2027 Q3，九个项目的开发节奏。" name="twitter:description"/>
+<link href="manifest.json" rel="manifest"/>
+<meta content="#1A1A1A" name="theme-color"/>
+<link href="assets/svg/logo-zep4yrs.svg" rel="icon" type="image/svg+xml"/>
+<link href="feed.xml" rel="alternate" title="四时工坊公告" type="application/rss+xml"/>
+<script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"四时工坊","alternateName":"Four Seasons Workshop","url":"https://work.feng-qiao.top","logo":"https://work.feng-qiao.top/assets/svg/logo-zep4yrs.svg","founder":"枫桥","foundingDate":"2024","sameAs":["https://github.com/zep4yrs"]}
+  </script>
+<meta content="https://work.feng-qiao.top/assets/og/og-pipeline.png" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+</head>
+<body>
+<div class="notice">
+  2026 管线 · 9 个项目持续滚动
+  <span class="dot"></span>
+<a href="bulletin.html">最新动态 →</a>
+</div>
+<header class="nav">
+<div class="nav-inner">
+<a class="brand" href="index.html">
+<span class="brand-mark">z4</span>
+<span>四时工坊</span>
+</a>
+<nav class="nav-links">
+<a href="index.html">首页</a>
+<a href="about.html">关于</a>
+<a href="projects.html">项目</a>
+<a href="capabilities.html">能力</a>
+<a href="pipeline.html">管线</a>
+<a href="bulletin.html">公告</a>
+<a href="contact.html">联系</a>
+<span class="nav-dropdown">
+<button class="nav-dropdown-btn">在线体验 <span class="arrow-down">▼</span></button>
+<span class="nav-dropdown-menu">
+<a href="https://work.feng-qiao.top/crypto/">CryptoVis<span class="dd-desc">密码学可视化</span></a>
+<a href="https://work.feng-qiao.top/struct/">StructVis<span class="dd-desc">数据结构可视化</span></a>
+<a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋<span class="dd-desc">CTF 工具箱</span></a>
+</span>
+</span>
+<a class="nav-cta" href="https://github.com/zep4yrs" rel="noopener" target="_blank">GitHub ↗</a>
+</nav>
+
+  <button class="hamburger" aria-label="菜单"><span></span><span></span><span></span></button>
+</div>
+</header>
+<div class="mobile-menu">
+  <a href="index.html">首页</a>
+  <a href="index.html#matrix">项目矩阵</a>
+  <a href="index.html#ecosystem">生态</a>
+  <a href="about.html">关于</a>
+  <a href="projects.html">项目</a>
+  <a href="capabilities.html">能力</a>
+  <a href="pipeline.html">管线</a>
+  <a href="bulletin.html">公告</a>
+  <a href="contact.html">联系</a>
+  <div class="mm-dropdown">
+    <button class="mm-dropdown-btn">在线体验 ▼</button>
+    <div class="mm-dropdown-menu">
+      <a href="https://work.feng-qiao.top/crypto/">CryptoVis</a>
+      <a href="https://work.feng-qiao.top/struct/">StructVis</a>
+      <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋</a>
+    </div>
+  </div>
+  <a href="https://github.com/zep4yrs" class="mm-cta" target="_blank">GitHub ↗</a>
+</div>
+
+<main>
+<section class="hero" style="padding:80px 0 56px">
+<div class="hero-watermark">PIPELINE</div>
+<div class="wrap">
+<div class="kicker">PIPELINE · 管线</div>
+<h1>项目管线<span class="en">project pipeline</span></h1>
+<p class="sub">九个项目的进度时间线。实色=做完了，斜纹=进行中，虚线=计划中。按季度保持一致，2024 起源，2026 多元化。</p>
+</div>
+</section>
+<section class="section">
+<div class="wrap">
+<div class="gantt">
+<div class="gantt-head">
+<div class="gh-cell gh-name">项目 / 时间</div>
+<div class="gh-cell">24Q4</div><div class="gh-cell">25Q1</div><div class="gh-cell">25Q2</div>
+<div class="gh-cell">25Q3</div><div class="gh-cell">25Q4</div><div class="gh-cell">26Q1</div>
+<div class="gh-cell">26Q2</div><div class="gh-cell">26Q3</div><div class="gh-cell">26Q4</div>
+<div class="gh-cell">27Q1</div><div class="gh-cell">27Q2</div><div class="gh-cell">27Q3</div>
+</div>
+<!-- BlueTidy: 24Q4-25Q3 done, 26Q1-Q2 progress -->
+<div class="gantt-row">
+<div class="gr-name"><img alt="" src="assets/svg/logo-bluetidy.svg"/>BlueTidy</div>
+<div class="gr-bar done" style="grid-column:2/4"></div>
+<div class="gr-bar done" style="grid-column:4/6"></div>
+<div class="gr-bar progress" style="grid-column:7/9"></div>
+</div>
+<!-- LanNook: 25Q1-Q3 done, 26Q2 progress -->
+<div class="gantt-row">
+<div class="gr-name"><img alt="" src="assets/svg/logo-lannook.svg"/>LanNook</div>
+<div class="gr-bar done" style="grid-column:3/5"></div>
+<div class="gr-bar progress" style="grid-column:8/10"></div>
+</div>
+<!-- CTF乾坤袋: 25Q2-Q4 done -->
+<div class="gantt-row">
+<div class="gr-name"><img alt="" src="assets/svg/logo-ctf-qiankun.svg"/>CTF乾坤袋</div>
+<div class="gr-bar done" style="grid-column:4/7"></div>
+</div>
+<!-- AutoPen: 25Q4-26Q2 progress, 26Q4 planned -->
+<div class="gantt-row">
+<div class="gr-name"><img alt="" src="assets/svg/logo-autopen.svg"/>AutoPen</div>
+<div class="gr-bar progress" style="grid-column:6/9"></div>
+<div class="gr-bar planned" style="grid-column:10/11"></div>
+</div>
+<!-- 零号告警: 26Q2-Q3 progress, 27Q1-Q2 planned -->
+<div class="gantt-row">
+<div class="gr-name"><img alt="" src="assets/svg/logo-alertzero.svg"/>零号告警</div>
+<div class="gr-bar progress" style="grid-column:8/10"></div>
+<div class="gr-bar planned" style="grid-column:11/13"></div>
+</div>
+<!-- CryptoVis: 26Q1-Q2 done -->
+<div class="gantt-row">
+<div class="gr-name"><img alt="" src="assets/svg/logo-cryptovis.svg"/>CryptoVis</div>
+<div class="gr-bar done" style="grid-column:7/9"></div>
+</div>
+<!-- StructVis: 26Q3 done -->
+<div class="gantt-row">
+<div class="gr-name"><img alt="" src="assets/svg/logo-structvis.svg"/>StructVis</div>
+<div class="gr-bar done" style="grid-column:9/10"></div>
+<div class="gr-bar progress" style="grid-column:10/11"></div>
+</div>
+<!-- DeepSeek 桌宠: 26Q3 开发中, 26Q4 计划 -->
+<div class="gantt-row">
+<div class="gr-name"><img alt="" src="assets/svg/logo-deepseek-pet.svg"/>DeepSeek 桌宠</div>
+<div class="gr-bar progress" style="grid-column:9/10"></div>
+<div class="gr-bar planned" style="grid-column:10/12"></div>
+</div>
+<!-- Stellar / 摘星: 26Q3 开发中, 27Q1-Q2 计划 -->
+<div class="gantt-row">
+<div class="gr-name"><img alt="" src="assets/svg/logo-stellar.svg"/>Stellar · 摘星</div>
+<div class="gr-bar progress" style="grid-column:9/10"></div>
+<div class="gr-bar planned" style="grid-column:11/13"></div>
+</div>
+</div>
+<div class="gantt-legend">
+<div class="gl-item"><span class="gl-sw done"></span>已完成 done</div>
+<div class="gl-item"><span class="gl-sw progress"></span>进行中 in progress</div>
+<div class="gl-item"><span class="gl-sw planned"></span>计划中 planned</div>
+</div>
+</div>
+</section>
+</main>
+<footer>
+<div class="wrap">
+<div class="footer-inner">
+<span>© 2026 四时工坊 · zep4yrs</span>
+<span>PIPELINE · 管线</span>
+<span>2024 Q4 → 2027 Q3</span>
+</div>
+</div>
+</footer>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<script src="assets/js/mimo.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+<script>
+    window.pagefind = new Promise(function(resolve) {
+          var s = document.createElement('script');
+          s.src = 'pagefind/pagefind-ui.js';
+          s.onload = function() { resolve(window.pagefind); };
+          s.onerror = function() { resolve(null); };
+          document.head.appendChild(s);
+        });
+    </script>
+<script src="assets/js/search.js"></script>
+</body>
+</html>

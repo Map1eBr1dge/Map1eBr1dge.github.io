@@ -1,0 +1,220 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>公告 · 四时工坊</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,500&amp;family=Noto+Sans+SC:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/css/fonts.css" rel="stylesheet"/>
+<link href="assets/css/mimo.css" rel="stylesheet"/>
+<link href="assets/css/search.css" rel="stylesheet"/>
+<style>
+  .bulletin-list { border-top: 1px solid var(--line); }
+  .b-item {
+    display: grid; grid-template-columns: 110px 60px 1fr auto;
+    gap: 24px; align-items: baseline;
+    padding: 24px 8px; border-bottom: 1px solid var(--line);
+    text-decoration: none; color: inherit;
+    transition: background .15s, padding .15s;
+  }
+  .b-item:hover { background: var(--card); padding-left: 20px; }
+  .b-item .b-date { font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }
+  .b-item .b-tag {
+    font-family: var(--font-mono); font-size: 10px; color: var(--ink-2);
+    border: 1px solid var(--line); padding: 2px 8px; text-align: center;
+  }
+  .b-item .b-tag.release { border-color: var(--ink); color: var(--ink); }
+  .b-item .b-title { font-size: 15px; color: var(--ink); line-height: 1.5; }
+  .b-item .b-arrow { color: var(--ink); font-family: var(--font-serif); transition: transform .15s; }
+  .b-item:hover .b-arrow { transform: translateX(4px); }
+  @media (max-width: 768px) {
+    .b-item { grid-template-columns: 1fr; gap: 8px; }
+  }
+</style>
+<link href="https://work.feng-qiao.top/bulletin.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="公告 · 四时工坊" property="og:title"/>
+<meta content="版本发布、项目进展、计划变更。支持 RSS 订阅。" property="og:description"/>
+<meta content="https://work.feng-qiao.top/bulletin.html" property="og:url"/>
+<meta content="四时工坊" property="og:site_name"/>
+<meta content="zh_CN" property="og:locale"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="公告 · 四时工坊" name="twitter:title"/>
+<meta content="版本发布、项目进展、计划变更。支持 RSS 订阅。" name="twitter:description"/>
+<link href="manifest.json" rel="manifest"/>
+<meta content="#1A1A1A" name="theme-color"/>
+<link href="assets/svg/logo-zep4yrs.svg" rel="icon" type="image/svg+xml"/>
+<link href="feed.xml" rel="alternate" title="四时工坊公告" type="application/rss+xml"/>
+<script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"四时工坊","alternateName":"Four Seasons Workshop","url":"https://work.feng-qiao.top","logo":"https://work.feng-qiao.top/assets/svg/logo-zep4yrs.svg","founder":"枫桥","foundingDate":"2024","sameAs":["https://github.com/zep4yrs"]}
+  </script>
+<meta content="https://work.feng-qiao.top/assets/og/og-bulletin.png" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+</head>
+<body>
+<div class="notice">
+  订阅 RSS · 公告第一时间送达
+  <span class="dot"></span>
+<a href="contact.html">联系 →</a>
+</div>
+<header class="nav">
+<div class="nav-inner">
+<a class="brand" href="index.html">
+<span class="brand-mark">z4</span>
+<span>四时工坊</span>
+</a>
+<nav class="nav-links">
+<a href="index.html">首页</a>
+<a href="about.html">关于</a>
+<a href="projects.html">项目</a>
+<a href="capabilities.html">能力</a>
+<a href="pipeline.html">管线</a>
+<a href="bulletin.html">公告</a>
+<a href="contact.html">联系</a>
+<span class="nav-dropdown">
+<button class="nav-dropdown-btn">在线体验 <span class="arrow-down">▼</span></button>
+<span class="nav-dropdown-menu">
+<a href="https://work.feng-qiao.top/crypto/">CryptoVis<span class="dd-desc">密码学可视化</span></a>
+<a href="https://work.feng-qiao.top/struct/">StructVis<span class="dd-desc">数据结构可视化</span></a>
+<a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋<span class="dd-desc">CTF 工具箱</span></a>
+</span>
+</span>
+<a class="nav-cta" href="https://github.com/zep4yrs" rel="noopener" target="_blank">GitHub ↗</a>
+</nav>
+
+  <button class="hamburger" aria-label="菜单"><span></span><span></span><span></span></button>
+</div>
+</header>
+<div class="mobile-menu">
+  <a href="index.html">首页</a>
+  <a href="index.html#matrix">项目矩阵</a>
+  <a href="index.html#ecosystem">生态</a>
+  <a href="about.html">关于</a>
+  <a href="projects.html">项目</a>
+  <a href="capabilities.html">能力</a>
+  <a href="pipeline.html">管线</a>
+  <a href="bulletin.html">公告</a>
+  <a href="contact.html">联系</a>
+  <div class="mm-dropdown">
+    <button class="mm-dropdown-btn">在线体验 ▼</button>
+    <div class="mm-dropdown-menu">
+      <a href="https://work.feng-qiao.top/crypto/">CryptoVis</a>
+      <a href="https://work.feng-qiao.top/struct/">StructVis</a>
+      <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋</a>
+    </div>
+  </div>
+  <a href="https://github.com/zep4yrs" class="mm-cta" target="_blank">GitHub ↗</a>
+</div>
+
+<main>
+<section class="hero" style="padding: 72px 0 56px;">
+<div class="hero-watermark">BULLETIN</div>
+<div class="wrap">
+<div class="hero-left">
+<div class="kicker">BULLETIN · 公告</div>
+<h1>工坊动态<span class="en">what's new</span></h1>
+<p class="sub">版本发布、项目进展、计划变更工坊的动态都在这里。可订阅 RSS 第一时间收到。</p>
+</div>
+</div>
+</section>
+<section class="section" id="latest">
+<div class="wrap">
+<div class="section-head">
+<div class="kicker">LATEST · 最新</div>
+<h2>最新公告<span class="en">recent</span></h2>
+</div>
+<div class="bulletin-list">
+<a class="b-item" href="#">
+<span class="b-date">2026.08.02</span>
+<span class="b-tag release">发布</span>
+<span class="b-title">StructVis v0.0.1 已发布，数据结构自学工具上线 GitHub Pages，保持一致李春葆教材章节</span>
+<span class="b-arrow">→</span>
+</a>
+<a class="b-item" href="#">
+<span class="b-date">2026.07.15</span>
+<span class="b-tag">更新</span>
+<span class="b-title">零号告警设计阶段完成（V0.5），正式进入编码阶段，规划五大技术方向 9 模块 4 层架构</span>
+<span class="b-arrow">→</span>
+</a>
+<a class="b-item" href="#">
+<span class="b-date">2026.04.20</span>
+<span class="b-tag release">发布</span>
+<span class="b-title">CryptoVis 密码学可视化教学工具上线，对称加密/哈希/签名动画演示</span>
+<span class="b-arrow">→</span>
+</a>
+<a class="b-item" href="#">
+<span class="b-date">2026.03</span>
+<span class="b-tag release">发布</span>
+<span class="b-title">BlueTidy v0.2.0 Preview 发布，应用模式与 TidyPilot 预览版</span>
+<span class="b-arrow">→</span>
+</a>
+<a class="b-item" href="#">
+<span class="b-date">2025.12.05</span>
+<span class="b-tag release">发布</span>
+<span class="b-title">LanNook v26.0.0 发布，从 LYNQO 更名，跨平台架构重构</span>
+<span class="b-arrow">→</span>
+</a>
+<a class="b-item" href="#">
+<span class="b-date">2025.10.20</span>
+<span class="b-tag">更新</span>
+<span class="b-title">CTF 乾坤袋工具数量扩展至 50+，新增隐写分析与取证模块</span>
+<span class="b-arrow">→</span>
+</a>
+<a class="b-item" href="#">
+<span class="b-date">2025.11</span>
+<span class="b-tag release">发布</span>
+<span class="b-title">BlueTidy v0.1.0 发布，文件夹模式基础版，磁盘空间可视化分析</span>
+<span class="b-arrow">→</span>
+</a>
+<a class="b-item" href="#">
+<span class="b-date">2025.05.30</span>
+<span class="b-tag">计划</span>
+<span class="b-title">四时工坊站点上线，整合全部项目入口，统一品牌视觉</span>
+<span class="b-arrow">→</span>
+</a>
+<a class="b-item" href="#">
+<span class="b-date">2024.11.10</span>
+<span class="b-tag">计划</span>
+<span class="b-title">zep4yrs 起源：第一个开源项目发布，工坊名字定下来四季不歇</span>
+<span class="b-arrow">→</span>
+</a>
+</div>
+<div class="load-trigger" id="loadTrigger">— 已加载全部历史 —</div>
+</div>
+</section>
+</main>
+<footer>
+<div class="wrap">
+<div class="footer-inner">
+<span>© 2026 四时工坊 · zep4yrs</span>
+<span>BULLETIN · 公告</span>
+<span>RSS · feed.xml</span>
+</div>
+</div>
+</footer>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<script src="assets/js/mimo.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+<script>
+    window.pagefind = new Promise(function(resolve) {
+          var s = document.createElement('script');
+          s.src = 'pagefind/pagefind-ui.js';
+          s.onload = function() { resolve(window.pagefind); };
+          s.onerror = function() { resolve(null); };
+          document.head.appendChild(s);
+        });
+    </script>
+<script src="assets/js/search.js"></script>
+</body>
+</html>

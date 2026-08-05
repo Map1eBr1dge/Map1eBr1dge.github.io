@@ -1,0 +1,14 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CTF乾坤袋">
+  <!-- 袋身：梯形 -->
+  <path d="M 26 38 L 20 84 Q 20 92 28 92 L 72 92 Q 80 92 80 84 L 74 38 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  <!-- 袋口：椭圆 -->
+  <ellipse cx="50" cy="38" rx="24" ry="5" fill="none" stroke="currentColor" stroke-width="2"/>
+  <!-- 乾坤符号：简化太极 -->
+  <circle cx="50" cy="62" r="13" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <path d="M 50 49 A 6.5 6.5 0 0 1 50 62 A 6.5 6.5 0 0 0 50 75" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="50" cy="55.5" r="1.8" fill="currentColor"/>
+  <circle cx="50" cy="68.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <!-- 袋口绳结 -->
+  <line x1="44" y1="33" x2="42" y2="28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="56" y1="33" x2="58" y2="28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

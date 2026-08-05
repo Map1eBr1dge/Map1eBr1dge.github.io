@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>在线演示 · 四时工坊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,500&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/fonts.css">
+  <link rel="stylesheet" href="assets/css/mimo.css">
+  <link rel="stylesheet" href="assets/css/search.css">
+<style>
+  .demo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border: 1px solid var(--line); border-bottom: none; }
+  .demo-card { padding: 32px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); background: var(--card); text-decoration: none; color: inherit; transition: background .15s; display: flex; flex-direction: column; gap: 12px; }
+  .demo-card:nth-child(2n) { border-right: none; }
+  .demo-card:hover { background: var(--bg); }
+  .demo-card .dc-top { display: flex; align-items: center; gap: 12px; }
+  .demo-card .dc-top img { width: 32px; height: 32px; }
+  .demo-card .dc-num { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.15em; }
+  .demo-card h3 { font-family: var(--font-sans); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; }
+  .demo-card h3 .en { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--ink-3); font-size: 0.7em; margin-left: 8px; }
+  .demo-card p { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+  .demo-card .dc-link { font-family: var(--font-mono); font-size: 12px; color: var(--ink); margin-top: 8px; }
+  .demo-card .dc-link .arrow { transition: transform .15s; }
+  .demo-card:hover .dc-link .arrow { transform: translateX(4px); }
+</style>
+  <meta property="og:image" content="https://work.feng-qiao.top/assets/og/og-demos.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+</head>
+<body>
+
+<div class="notice">
+  在线演示 · 不用下载，浏览器里直接玩
+  <span class="dot"></span>
+  <a href="projects.html">全部项目 →</a>
+</div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">z4</span><span>四时工坊</span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="about.html">关于</a>
+      <a href="projects.html">项目</a>
+      <a href="capabilities.html">能力</a>
+      <a href="pipeline.html">管线</a>
+      <a href="bulletin.html">公告</a>
+      <a href="contact.html">联系</a>
+      <span class="nav-dropdown">
+        <button class="nav-dropdown-btn">在线体验 <span class="arrow-down">▼</span></button>
+        <span class="nav-dropdown-menu">
+          <a href="https://work.feng-qiao.top/crypto/">CryptoVis<span class="dd-desc">密码学可视化</span></a>
+          <a href="https://work.feng-qiao.top/struct/">StructVis<span class="dd-desc">数据结构可视化</span></a>
+          <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋<span class="dd-desc">CTF 工具箱</span></a>
+        </span>
+      </span>
+      <a href="https://github.com/zep4yrs" target="_blank" class="nav-cta">GitHub ↗</a>
+    </nav>
+  
+  <button class="hamburger" aria-label="菜单"><span></span><span></span><span></span></button>
+</div>
+</header>
+<div class="mobile-menu">
+  <a href="index.html">首页</a>
+  <a href="index.html#matrix">项目矩阵</a>
+  <a href="index.html#ecosystem">生态</a>
+  <a href="about.html">关于</a>
+  <a href="projects.html">项目</a>
+  <a href="capabilities.html">能力</a>
+  <a href="pipeline.html">管线</a>
+  <a href="bulletin.html">公告</a>
+  <a href="contact.html">联系</a>
+  <div class="mm-dropdown">
+    <button class="mm-dropdown-btn">在线体验 ▼</button>
+    <div class="mm-dropdown-menu">
+      <a href="https://work.feng-qiao.top/crypto/">CryptoVis</a>
+      <a href="https://work.feng-qiao.top/struct/">StructVis</a>
+      <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋</a>
+    </div>
+  </div>
+  <a href="https://github.com/zep4yrs" class="mm-cta" target="_blank">GitHub ↗</a>
+</div>
+
+
+<main>
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">DEMOS · 在线演示</div>
+      <h2>直接玩<span class="en">play now</span></h2>
+      <p class="desc">不用下载安装，浏览器里直接体验核心功能。每个演示都配了引导说明。</p>
+    </div>
+    <div class="demo-grid">
+      <a class="demo-card" href="https://work.feng-qiao.top/struct/" target="_blank">
+        <div class="dc-top"><img src="assets/svg/logo-structvis.svg" alt=""><span class="dc-num">N°01 · 教学</span></div>
+        <h3>StructVis<span class="en">struct viz</span></h3>
+        <p>数据结构与算法可视化。链表/树/图操作即见结构变化，排序算法步骤动画。</p>
+        <div class="dc-link">work.feng-qiao.top/struct <span class="arrow">→</span></div>
+      </a>
+      <a class="demo-card" href="https://work.feng-qiao.top/crypto/" target="_blank">
+        <div class="dc-top"><img src="assets/svg/logo-cryptovis.svg" alt=""><span class="dc-num">N°02 · 教学</span></div>
+        <h3>CryptoVis<span class="en">crypto viz</span></h3>
+        <p>密码学可视化。AES 加密过程、哈希计算、数字签名流程动画演示。</p>
+        <div class="dc-link">work.feng-qiao.top/crypto <span class="arrow">→</span></div>
+      </a>
+      <a class="demo-card" href="bluetidy.html">
+        <div class="dc-top"><img src="assets/svg/logo-bluetidy.svg" alt=""><span class="dc-num">N°03 · 桌面</span></div>
+        <h3>BlueTidy<span class="en">disk tidy</span></h3>
+        <p>磁盘空间分析。桌面应用，演示版可在线体验扫描与可视化界面。</p>
+        <div class="dc-link">查看详情 <span class="arrow">→</span></div>
+      </a>
+      <a class="demo-card" href="lannook.html">
+        <div class="dc-top"><img src="assets/svg/logo-lannook.svg" alt=""><span class="dc-num">N°04 · 桌面</span></div>
+        <h3>LanNook<span class="en">lan transfer</span></h3>
+        <p>局域网文件传输。桌面应用，演示版展示设备发现与拖拽传输流程。</p>
+        <div class="dc-link">查看详情 <span class="arrow">→</span></div>
+      </a>
+      <a class="demo-card" href="ctf-qiankun.html">
+        <div class="dc-top"><img src="assets/svg/logo-ctf-qiankun.svg" alt=""><span class="dc-num">N°05 · 浏览器</span></div>
+        <h3>CTF 乾坤袋<span class="en">ctf kit</span></h3>
+        <p>CTF 工具箱扩展。浏览器安装即用，编码解码/密码学/漏洞速查。</p>
+        <div class="dc-link">查看详情 <span class="arrow">→</span></div>
+      </a>
+      <a class="demo-card" href="alertzero.html">
+        <div class="dc-top"><img src="assets/svg/logo-alertzero.svg" alt=""><span class="dc-num">N°06 · 游戏</span></div>
+        <h3>零号告警<span class="en">alert zero</span></h3>
+        <p>Steam 网络安全学习游戏。开发中，演示版可体验终端模拟与告警流程。</p>
+        <div class="dc-link">查看详情 <span class="arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <span>© 2026 四时工坊 · zep4yrs</span>
+      <span>DEMOS · 在线演示</span>
+      <span>STRUCTVIS · CRYPTOVIS · BLUETIDY · LANNOOK · CTF · ALERTZERO</span>
+    </div>
+  </div>
+</footer>
+
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<script src="assets/js/mimo.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+<script>
+    window.pagefind = new Promise(function(resolve) {
+          var s = document.createElement('script');
+          s.src = 'pagefind/pagefind-ui.js';
+          s.onload = function() { resolve(window.pagefind); };
+          s.onerror = function() { resolve(null); };
+          document.head.appendChild(s);
+        });
+    </script>
+<script src="assets/js/search.js"></script>
+</body>
+</html>

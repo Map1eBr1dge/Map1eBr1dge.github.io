@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>项目 · 四时工坊</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,500&amp;family=Noto+Sans+SC:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/css/fonts.css" rel="stylesheet"/>
+<link href="assets/css/mimo.css" rel="stylesheet"/>
+<link href="assets/css/search.css" rel="stylesheet"/>
+<style>
+  /* 筛选器 */
+  .filter-bar {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px;
+    padding-bottom: 24px; border-bottom: 1px solid var(--line);
+  }
+  .filter-chip {
+    border: 1px solid var(--line); padding: 6px 14px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--ink-2);
+    cursor: pointer; transition: all .15s; background: var(--card);
+  }
+  .filter-chip:hover { border-color: var(--ink); color: var(--ink); }
+  .filter-chip.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .filter-chip .count { color: var(--ink-3); margin-left: 6px; font-size: 10px; }
+  .filter-chip.active .count { color: var(--ink-4); }
+</style>
+<link href="https://work.feng-qiao.top/projects.html" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="项目 · 四时工坊" property="og:title"/>
+<meta content="九个项目持续维护中。BlueTidy、LanNook、CTF乾坤袋、Polaris、零号告警、CryptoVis、StructVis、DeepSeek桌宠、Stellar。" property="og:description"/>
+<meta content="https://work.feng-qiao.top/projects.html" property="og:url"/>
+<meta content="四时工坊" property="og:site_name"/>
+<meta content="zh_CN" property="og:locale"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="项目 · 四时工坊" name="twitter:title"/>
+<meta content="九个项目持续维护中。BlueTidy、LanNook、CTF乾坤袋、Polaris、零号告警、CryptoVis、StructVis、DeepSeek桌宠、Stellar。" name="twitter:description"/>
+<link href="manifest.json" rel="manifest"/>
+<meta content="#1A1A1A" name="theme-color"/>
+<link href="assets/svg/logo-zep4yrs.svg" rel="icon" type="image/svg+xml"/>
+<link href="feed.xml" rel="alternate" title="四时工坊公告" type="application/rss+xml"/>
+<script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"四时工坊","alternateName":"Four Seasons Workshop","url":"https://work.feng-qiao.top","logo":"https://work.feng-qiao.top/assets/svg/logo-zep4yrs.svg","founder":"枫桥","foundingDate":"2024","sameAs":["https://github.com/zep4yrs"]}
+  </script>
+<meta content="https://work.feng-qiao.top/assets/og/og-projects.png" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+</head>
+<body>
+<div class="notice">
+  9 个项目持续维护中 · 3 开源 / 2 商业 / 2 教学
+  <span class="dot"></span>
+<a href="bulletin.html">最新动态 →</a>
+</div>
+<header class="nav">
+<div class="nav-inner">
+<a class="brand" href="index.html">
+<span class="brand-mark">z4</span>
+<span>四时工坊</span>
+</a>
+<nav class="nav-links">
+<a href="index.html">首页</a>
+<a href="about.html">关于</a>
+<a href="projects.html">项目</a>
+<a href="capabilities.html">能力</a>
+<a href="pipeline.html">管线</a>
+<a href="bulletin.html">公告</a>
+<a href="contact.html">联系</a>
+<span class="nav-dropdown">
+<button class="nav-dropdown-btn">在线体验 <span class="arrow-down">▼</span></button>
+<span class="nav-dropdown-menu">
+<a href="https://work.feng-qiao.top/crypto/">CryptoVis<span class="dd-desc">密码学可视化</span></a>
+<a href="https://work.feng-qiao.top/struct/">StructVis<span class="dd-desc">数据结构可视化</span></a>
+<a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋<span class="dd-desc">CTF 工具箱</span></a>
+</span>
+</span>
+<a class="nav-cta" href="https://github.com/zep4yrs" rel="noopener" target="_blank">GitHub ↗</a>
+</nav>
+
+  <button class="hamburger" aria-label="菜单"><span></span><span></span><span></span></button>
+</div>
+</header>
+<div class="mobile-menu">
+  <a href="index.html">首页</a>
+  <a href="index.html#matrix">项目矩阵</a>
+  <a href="index.html#ecosystem">生态</a>
+  <a href="about.html">关于</a>
+  <a href="projects.html">项目</a>
+  <a href="capabilities.html">能力</a>
+  <a href="pipeline.html">管线</a>
+  <a href="bulletin.html">公告</a>
+  <a href="contact.html">联系</a>
+  <div class="mm-dropdown">
+    <button class="mm-dropdown-btn">在线体验 ▼</button>
+    <div class="mm-dropdown-menu">
+      <a href="https://work.feng-qiao.top/crypto/">CryptoVis</a>
+      <a href="https://work.feng-qiao.top/struct/">StructVis</a>
+      <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋</a>
+    </div>
+  </div>
+  <a href="https://github.com/zep4yrs" class="mm-cta" target="_blank">GitHub ↗</a>
+</div>
+
+<main>
+<section class="hero" style="padding: 72px 0 56px;">
+<div class="hero-watermark">PROJECTS</div>
+<div class="wrap">
+<div class="hero-left">
+<div class="kicker">PROJECTS · 项目清单</div>
+<h1>九个项目<span class="en">nine projects</span></h1>
+<p class="sub">桌面开发、安全工程、教学可视化、游戏化学习四个方向，九个项目，开源和商业并行。</p>
+</div>
+</div>
+</section>
+<section class="section" id="matrix">
+<div class="wrap">
+<div class="section-head">
+<div class="kicker">MATRIX · 项目矩阵</div>
+<h2>全部项目<span class="en">all projects</span></h2>
+</div>
+<!-- 筛选器 -->
+<div class="filter-bar">
+<span class="filter-chip active" data-filter="all">全部 <span class="count">9</span></span>
+<span class="filter-chip" data-filter="open">开源 <span class="count">3</span></span>
+<span class="filter-chip" data-filter="commercial">商业 <span class="count">4</span></span>
+<span class="filter-chip" data-filter="edu">教学 <span class="count">2</span></span>
+<span class="filter-chip" data-filter="desktop">桌面 <span class="count">4</span></span>
+<span class="filter-chip" data-filter="web">Web <span class="count">3</span></span>
+<span class="filter-chip" data-filter="game">游戏 <span class="count">1</span></span>
+</div>
+<!-- 项目矩阵网格 -->
+<div class="matrix-grid">
+<a class="matrix-card" data-tags="open,desktop" href="bluetidy.html">
+<div class="mc-top"><span class="mc-num">N°01</span><span class="mc-license">MIT</span></div>
+<h3>BlueTidy<span class="en">disk analyzer</span></h3>
+<p class="mc-desc">磁盘空间分析工具。扫描整个磁盘，把文件按类型、大小、时间可视化，找出占空间的"老赖"。</p>
+<div class="mc-tags"><span class="mc-tag">Rust</span><span class="mc-tag">Tauri</span><span class="mc-tag">Disk</span></div>
+<div class="mc-foot"><span>v0.2.0 · Preview</span><span class="arrow">→</span></div>
+</a>
+<a class="matrix-card" data-tags="open,desktop" href="lannook.html">
+<div class="mc-top"><span class="mc-num">N°02</span><span class="mc-license">GPL-3.0</span></div>
+<h3>LanNook<span class="en">lan transfer</span></h3>
+<p class="mc-desc">局域网文件传输，零配置。同一 WiFi 下跨平台传文件，无需服务器，自动发现设备。</p>
+<div class="mc-tags"><span class="mc-tag">Rust</span><span class="mc-tag">LAN</span></div>
+<div class="mc-foot"><span>v26.2.1 · 跨平台</span><span class="arrow">→</span></div>
+</a>
+<a class="matrix-card" data-tags="open,web" href="ctf-qiankun.html">
+<div class="mc-top"><span class="mc-num">N°03</span><span class="mc-license">MIT</span></div>
+<h3>CTF 乾坤袋<span class="en">ctf toolbox</span></h3>
+<p class="mc-desc">CTF 工具箱在线工具，比赛常备。集成编码解码、密码学、隐写分析，一个网页搞定常用操作。</p>
+<div class="mc-tags"><span class="mc-tag">TypeScript</span><span class="mc-tag">Vue</span><span class="mc-tag">CTF</span></div>
+<div class="mc-foot"><span>50+ 工具 · 在线</span><span class="arrow">→</span></div>
+</a>
+<a class="matrix-card" data-tags="commercial,web" href="autopen.html">
+<div class="mc-top"><span class="mc-num">N°04</span><span class="mc-license commercial">商业</span></div>
+<h3>AutoPen<span class="en">ai security</span></h3>
+<p class="mc-desc">AI 驱动的安全自动化平台。从资产发现到漏洞验证，用大模型串联渗透测试全流程。</p>
+<div class="mc-tags"><span class="mc-tag">Python</span><span class="mc-tag">AI</span><span class="mc-tag">Security</span></div>
+<div class="mc-foot"><span>v0.3 · 内测</span><span class="arrow">→</span></div>
+</a>
+<a class="matrix-card" data-tags="commercial,game" href="alertzero.html">
+<div class="mc-top"><span class="mc-num">N°05</span><span class="mc-license commercial">商业</span></div>
+<h3>零号告警<span class="en">alert zero</span></h3>
+<p class="mc-desc">Steam 网络安全学习游戏。扮演学校网络安全中心老师，从告警到报告走完整事件分析流程。</p>
+<div class="mc-tags"><span class="mc-tag">Godot 4</span><span class="mc-tag">C#</span><span class="mc-tag">Steam</span></div>
+<div class="mc-foot"><span>V0.5 · 编码中</span><span class="arrow">→</span></div>
+</a>
+<a class="matrix-card" data-tags="edu,web" href="cryptovis.html">
+<div class="mc-top"><span class="mc-num">N°06</span><span class="mc-license">教学</span></div>
+<h3>CryptoVis<span class="en">crypto viz</span></h3>
+<p class="mc-desc">密码学可视化教学工具。把对称加密、哈希、签名等抽象概念变成可操作的动画。</p>
+<div class="mc-tags"><span class="mc-tag">Web</span><span class="mc-tag">Edu</span><span class="mc-tag">Crypto</span></div>
+<div class="mc-foot"><span>v0.4 · 活跃</span><span class="arrow">→</span></div>
+</a>
+<a class="matrix-card" data-tags="edu,web" href="structvis.html">
+<div class="mc-top"><span class="mc-num">N°07</span><span class="mc-license">教学</span></div>
+<h3>StructVis<span class="en">struct viz</span></h3>
+<p class="mc-desc">数据结构与数据库自学工具。保持一致教材章节，跟着教材走，操作即见结构变化。</p>
+<div class="mc-tags"><span class="mc-tag">Web</span><span class="mc-tag">Edu</span><span class="mc-tag">DS</span></div>
+<div class="mc-foot"><span>v0.0.1 · 新</span><span class="arrow">→</span></div>
+</a>
+<a class="matrix-card" data-tags="commercial,desktop" href="deepseek-pet.html">
+<div class="mc-top"><span class="mc-num">N°08</span><span class="mc-license commercial">商业</span></div>
+<h3>DeepSeek 桌宠<span class="en">api pet</span></h3>
+<p class="mc-desc">桌面额度管家。常驻桌面的小鲸鱼，实时显示 API 余额与用量，余额告急主动提醒。</p>
+<div class="mc-tags"><span class="mc-tag">Tauri</span><span class="mc-tag">Desktop</span><span class="mc-tag">API</span></div>
+<div class="mc-foot"><span>v0.1-dev · 开发中</span><span class="arrow">→</span></div>
+</a>
+<a class="matrix-card" data-tags="commercial,desktop" href="stellar.html">
+<div class="mc-top"><span class="mc-num">N°09</span><span class="mc-license commercial">商业</span></div>
+<h3>Stellar / 摘星<span class="en">curation</span></h3>
+<p class="mc-desc">桌面 AI 内容策展助手。随手贴一个链接或一段文字，5 秒告诉你值不值得看，然后把精华摘下来存好。</p>
+<div class="mc-tags"><span class="mc-tag">Tauri</span><span class="mc-tag">React</span><span class="mc-tag">AI</span></div>
+<div class="mc-foot"><span>v0.1-dev · 开发中</span><span class="arrow">→</span></div>
+</a>
+</div>
+</div>
+</section>
+</main>
+<footer>
+<div class="wrap">
+<div class="footer-inner">
+<span>© 2026 四时工坊 · zep4yrs</span>
+<span>PROJECTS · 项目清单</span>
+<span>BLUE TIDY · LANNOOK · CTF乾坤袋 · AUTOPEN · 零号告警 · CRYPTOVIS · STRUCTVIS · DEEPSEEK桌宠 · STELLAR</span>
+</div>
+</div>
+</footer>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<script src="assets/js/mimo.js"></script>
+<script>
+// 筛选器交互
+(function(){
+  var chips = document.querySelectorAll('.filter-chip');
+  var cards = document.querySelectorAll('.matrix-card');
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      chips.forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+      var filter = chip.dataset.filter;
+      cards.forEach(function(card){
+        if(filter === 'all' || card.dataset.tags.indexOf(filter) > -1){
+          card.style.display = '';
+          card.classList.add('stream-in','visible');
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+<script>
+    window.pagefind = new Promise(function(resolve) {
+          var s = document.createElement('script');
+          s.src = 'pagefind/pagefind-ui.js';
+          s.onload = function() { resolve(window.pagefind); };
+          s.onerror = function() { resolve(null); };
+          document.head.appendChild(s);
+        });
+    </script>
+<script src="assets/js/search.js"></script>
+</body>
+</html>

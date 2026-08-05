@@ -1,0 +1,201 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 · 图纸找不到 · 四时工坊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/mimo.css">
+<link rel="stylesheet" href="assets/css/search.css">
+<style>
+  /* ============ 404 专属样式 ============ */
+  .err-section { min-height: calc(100vh - 112px); display: flex; align-items: center; }
+  .err-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; padding: 48px 0; }
+  /* 左侧 SVG 视觉 */
+  .err-visual { display: flex; justify-content: center; align-items: center; }
+  .err-svg { width: 100%; max-width: 340px; height: auto; }
+  /* 环 */
+  .err-svg .er-ring { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 400; stroke-dashoffset: 0; }
+  .err-svg .er-ring-broken { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 0 400; stroke-dashoffset: 0; }
+  .err-svg .er-ring-soft { fill: none; stroke: var(--ink-4); stroke-width: 1; }
+  .err-svg .er-ring-dashed { fill: none; stroke: var(--ink-4); stroke-width: 1; stroke-dasharray: 3 4; }
+  .err-svg .er-cross { stroke: var(--ink-4); stroke-width: 0.5; fill: none; }
+  .err-svg .er-fragment { fill: var(--ink); }
+  .err-svg .er-dot { fill: var(--ink-3); }
+  .err-svg .er-label { font-family: var(--font-mono); font-size: 9px; fill: var(--ink-3); }
+  .err-svg .er-404-bg { font-family: var(--font-serif); font-weight: 900; font-size: 72px; fill: var(--watermark); }
+  /* 右侧文案 */
+  .err-text { }
+  .err-code { font-family: var(--font-serif); font-weight: 900; font-size: clamp(48px, 8vw, 80px); line-height: 1; letter-spacing: -0.04em; margin-bottom: 8px; }
+  .err-text h1 { font-family: var(--font-sans); font-weight: 700; font-size: clamp(24px, 3.5vw, 36px); letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 20px; }
+  .err-text h1 .en { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--ink-3); font-size: 0.6em; margin-left: 10px; }
+  .err-text p { font-size: 15px; color: var(--ink-2); line-height: 1.8; max-width: 44ch; margin-bottom: 32px; }
+  .err-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .err-actions a { padding: 12px 24px; font-size: 14px; text-decoration: none; border: 1px solid var(--ink); transition: all .15s; }
+  .err-actions a:hover { opacity: 0.85; }
+  .err-actions a.primary { background: var(--ink); color: var(--bg); }
+  .err-actions a.ghost { color: var(--ink-2); border-color: var(--line); }
+  .err-actions a.ghost:hover { border-color: var(--ink); color: var(--ink); }
+  /* 移动端适配 */
+  @media (max-width: 768px) {
+    .err-inner { grid-template-columns: 1fr; gap: 40px; }
+    .err-visual { order: -1; }
+    .err-svg { max-width: 240px; }
+    .err-text { text-align: center; }
+    .err-text p { max-width: 100%; }
+    .err-actions { justify-content: center; }
+  }
+</style>
+<link rel="canonical" href="https://work.feng-qiao.top/404.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="404 · 四时工坊">
+<meta property="og:description" content="页面未找到。">
+<meta property="og:url" content="https://work.feng-qiao.top/404.html">
+<meta property="og:site_name" content="四时工坊">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="404 · 四时工坊">
+<meta name="twitter:description" content="页面未找到。">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1A1A1A">
+<link rel="icon" type="image/svg+xml" href="assets/svg/logo-zep4yrs.svg">
+<link rel="alternate" type="application/rss+xml" title="四时工坊公告" href="feed.xml">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"四时工坊","alternateName":"Four Seasons Workshop","url":"https://work.feng-qiao.top","logo":"https://work.feng-qiao.top/assets/svg/logo-zep4yrs.svg","founder":"枫桥","foundingDate":"2024","sameAs":["https://github.com/zep4yrs"]}
+</script>
+<meta property="og:image" content="https://work.feng-qiao.top/assets/og/og-404.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+</head>
+<body>
+<!-- 通知条 -->
+<div class="notice">
+<span>StructVis v0.0.1 已发布</span><span class="dot"></span><span>数据结构自学工具上线 GitHub Pages</span><span class="dot"></span><a href="bulletin.html">查看全部动态 →</a>
+</div>
+<!-- 导航 -->
+<header class="nav">
+<div class="nav-inner">
+<a class="brand" href="index.html">
+<span class="brand-mark">z4</span>
+<span>四时工坊</span>
+</a>
+<nav class="nav-links">
+<a href="index.html#matrix">项目矩阵</a>
+<a href="index.html#ecosystem">生态</a>
+<a href="about.html">关于</a>
+<a href="projects.html">项目</a>
+<a href="capabilities.html">能力</a>
+<a href="pipeline.html">管线</a>
+<a href="bulletin.html">公告</a>
+<a href="contact.html">联系</a>
+<span class="nav-dropdown">
+<button class="nav-dropdown-btn">在线体验 <span class="arrow-down">▼</span></button>
+<span class="nav-dropdown-menu">
+<a href="https://work.feng-qiao.top/crypto/">CryptoVis<span class="dd-desc">密码学可视化</span></a>
+<a href="https://work.feng-qiao.top/struct/">StructVis<span class="dd-desc">数据结构可视化</span></a>
+<a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋<span class="dd-desc">CTF 工具箱</span></a>
+</span>
+</span>
+<a class="nav-cta" href="https://github.com/zep4yrs" target="_blank">GitHub ↗</a>
+</nav>
+
+  <button class="hamburger" aria-label="菜单"><span></span><span></span><span></span></button>
+</div>
+</header>
+<div class="mobile-menu">
+  <a href="index.html">首页</a>
+  <a href="index.html#matrix">项目矩阵</a>
+  <a href="index.html#ecosystem">生态</a>
+  <a href="about.html">关于</a>
+  <a href="projects.html">项目</a>
+  <a href="capabilities.html">能力</a>
+  <a href="pipeline.html">管线</a>
+  <a href="bulletin.html">公告</a>
+  <a href="contact.html">联系</a>
+  <div class="mm-dropdown">
+    <button class="mm-dropdown-btn">在线体验 ▼</button>
+    <div class="mm-dropdown-menu">
+      <a href="https://work.feng-qiao.top/crypto/">CryptoVis</a>
+      <a href="https://work.feng-qiao.top/struct/">StructVis</a>
+      <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋</a>
+    </div>
+  </div>
+  <a href="https://github.com/zep4yrs" class="mm-cta" target="_blank">GitHub ↗</a>
+</div>
+
+
+<!-- 404 主内容 -->
+<section class="err-section scroll-reveal">
+<div class="wrap">
+<div class="err-inner">
+<div class="err-visual">
+<svg class="err-svg" viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景水印 404 -->
+  <text class="er-404-bg" x="170" y="195" text-anchor="middle">404</text>
+  <!-- 十字基线 -->
+  <line class="er-cross" x1="170" y1="20" x2="170" y2="320" />
+  <line class="er-cross" x1="20" y1="170" x2="320" y2="170" />
+  <!-- 外层虚环（完整） -->
+  <circle class="er-ring-dashed" cx="170" cy="170" r="130" />
+  <!-- 内层实环（断开） -->
+  <path class="er-ring" d="M 170 40 A 130 130 0 0 1 250 55" />
+  <path class="er-ring" d="M 280 100 A 130 130 0 0 1 300 170" />
+  <path class="er-ring" d="M 280 220 A 130 130 0 0 1 170 300" />
+  <path class="er-ring" d="M 60 250 A 130 130 0 0 1 40 170" />
+  <!-- 碎片散落 -->
+  <rect class="er-fragment" x="255" y="48" width="8" height="8" transform="rotate(25 259 52)" />
+  <rect class="er-fragment" x="305" y="165" width="6" height="6" transform="rotate(-15 308 168)" />
+  <rect class="er-fragment" x="160" y="315" width="7" height="7" transform="rotate(40 163 318)" />
+  <rect class="er-fragment" x="30" y="155" width="5" height="5" transform="rotate(-30 32 157)" />
+  <rect class="er-fragment" x="270" y="240" width="6" height="6" transform="rotate(10 273 243)" />
+  <!-- 中心标记 -->
+  <circle class="er-dot" cx="170" cy="170" r="4" />
+  <text class="er-label" x="170" y="200" text-anchor="middle">• 迷路坐标 •</text>
+  <!-- 信号线（断掉） -->
+  <line class="er-ring-soft" x1="170" y1="170" x2="170" y2="40" stroke-dasharray="2 6" />
+  <line class="er-ring-soft" x1="170" y1="170" x2="300" y2="170" stroke-dasharray="2 6" />
+  <!-- 问号标记 -->
+  <text class="er-label" style="font-size:24px;fill:var(--ink-3)" x="235" y="55" font-family="var(--font-serif)">?</text>
+  <text class="er-label" style="font-size:16px;fill:var(--ink-3)" x="310" y="195" font-family="var(--font-serif)">?</text>
+</svg>
+</div>
+<div class="err-text scroll-reveal">
+<div class="err-code">404</div>
+<h1>图纸找不到这张图<span class="en">not found</span></h1>
+<p>页面不在图纸上——可能被擦掉了，可能从未画过，也可能 URL 写错了。回到工坊重新找路，或者直接去项目区看看。</p>
+<div class="err-actions">
+<a href="index.html" class="primary">← 返回首页</a>
+<a href="projects.html" class="ghost">查看项目</a>
+<a href="bulletin.html" class="ghost">最新公告</a>
+<a href="https://github.com/zep4yrs" class="ghost" target="_blank">GitHub ↗</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<script src="assets/js/mimo.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+<script>
+    window.pagefind = new Promise(function(resolve) {
+          var s = document.createElement('script');
+          s.src = 'pagefind/pagefind-ui.js';
+          s.onload = function() { resolve(window.pagefind); };
+          s.onerror = function() { resolve(null); };
+          document.head.appendChild(s);
+        });
+    </script>
+<script src="assets/js/search.js"></script>
+</body>
+</html>

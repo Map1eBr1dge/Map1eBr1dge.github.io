@@ -1,0 +1,243 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>联系 · 四时工坊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,500&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/fonts.css">
+  <link rel="stylesheet" href="assets/css/mimo.css">
+  <link rel="stylesheet" href="assets/css/search.css">
+<style>
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    border: 1px solid var(--line); border-bottom: none;
+  }
+  .contact-card {
+    padding: 40px; border-bottom: 1px solid var(--line);
+    border-right: 1px solid var(--line); background: var(--card);
+    transition: background .15s; text-decoration: none; color: inherit;
+    display: flex; flex-direction: column;
+  }
+  .contact-card:last-child, .contact-card:nth-child(2n) { border-right: none; }
+  .contact-card:hover { background: var(--bg); }
+  .contact-card .cc-kicker {
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-3);
+    letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 16px;
+  }
+  .contact-card h3 {
+    font-family: var(--font-sans); font-weight: 700;
+    font-size: 22px; margin-bottom: 8px; letter-spacing: -0.01em;
+  }
+  .contact-card h3 .en {
+    font-family: var(--font-serif); font-style: italic; font-weight: 400;
+    color: var(--ink-3); font-size: 0.65em; margin-left: 8px;
+  }
+  .contact-card .cc-desc { font-size: 14px; color: var(--ink-2); line-height: 1.7; margin-bottom: 20px; flex: 1; }
+  .contact-card .cc-link {
+    font-family: var(--font-mono); font-size: 13px; color: var(--ink);
+    border-top: 1px solid var(--line); padding-top: 16px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .contact-card .cc-link .arrow { font-family: var(--font-serif); transition: transform .15s; }
+  .contact-card:hover .cc-link .arrow { transform: translateX(4px); }
+
+  .form-block {
+    border: 1px solid var(--line); padding: 40px; background: var(--card);
+  }
+  .form-block h3 {
+    font-family: var(--font-sans); font-weight: 700; font-size: 20px; margin-bottom: 4px;
+  }
+  .form-block h3 .en {
+    font-family: var(--font-serif); font-style: italic; font-weight: 400;
+    color: var(--ink-3); font-size: 0.65em; margin-left: 8px;
+  }
+  .form-block .fb-desc { font-size: 13px; color: var(--ink-2); margin-bottom: 24px; }
+  .form-block .field { margin-bottom: 20px; }
+  .form-block label {
+    display: block; font-family: var(--font-mono); font-size: 11px;
+    color: var(--ink-3); letter-spacing: 0.1em; margin-bottom: 8px;
+  }
+  .form-block input, .form-block textarea {
+    width: 100%; border: none; border-bottom: 1px solid var(--line);
+    background: transparent; padding: 8px 0; font-family: var(--font-sans);
+    font-size: 14px; color: var(--ink); outline: none;
+    transition: border-color .15s;
+  }
+  .form-block input:focus, .form-block textarea:focus { border-color: var(--ink); }
+  .form-block textarea { resize: vertical; min-height: 80px; }
+  .form-block button {
+    background: var(--ink); color: var(--bg); border: none;
+    padding: 12px 28px; font-family: var(--font-mono); font-size: 13px;
+    cursor: pointer; transition: opacity .15s;
+  }
+  .form-block button:hover { opacity: 0.85; }
+
+  @media (max-width: 768px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    .contact-card { border-right: none; }
+  }
+</style>
+  <link rel="canonical" href="https://work.feng-qiao.top/contact.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="联系 · 四时工坊">
+  <meta property="og:description" content="GitHub、邮箱、RSS、在线演示。有啥想说的都能找到路子。">
+  <meta property="og:url" content="https://work.feng-qiao.top/contact.html">
+  <meta property="og:site_name" content="四时工坊">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="联系 · 四时工坊">
+  <meta name="twitter:description" content="GitHub、邮箱、RSS、在线演示。有啥想说的都能找到路子。">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1A1A1A">
+  <link rel="icon" type="image/svg+xml" href="assets/svg/logo-zep4yrs.svg">
+  <link rel="alternate" type="application/rss+xml" title="四时工坊公告" href="feed.xml">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"四时工坊","alternateName":"Four Seasons Workshop","url":"https://work.feng-qiao.top","logo":"https://work.feng-qiao.top/assets/svg/logo-zep4yrs.svg","founder":"枫桥","foundingDate":"2024","sameAs":["https://github.com/zep4yrs"]}
+  </script>
+  <meta property="og:image" content="https://work.feng-qiao.top/assets/og/og-contact.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+</head>
+<body>
+
+<div class="notice">
+  欢迎交流 · bug 报告 / 功能建议 / 合作
+  <span class="dot"></span>
+  <a href="https://github.com/zep4yrs" target="_blank" rel="noopener">GitHub →</a>
+</div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">z4</span>
+      <span>四时工坊</span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="about.html">关于</a>
+      <a href="projects.html">项目</a>
+      <a href="capabilities.html">能力</a>
+      <a href="pipeline.html">管线</a>
+      <a href="bulletin.html">公告</a>
+      <a href="contact.html">联系</a>
+      <span class="nav-dropdown">
+        <button class="nav-dropdown-btn">在线体验 <span class="arrow-down">▼</span></button>
+        <span class="nav-dropdown-menu">
+          <a href="https://work.feng-qiao.top/crypto/">CryptoVis<span class="dd-desc">密码学可视化</span></a>
+          <a href="https://work.feng-qiao.top/struct/">StructVis<span class="dd-desc">数据结构可视化</span></a>
+          <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋<span class="dd-desc">CTF 工具箱</span></a>
+        </span>
+      </span>
+      <a href="https://github.com/zep4yrs" target="_blank" rel="noopener" class="nav-cta">GitHub ↗</a>
+    </nav>
+  
+  <button class="hamburger" aria-label="菜单"><span></span><span></span><span></span></button>
+</div>
+</header>
+<div class="mobile-menu">
+  <a href="index.html">首页</a>
+  <a href="index.html#matrix">项目矩阵</a>
+  <a href="index.html#ecosystem">生态</a>
+  <a href="about.html">关于</a>
+  <a href="projects.html">项目</a>
+  <a href="capabilities.html">能力</a>
+  <a href="pipeline.html">管线</a>
+  <a href="bulletin.html">公告</a>
+  <a href="contact.html">联系</a>
+  <div class="mm-dropdown">
+    <button class="mm-dropdown-btn">在线体验 ▼</button>
+    <div class="mm-dropdown-menu">
+      <a href="https://work.feng-qiao.top/crypto/">CryptoVis</a>
+      <a href="https://work.feng-qiao.top/struct/">StructVis</a>
+      <a href="https://work.feng-qiao.top/ctf-qiankun/">CTF 乾坤袋</a>
+    </div>
+  </div>
+  <a href="https://github.com/zep4yrs" class="mm-cta" target="_blank">GitHub ↗</a>
+</div>
+
+
+<main>
+<section class="hero" style="padding: 72px 0 56px;">
+  <div class="hero-watermark">CONTACT</div>
+  <div class="wrap">
+    <div class="hero-left">
+      <div class="kicker">CONTACT · 联系</div>
+      <h1>找到工坊<span class="en">reach us</span></h1>
+      <p class="sub">有啥想说的、想问的、或者发现了个 bug，在这都能找到路子。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="channels">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">CHANNELS · 联系渠道</div>
+      <h2>怎么找到我们<span class="en">how to reach</span></h2>
+    </div>
+    <div class="contact-grid">
+      <a class="contact-card" href="https://github.com/zep4yrs" target="_blank" rel="noopener">
+        <div class="cc-kicker">CODE · 源码</div>
+        <h3>GitHub<span class="en">source & issues</span></h3>
+        <p class="cc-desc">所有开源项目的源码、Issue、PR 都在这里。bug 报告、功能建议、代码贡献，都欢迎。</p>
+        <div class="cc-link"><span>github.com/zep4yrs</span><span class="arrow">→</span></div>
+      </a>
+      <a class="contact-card" href="bulletin.html">
+        <div class="cc-kicker">NEWS · 动态</div>
+        <h3>公告 RSS<span class="en">subscribe</span></h3>
+        <p class="cc-desc">订阅 RSS feed，工坊的版本发布、项目进展、计划变更第一时间送达，不用主动查。</p>
+        <div class="cc-link"><span>feed.xml</span><span class="arrow">→</span></div>
+      </a>
+      <a class="contact-card" href="mailto:1706208350@qq.com">
+        <div class="cc-kicker">MAIL · 邮件</div>
+        <h3>邮箱<span class="en">email</span></h3>
+        <p class="cc-desc">合作、咨询、深度交流，或不想在 GitHub 公开讨论的事，发邮件最稳妥。一般 48 小时内回复。</p>
+        <div class="cc-link"><span>1706208350@qq.com</span><span class="arrow">→</span></div>
+      </a>
+      <a class="contact-card" href="projects.html">
+        <div class="cc-kicker">DEMO · 演示</div>
+        <h3>在线体验<span class="en">try it</span></h3>
+        <p class="cc-desc">CryptoVis、StructVis 等教学工具有在线演示，不用下载直接在浏览器里体验核心功能。</p>
+        <div class="cc-link"><span>work.feng-qiao.top</span><span class="arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <span>© 2026 四时工坊 · zep4yrs</span>
+      <span>CONTACT · 联系</span>
+      <span>GITHUB · RSS · EMAIL · DEMO</span>
+    </div>
+  </div>
+</footer>
+
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<script src="assets/js/mimo.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+<script>
+    window.pagefind = new Promise(function(resolve) {
+          var s = document.createElement('script');
+          s.src = 'pagefind/pagefind-ui.js';
+          s.onload = function() { resolve(window.pagefind); };
+          s.onerror = function() { resolve(null); };
+          document.head.appendChild(s);
+        });
+    </script>
+<script src="assets/js/search.js"></script>
+</body>
+</html>
