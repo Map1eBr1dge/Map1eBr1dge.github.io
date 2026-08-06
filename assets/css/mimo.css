@@ -127,7 +127,7 @@
   /* 四季同心环 · 3D（Three.js canvas 容器） */
   .hero-right { display: flex; justify-content: center; align-items: center; }
   .globe-3d {
-    width: 100%; max-width: 600px; aspect-ratio: 1 / 1;
+    width: 100%; max-width: 800px; aspect-ratio: 1 / 1;
     position: relative;
   }
   .globe-3d canvas { display: block; width: 100% !important; height: 100% !important; }
