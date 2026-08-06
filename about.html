@@ -11,6 +11,8 @@
 <link href="assets/css/fonts.css" rel="stylesheet"/>
 <link href="assets/css/mimo.css" rel="stylesheet"/>
 <link href="assets/css/search.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <style>
   /* about 页专属：历程时间线 */
   .timeline { border-top: 1px solid var(--line); }
@@ -163,10 +165,21 @@
 <section class="hero" style="padding: 72px 0 56px;">
 <div class="hero-watermark">ABOUT</div>
 <div class="wrap">
+<div class="hero-inner">
 <div class="hero-left">
 <div class="kicker">ABOUT · 关于</div>
 <h1>关于工坊<span class="en">about the workshop</span></h1>
 <p class="sub">四时工坊是枫桥独立维护的软件工作室。不追风口、不赶工期，按自己的节奏把每个想法做成能用的东西。</p>
+</div>
+<div class="hero-right">
+<div id="globe3d" class="globe-3d">
+  <div class="globe-label label-2024">2024</div>
+  <div class="globe-label label-2025">2025</div>
+  <div class="globe-label label-2026">2026</div>
+  <div class="globe-label label-origin">Origin</div>
+  <div class="globe-label label-footer">历程线</div>
+</div>
+</div>
 </div>
 </div>
 </section>
@@ -292,7 +305,188 @@
 <!-- 自定义鼠标 -->
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="cursor-dot" id="cursorDot"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="assets/js/mimo.js"></script>
+<script>
+/* ===== 历程线 · 3D 螺旋路径（Three.js + GSAP） ===== */
+(function(){
+  'use strict';
+  var container = document.getElementById('globe3d');
+  if (!container || typeof THREE === 'undefined' || typeof gsap === 'undefined') return;
+
+  var scene = new THREE.Scene();
+  var aspect = container.clientWidth / container.clientHeight;
+  var camera = new THREE.PerspectiveCamera(38, aspect, 0.1, 100);
+  camera.position.set(5, 3, 8);
+  camera.lookAt(0, 0, 0);
+
+  var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  container.appendChild(renderer.domElement);
+
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.autoRotate = false;
+  controls.minDistance = 3;
+  controls.maxDistance = 20;
+  controls.target.set(0, 0, 0);
+
+  function resize() {
+    var w = container.clientWidth;
+    var h = container.clientHeight;
+    if (w === 0 || h === 0) return;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  /* 螺旋路径点 */
+  var spiralPoints = [];
+  var turns = 4;
+  var totalPts = 200;
+  for (var i = 0; i <= totalPts; i++) {
+    var t = i / totalPts;
+    var angle = t * Math.PI * 2 * turns;
+    var radius = 3.2 - t * 1.6;
+    var y = -2.0 + t * 4.0;
+    spiralPoints.push(new THREE.Vector3(
+      Math.cos(angle) * radius,
+      y,
+      Math.sin(angle) * 0.8
+    ));
+  }
+
+  /* 螺旋线 */
+  var spiralGeo = new THREE.BufferGeometry().setFromPoints(spiralPoints);
+  var spiralMat = new THREE.LineBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.35 });
+  var spiralLine = new THREE.Line(spiralGeo, spiralMat);
+  scene.add(spiralLine);
+
+  /* 三个里程碑节点 */
+  var milestones = [
+    { t: 0.1, label: '2024', color: 0x555555, size: 0.12 },
+    { t: 0.45, label: '2025', color: 0x888888, size: 0.15 },
+    { t: 0.85, label: '2026', color: 0xCCCCCC, size: 0.18 }
+  ];
+
+  var nodeGroup = new THREE.Group();
+  var nodeMeshes = [];
+  milestones.forEach(function(m) {
+    var idx = Math.floor(m.t * totalPts);
+    var pos = spiralPoints[idx] || spiralPoints[spiralPoints.length - 1];
+    var geo = new THREE.SphereGeometry(m.size, 12, 12);
+    var mat = new THREE.MeshBasicMaterial({ color: m.color });
+    var mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(pos);
+    nodeGroup.add(mesh);
+    nodeMeshes.push(mesh);
+
+    /* 光环 */
+    var ringGeo = new THREE.RingGeometry(m.size * 1.5, m.size * 1.8, 24);
+    var ringMat = new THREE.MeshBasicMaterial({ color: m.color, side: THREE.DoubleSide, transparent: true, opacity: 0.3 });
+    var ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.position.copy(pos);
+    ring.lookAt(0, 0, 0);
+    nodeGroup.add(ring);
+    gsap.to(ring.scale, { x: 2, y: 2, z: 2, duration: 2, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: m.t * 3 });
+    gsap.to(ring.material, { opacity: 0, duration: 2, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: m.t * 3 });
+  });
+  scene.add(nodeGroup);
+
+  /* 连接线：从原点到各节点 */
+  var origin = new THREE.Vector3(0, -2, 0);
+  nodeMeshes.forEach(function(mesh) {
+    var lineGeo = new THREE.BufferGeometry().setFromPoints([origin, mesh.position]);
+    var lineMat = new THREE.LineDashedMaterial({ color: 0x555555, dashSize: 0.05, gapSize: 0.1, transparent: true, opacity: 0.2 });
+    var line = new THREE.Line(lineGeo, lineMat);
+    line.computeLineDistances();
+    scene.add(line);
+  });
+
+  /* 起点原点 */
+  var originGeo = new THREE.SphereGeometry(0.08, 8, 8);
+  var originMat = new THREE.MeshBasicMaterial({ color: 0x555555 });
+  var originMesh = new THREE.Mesh(originGeo, originMat);
+  originMesh.position.copy(origin);
+  scene.add(originMesh);
+
+  /* 装饰粒子沿路径 */
+  var dotGroup = new THREE.Group();
+  var dotGeo = new THREE.SphereGeometry(0.03, 4, 4);
+  var dotMat = new THREE.MeshBasicMaterial({ color: 0x888888 });
+  var dotCount = 80;
+  var dotMeshes = [];
+  for (var i = 0; i < dotCount; i++) {
+    var dot = new THREE.Mesh(dotGeo, dotMat);
+    var idx = Math.floor((i / dotCount) * totalPts);
+    var p = spiralPoints[idx] || spiralPoints[0];
+    dot.position.copy(p);
+    dotGroup.add(dot);
+    dotMeshes.push(dot);
+  }
+  scene.add(dotGroup);
+
+  /* GSAP 旋转 */
+  gsap.to(spiralLine.rotation, { y: Math.PI * 2, duration: 35, repeat: -1, ease: 'none' });
+  gsap.to(nodeGroup.rotation, { y: Math.PI * 2, duration: 35, repeat: -1, ease: 'none' });
+  gsap.to(dotGroup.rotation, { y: Math.PI * 2, duration: 35, repeat: -1, ease: 'none' });
+
+  /* 粒子沿路径流动 */
+  (function flowParticles() {
+    var offset = 0;
+    setInterval(function() {
+      offset = (offset + 1) % dotCount;
+      for (var i = 0; i < dotCount; i++) {
+        var idx = (i + offset) % dotCount;
+        var pi = Math.floor((idx / dotCount) * totalPts);
+        var p = spiralPoints[pi] || spiralPoints[0];
+        dotMeshes[i].position.copy(p);
+      }
+    }, 120);
+  })();
+
+  /* 标签 */
+  var label2024 = container.querySelector('.label-2024');
+  var label2025 = container.querySelector('.label-2025');
+  var label2026 = container.querySelector('.label-2026');
+  var labelOrigin = container.querySelector('.label-origin');
+  var labelFooter = container.querySelector('.label-footer');
+
+  var labelPositions = [
+    { el: label2024, pos: new THREE.Vector3(0, -1.0, 0) },
+    { el: label2025, pos: new THREE.Vector3(0, 0.8, 0) },
+    { el: label2026, pos: new THREE.Vector3(0, 2.5, 0) },
+    { el: labelOrigin, pos: new THREE.Vector3(0, -2.8, 0) },
+    { el: labelFooter, pos: new THREE.Vector3(0, -3.8, 0) }
+  ];
+
+  function updateLabels() {
+    var rect = container.getBoundingClientRect();
+    for (var i = 0; i < labelPositions.length; i++) {
+      var lp = labelPositions[i];
+      if (!lp.el) continue;
+      var vec = lp.pos.clone();
+      vec.project(camera);
+      var x = (vec.x * 0.5 + 0.5) * rect.width;
+      var y = (-vec.y * 0.5 + 0.5) * rect.height;
+      lp.el.style.left = x + 'px';
+      lp.el.style.top = y + 'px';
+    }
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    updateLabels();
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+</script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
