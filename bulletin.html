@@ -11,6 +11,8 @@
 <link href="assets/css/fonts.css" rel="stylesheet"/>
 <link href="assets/css/mimo.css" rel="stylesheet"/>
 <link href="assets/css/search.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <style>
   .bulletin-list { border-top: 1px solid var(--line); }
   .b-item {
@@ -114,10 +116,20 @@
 <section class="hero" style="padding: 72px 0 56px;">
 <div class="hero-watermark">BULLETIN</div>
 <div class="wrap">
+<div class="hero-inner">
 <div class="hero-left">
 <div class="kicker">BULLETIN · 公告</div>
 <h1>工坊动态<span class="en">what's new</span></h1>
 <p class="sub">版本发布、项目进展、计划变更工坊的动态都在这里。可订阅 RSS 第一时间收到。</p>
+</div>
+<div class="hero-right">
+<div id="globe3d" class="globe-3d">
+  <div class="globe-label label-ripple1">发布</div>
+  <div class="globe-label label-ripple2">更新</div>
+  <div class="globe-label label-ripple3">计划</div>
+  <div class="globe-label label-footer">波纹公告</div>
+</div>
+</div>
 </div>
 </div>
 </section>
@@ -198,7 +210,188 @@
 </footer>
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="cursor-dot" id="cursorDot"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="assets/js/mimo.js"></script>
+<script>
+/* ===== 波纹公告 · 3D 扩散环（Three.js + GSAP） ===== */
+(function(){
+  'use strict';
+  var container = document.getElementById('globe3d');
+  if (!container || typeof THREE === 'undefined' || typeof gsap === 'undefined') return;
+
+  var scene = new THREE.Scene();
+  var aspect = container.clientWidth / container.clientHeight;
+  var camera = new THREE.PerspectiveCamera(38, aspect, 0.1, 100);
+  camera.position.set(0, 2, 8);
+  camera.lookAt(0, 0, 0);
+
+  var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  container.appendChild(renderer.domElement);
+
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.autoRotate = false;
+  controls.minDistance = 3;
+  controls.maxDistance = 20;
+  controls.target.set(0, 0, 0);
+
+  function resize() {
+    var w = container.clientWidth;
+    var h = container.clientHeight;
+    if (w === 0 || h === 0) return;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  /* 扩散环参数 */
+  var rippleColors = [0x444444, 0x666666, 0x888888, 0x666666, 0x444444];
+  var rippleGroup = new THREE.Group();
+  var ripples = [];
+
+  /* 创建一组扩散环 */
+  function createRippleRing(radius, color, yPos, phase) {
+    var segs = 48;
+    var geo = new THREE.RingGeometry(radius - 0.03, radius + 0.03, segs);
+    var mat = new THREE.MeshBasicMaterial({
+      color: color,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.3
+    });
+    var mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = yPos;
+    mesh.rotation.x = -Math.PI / 2 + (Math.random() - 0.5) * 0.3;
+    mesh.rotation.z = (Math.random() - 0.5) * 0.3;
+    return mesh;
+  }
+
+  /* 多组扩散环 */
+  for (var r = 0; r < 5; r++) {
+    var baseRadius = 0.5 + r * 0.6;
+    var yPos = -1.5 + r * 0.75;
+    var color = rippleColors[r];
+    var ring = createRippleRing(baseRadius, color, yPos, r * 0.2);
+    rippleGroup.add(ring);
+    ripples.push(ring);
+
+    /* 环上的装饰点 */
+    var dotCount = 8 + r * 2;
+    var dotGeo = new THREE.SphereGeometry(0.04, 4, 4);
+    var dotMat = new THREE.MeshBasicMaterial({ color: color });
+    for (var d = 0; d < dotCount; d++) {
+      var a = (d / dotCount) * Math.PI * 2;
+      var dot = new THREE.Mesh(dotGeo, dotMat);
+      dot.position.set(Math.cos(a) * baseRadius, yPos, Math.sin(a) * baseRadius);
+      rippleGroup.add(dot);
+    }
+
+    /* GSAP 脉冲动画：环缩放+透明度 */
+    gsap.to(ring.scale, {
+      x: 1.8, y: 1.8, z: 1.8,
+      duration: 2.5 + r * 0.4,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+      delay: r * 0.5
+    });
+    gsap.to(ring.material, {
+      opacity: 0.05,
+      duration: 2.5 + r * 0.4,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+      delay: r * 0.5
+    });
+  }
+  scene.add(rippleGroup);
+
+  /* 中心竖直线 - 公告柱 */
+  var pillarGeo = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(0, -2.0, 0),
+    new THREE.Vector3(0, 2.0, 0)
+  ]);
+  var pillarMat = new THREE.LineDashedMaterial({
+    color: 0x555555,
+    dashSize: 0.06,
+    gapSize: 0.08,
+    transparent: true,
+    opacity: 0.2
+  });
+  var pillar = new THREE.Line(pillarGeo, pillarMat);
+  pillar.computeLineDistances();
+  scene.add(pillar);
+
+  /* 顶部发光点 */
+  var topGeo = new THREE.SphereGeometry(0.1, 8, 8);
+  var topMat = new THREE.MeshBasicMaterial({ color: 0xAAAAAA });
+  var topMesh = new THREE.Mesh(topGeo, topMat);
+  topMesh.position.set(0, 2.0, 0);
+  scene.add(topMesh);
+  gsap.to(topMesh.scale, { x: 1.5, y: 1.5, z: 1.5, duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+
+  /* 底部发光点 */
+  var bottomMesh = new THREE.Mesh(topGeo, topMat);
+  bottomMesh.position.set(0, -2.0, 0);
+  scene.add(bottomMesh);
+
+  /* 悬浮粒子 */
+  var pCount = 100;
+  var pGeo = new THREE.BufferGeometry();
+  var pPos = new Float32Array(pCount * 3);
+  for (var i = 0; i < pCount * 3; i++) {
+    pPos[i] = (Math.random() - 0.5) * 10;
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+  var pMat = new THREE.PointsMaterial({ color: 0x555555, size: 0.02, transparent: true, opacity: 0.3 });
+  var pMesh = new THREE.Points(pGeo, pMat);
+  scene.add(pMesh);
+
+  /* GSAP 缓慢旋转 */
+  gsap.to(rippleGroup.rotation, { y: Math.PI * 2, duration: 30, repeat: -1, ease: 'none' });
+  gsap.to(pMesh.rotation, { y: -Math.PI * 2, duration: 50, repeat: -1, ease: 'none' });
+
+  /* 标签 */
+  var labelR1 = container.querySelector('.label-ripple1');
+  var labelR2 = container.querySelector('.label-ripple2');
+  var labelR3 = container.querySelector('.label-ripple3');
+  var labelFooter = container.querySelector('.label-footer');
+
+  var labelPositions = [
+    { el: labelR1, pos: new THREE.Vector3(0, 1.5, 0) },
+    { el: labelR2, pos: new THREE.Vector3(0, 0.5, 0) },
+    { el: labelR3, pos: new THREE.Vector3(0, -0.5, 0) },
+    { el: labelFooter, pos: new THREE.Vector3(0, -3.5, 0) }
+  ];
+
+  function updateLabels() {
+    var rect = container.getBoundingClientRect();
+    for (var i = 0; i < labelPositions.length; i++) {
+      var lp = labelPositions[i];
+      if (!lp.el) continue;
+      var vec = lp.pos.clone();
+      vec.project(camera);
+      var x = (vec.x * 0.5 + 0.5) * rect.width;
+      var y = (-vec.y * 0.5 + 0.5) * rect.height;
+      lp.el.style.left = x + 'px';
+      lp.el.style.top = y + 'px';
+    }
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    updateLabels();
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+</script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
