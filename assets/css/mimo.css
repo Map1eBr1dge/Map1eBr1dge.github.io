@@ -124,17 +124,34 @@
   .hero-cta:hover { opacity: 0.85; }
   .hero-cta .arrow { font-family: var(--font-serif); }
 
-  /* 四季同心环 */
+  /* 四季同心环 · 3D（Three.js canvas 容器） */
   .hero-right { display: flex; justify-content: center; align-items: center; }
-  .globe-svg { width: 100%; max-width: 380px; height: auto; }
-  .globe-svg circle.dot { fill: var(--ink); }
-  .globe-svg .ring { fill: none; stroke: var(--ink); stroke-width: 1; }
-  .globe-svg .ring-dashed { fill: none; stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 3; }
-  .globe-svg .ring-soft { fill: none; stroke: var(--ink-4); stroke-width: 1; }
-  .globe-svg .line-soft { stroke: var(--ink-4); stroke-width: 0.5; fill: none; }
-  .globe-svg text { font-family: var(--font-mono); font-size: 9px; fill: var(--ink-3); }
-  .globe-svg text.season { font-family: var(--font-serif); font-style: italic; font-size: 13px; fill: var(--ink-2); }
-  .globe-svg text.center-mark { font-family: var(--font-serif); font-weight: 900; font-size: 18px; fill: var(--ink); }
+  .globe-3d {
+    width: 100%; max-width: 380px; aspect-ratio: 1 / 1;
+    position: relative;
+  }
+  .globe-3d canvas { display: block; width: 100% !important; height: 100% !important; }
+
+  /* 四季标签——屏幕空间跟随 */
+  .globe-label {
+    position: absolute; pointer-events: none;
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 13px; letter-spacing: 0.15em;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.5s;
+    z-index: 2;
+  }
+  .label-spring { color: var(--ink-3); }
+  .label-summer { color: var(--ink-2); }
+  .label-autumn { color: var(--ink); }
+  .label-winter { color: var(--ink-4); }
+
+  /* 四时同心——底部悬浮标签，mono 直立 */
+  .label-footer {
+    font-family: var(--font-mono); font-style: normal;
+    font-size: 10px; letter-spacing: 0.25em;
+    color: var(--ink-4);
+  }
 
   /* ============ 滚动横幅 ============ */
   .marquee {
@@ -561,8 +578,8 @@
   .parallax-watermark, .parallax-globe { will-change: transform; }
 
   /* ============================================================
-     四季同心环自主动效 —— 加大幅度，一眼可见
-     不用颜色变化（保持去色彩化），用缩放/旋转/快速流动
+     四季同心环自主动效 —— GSAP 时间线驱动，行星系节奏
+     外环顺时针慢转，相邻内环逆时针交错，像太阳系行星转
      ============================================================ */
 
   /* 节点呼吸：opacity 大幅变化 + scale 放大，明显闪烁 */
@@ -597,42 +614,10 @@
     100% { stroke-dashoffset: -28; }
   }
 
-  /* 四季环旋转：外环顺时针慢转，虚线环逆时针中速，像行星系 */
-  .globe-svg .ring-soft {
-    animation: ringBreathe 5s ease-in-out infinite, ringSpinCW 40s linear infinite;
-    transform-origin: 200px 200px;
-  }
-  .globe-svg .ring {
-    animation: ringBreathe 4s ease-in-out infinite;
-    animation-delay: 0.6s;
-    transform-origin: 200px 200px;
-  }
-  .globe-svg .ring-dashed {
-    animation: ringBreathe 4.5s ease-in-out infinite, ringSpinCCW 25s linear infinite;
-    animation-delay: 1.2s;
-    transform-origin: 200px 200px;
-  }
-  @keyframes ringBreathe {
-    0%, 100% { opacity: 0.45; }
-    50% { opacity: 1; }
-  }
-  @keyframes ringSpinCW {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-  @keyframes ringSpinCCW {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(-360deg); }
-  }
-
-  /* 四季标签：明显高亮流转 */
+  /* 四季标签：初始淡色，GSAP 驱动高亮流转 */
   .globe-svg text.season {
-    animation: seasonHighlight 6s ease-in-out infinite;
-    animation-delay: calc(var(--i, 0) * 1.5s);
-  }
-  @keyframes seasonHighlight {
-    0%, 70%, 100% { opacity: 0.35; fill: var(--ink-4); }
-    20%, 50% { opacity: 1; fill: var(--ink); }
+    opacity: 0.35;
+    fill: var(--ink-4);
   }
 
   /* —— 滚动监听导航高亮 —— */

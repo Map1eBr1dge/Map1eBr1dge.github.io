@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>四季同心环 · MiMo 3D</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #F9F9F7;
+  overflow: hidden;
+  height: 100vh;
+  font-family: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+}
+canvas { display: block; }
+
+/* 标签 — MiMo 墨色印刷体 */
+.label {
+  position: absolute;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  font-style: italic;
+  font-weight: 400;
+  z-index: 10;
+  transition: opacity 0.6s ease;
+}
+.label-spring { color: #999; }
+.label-summer { color: #555; }
+.label-autumn { color: #1A1A1A; }
+.label-winter { color: #C8C8C8; }
+
+/* 底部 */
+.footer {
+  position: fixed;
+  bottom: 28px; left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+  color: #C8C8C8;
+  letter-spacing: 0.2em;
+  font-family: 'SF Mono', 'JetBrains Mono', Consolas, monospace;
+  z-index: 10;
+}
+
+/* 提示 */
+.hint {
+  position: fixed;
+  top: 22px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: #C8C8C8;
+  font-family: 'SF Mono', 'JetBrains Mono', Consolas, monospace;
+  letter-spacing: 0.08em;
+  z-index: 10;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<div class="hint">拖拽 · 滚轮</div>
+<div class="label label-spring" id="labelSpring">Spring</div>
+<div class="label label-summer" id="labelSummer">Summer</div>
+<div class="label label-autumn" id="labelAutumn">Autumn</div>
+<div class="label label-winter" id="labelWinter">Winter</div>
+<div class="footer">四时同心 · 九项并作</div>
+
+<script>
+(function() {
+  'use strict';
+  if (typeof THREE === 'undefined' || typeof gsap === 'undefined') return;
+
+  /* ===== 场景 ===== */
+  var scene = new THREE.Scene();
+
+  /* ===== 相机 ===== */
+  var camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(6, 4, 10);
+  camera.lookAt(0, 0, 0);
+
+  /* ===== 渲染器 ===== */
+  var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0xF9F9F7, 1);
+  document.body.appendChild(renderer.domElement);
+
+  /* ===== 轨道控制 ===== */
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.autoRotate = false;
+  controls.minDistance = 3;
+  controls.maxDistance = 25;
+  controls.target.set(0, 0, 0);
+
+  /* ===== 辅助：生成圆环点 ===== */
+  function circlePoints(radius, segments) {
+    var pts = [];
+    for (var i = 0; i <= segments; i++) {
+      var a = (i / segments) * Math.PI * 2;
+      pts.push(new THREE.Vector3(
+        Math.cos(a) * radius,
+        Math.sin(a) * radius,
+        0
+      ));
+    }
+    return pts;
+  }
+
+  /* ===== 创建一根圆环线（LineLoop） ===== */
+  function makeRing(radius, color, dash, segments, tiltX, tiltZ) {
+    segments = segments || 64;
+    var geo = new THREE.BufferGeometry().setFromPoints(circlePoints(radius, segments));
+    var mat;
+    if (dash) {
+      mat = new THREE.LineDashedMaterial({
+        color: color,
+        dashSize: dash[0],
+        gapSize: dash[1],
+        linewidth: 1,
+        transparent: dash[2] !== undefined,
+        opacity: dash[2] !== undefined ? dash[2] : 1
+      });
+    } else {
+      mat = new THREE.LineBasicMaterial({
+        color: color,
+        transparent: true,
+        opacity: 0.6
+      });
+    }
+    var line = new THREE.Line(geo, mat);
+    if (dash) line.computeLineDistances();
+    line.rotation.x = tiltX;
+    line.rotation.z = tiltZ;
+    scene.add(line);
+    return line;
+  }
+
+  /* ===== 四季环 — 墨色系，不同倾斜角度 ===== */
+  // 春 — ink-4 (#C8C8C8)，虚线，大环，倾斜 25°
+  var spring = makeRing(3.2, 0xC8C8C8, [0.12, 0.18], 72, 0.45, 0.2);
+  // 夏 — ink-2 (#555555)，实线，次大环，倾斜 -15°
+  var summer = makeRing(2.4, 0x555555, null, 64, -0.35, 0.5);
+  // 秋 — ink (#1A1A1A)，实线，中环，倾斜 35°
+  var autumn = makeRing(1.6, 0x1A1A1A, null, 56, 0.55, -0.3);
+  // 冬 — ink-4 (#C8C8C8)，虚线细密，小环，倾斜 -25°
+  var winter = makeRing(0.8, 0xC8C8C8, [0.06, 0.12], 48, -0.25, 0.4);
+
+  /* ===== 装饰点：每个环的四个方位放小点 ===== */
+  function addOrbs(radius, color, count, tiltX, tiltZ) {
+    var group = new THREE.Group();
+    group.rotation.x = tiltX;
+    group.rotation.z = tiltZ;
+    var dotGeo = new THREE.SphereGeometry(0.06, 6, 6);
+    var dotMat = new THREE.MeshBasicMaterial({ color: color });
+    for (var i = 0; i < count; i++) {
+      var a = (i / count) * Math.PI * 2;
+      var dot = new THREE.Mesh(dotGeo, dotMat);
+      dot.position.set(Math.cos(a) * radius, Math.sin(a) * radius, 0);
+      group.add(dot);
+    }
+    scene.add(group);
+    return group;
+  }
+
+  // 每个环 4 个点，颜色与环一致
+  var orbSpring = addOrbs(3.2, 0xC8C8C8, 4, 0.45, 0.2);
+  var orbSummer = addOrbs(2.4, 0x555555, 4, -0.35, 0.5);
+  var orbAutumn = addOrbs(1.6, 0x1A1A1A, 4, 0.55, -0.3);
+  var orbWinter = addOrbs(0.8, 0xC8C8C8, 4, -0.25, 0.4);
+
+  /* ===== 中心点 ===== */
+  var centerGeo = new THREE.SphereGeometry(0.1, 8, 8);
+  var centerMat = new THREE.MeshBasicMaterial({ color: 0x1A1A1A });
+  var centerDot = new THREE.Mesh(centerGeo, centerMat);
+  scene.add(centerDot);
+
+  /* ===== 标签投影到屏幕坐标 ===== */
+  var labelSpring = document.getElementById('labelSpring');
+  var labelSummer = document.getElementById('labelSummer');
+  var labelAutumn = document.getElementById('labelAutumn');
+  var labelWinter = document.getElementById('labelWinter');
+
+  var labelPositions = [
+    { el: labelSpring, pos: new THREE.Vector3(0, 3.5, 0) },
+    { el: labelSummer, pos: new THREE.Vector3(3.5, 0, 0) },
+    { el: labelAutumn, pos: new THREE.Vector3(0, -3.5, 0) },
+    { el: labelWinter, pos: new THREE.Vector3(-3.5, 0, 0) }
+  ];
+
+  function updateLabels() {
+    for (var i = 0; i < labelPositions.length; i++) {
+      var lp = labelPositions[i];
+      var vec = lp.pos.clone();
+      vec.applyQuaternion(camera.quaternion);
+      vec.project(camera);
+      var x = (vec.x * 0.5 + 0.5) * window.innerWidth;
+      var y = (-vec.y * 0.5 + 0.5) * window.innerHeight;
+      lp.el.style.left = x + 'px';
+      lp.el.style.top = y + 'px';
+    }
+  }
+
+  /* ===== GSAP 动画 ===== */
+
+  // 环自转（绕局部 Y 轴）
+  gsap.to(spring.rotation, { y: Math.PI * 2, duration: 28, repeat: -1, ease: 'none' });
+  gsap.to(summer.rotation, { y: -Math.PI * 2, duration: 22, repeat: -1, ease: 'none' });
+  gsap.to(autumn.rotation, { y: Math.PI * 2, duration: 18, repeat: -1, ease: 'none' });
+  gsap.to(winter.rotation, { y: -Math.PI * 2, duration: 14, repeat: -1, ease: 'none' });
+
+  // 装饰点跟随环旋转
+  gsap.to(orbSpring.rotation, { y: Math.PI * 2, duration: 28, repeat: -1, ease: 'none' });
+  gsap.to(orbSummer.rotation, { y: -Math.PI * 2, duration: 22, repeat: -1, ease: 'none' });
+  gsap.to(orbAutumn.rotation, { y: Math.PI * 2, duration: 18, repeat: -1, ease: 'none' });
+  gsap.to(orbWinter.rotation, { y: -Math.PI * 2, duration: 14, repeat: -1, ease: 'none' });
+
+  // 中心点呼吸
+  gsap.to(centerDot.scale, {
+    x: 1.4, y: 1.4, z: 1.4,
+    duration: 1.8,
+    repeat: -1,
+    yoyo: true,
+    ease: 'sine.inOut'
+  });
+
+  // 标签轮转高亮
+  var seasonTL = gsap.timeline({ repeat: -1, defaults: { duration: 0.5, ease: 'power2.inOut' } });
+  seasonTL
+    .to(labelSpring, { opacity: 1 })
+    .to(labelSpring, { opacity: 0.3 })
+    .to(labelSummer, { opacity: 1 })
+    .to(labelSummer, { opacity: 0.3 })
+    .to(labelAutumn, { opacity: 1 })
+    .to(labelAutumn, { opacity: 0.3 })
+    .to(labelWinter, { opacity: 1 })
+    .to(labelWinter, { opacity: 0.3 });
+
+  /* ===== 窗口自适应 ===== */
+  window.addEventListener('resize', function() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  /* ===== 渲染循环 ===== */
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    updateLabels();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+})();
+</script>
+</body>
+</html>

@@ -193,65 +193,8 @@
   }
 
   /* ============================================================
-     8. 无限加载：公告列表滚动到底加载更多历史公告
+     8. 无限加载：公告列表已全部写在 HTML 中，无需 JS 追加
      ============================================================ */
-  var bulletinList = document.querySelector('.bulletin-list');
-  if (bulletinList && !prefersReduced) {
-    var historyBulletins = [
-      { date: '2025.12.05', title: 'LanNook v26.0.0 发布，跨平台架构重构' },
-      { date: '2025.10.20', title: 'CTF 乾坤袋工具数量扩展至 50+，新增隐写分析模块' },
-      { date: '2025.08.15', title: 'BlueTidy v0.2.0 Preview 发布，应用模式与 TidyPilot 预览版' },
-      { date: '2025.05.30', title: '四时工坊站点上线，整合全部项目入口' },
-      { date: '2024.11.10', title: 'zep4yrs 起源：第一个开源项目发布' }
-    ];
-    var loadedCount = 0;
-    var loading = false;
-    var trigger = document.createElement('div');
-    trigger.className = 'load-trigger';
-    trigger.textContent = '滚动加载更多历史公告';
-    bulletinList.parentElement.appendChild(trigger);
-
-    var loadObs = new IntersectionObserver(function (entries) {
-      if (entries[0].isIntersecting && !loading && loadedCount < historyBulletins.length) {
-        loading = true;
-        trigger.classList.add('loading');
-        trigger.textContent = 'loading';
-        // 先插入骨架屏占位
-        var skelEls = [];
-        for (var k = 0; k < 2; k++) {
-          var skel = document.createElement('div');
-          skel.className = 'b-item skeleton-wrap';
-          skel.style.opacity = '1';
-          skel.innerHTML = '<span class="b-date skeleton skel-line short" style="height:10px"></span>' +
-            '<span class="b-title skeleton skel-line long" style="height:10px;flex:1"></span>';
-          bulletinList.appendChild(skel);
-          skelEls.push(skel);
-        }
-        setTimeout(function () {
-          // 移除骨架
-          skelEls.forEach(function (s) { s.remove(); });
-          var batch = historyBulletins.slice(loadedCount, loadedCount + 2);
-          batch.forEach(function (b) {
-            var item = document.createElement('div');
-            item.className = 'b-item stream-in';
-            item.innerHTML = '<span class="b-date">' + b.date + '</span><span class="b-title">' + b.title + '</span>';
-            bulletinList.appendChild(item);
-            requestAnimationFrame(function () { item.classList.add('visible'); });
-          });
-          loadedCount += batch.length;
-          loading = false;
-          if (loadedCount >= historyBulletins.length) {
-            trigger.textContent = '— 已加载全部历史 —';
-            loadObs.disconnect();
-          } else {
-            trigger.classList.remove('loading');
-            trigger.textContent = '滚动加载更多历史公告';
-          }
-        }, 600);
-      }
-    }, { rootMargin: '200px 0px' });
-    loadObs.observe(trigger);
-  }
 })();
 
 /* ============================================================
@@ -412,6 +355,7 @@
       window.location.href = 'index.html';
     }
   });
-})();
+
+  })();
 
 

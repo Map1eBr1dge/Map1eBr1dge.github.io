@@ -11,6 +11,8 @@
 <link href="assets/css/fonts.css" rel="stylesheet"/>
 <link href="assets/css/mimo.css" rel="stylesheet"/>
 <link href="assets/css/search.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <link href="https://work.feng-qiao.top/index.html" rel="canonical"/>
 <meta content="website" property="og:type"/>
 <meta content="四时工坊 · 独立软件工作室" property="og:title"/>
@@ -100,43 +102,14 @@
 <a class="hero-cta" href="#matrix">查看项目矩阵 <span class="arrow">→</span></a>
 </div>
 <div class="hero-right">
-<!-- 原创视觉：四季同心环 -->
-<svg class="globe-svg" viewbox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-<!-- 四个同心环：春/夏/秋/冬 -->
-<circle class="ring-soft" cx="200" cy="200" r="180"></circle>
-<circle class="ring" cx="200" cy="200" r="140"></circle>
-<circle class="ring-dashed" cx="200" cy="200" r="100"></circle>
-<circle class="ring" cx="200" cy="200" r="60"></circle>
-<!-- 十字基线 -->
-<line class="line-soft" x1="200" x2="200" y1="10" y2="390"></line>
-<line class="line-soft" x1="10" x2="390" y1="200" y2="200"></line>
-<!-- 四季标签（衬线斜体） -->
-<text class="season" style="--i:0" text-anchor="middle" x="200" y="8">Spring</text>
-<text class="season" style="--i:1" text-anchor="end" x="395" y="204">Summer</text>
-<text class="season" style="--i:2" text-anchor="middle" x="200" y="398">Autumn</text>
-<text class="season" style="--i:3" x="5" y="204">Winter</text>
-<!-- 中心工坊标识（单独呼吸节奏） -->
-<circle class="dot dot-center" cx="200" cy="200" r="6"></circle>
-<text class="center-mark" text-anchor="middle" x="200" y="206">z4</text>
-<!-- 信号线：中心到各项目节点（流动虚线） -->
-<line class="signal" style="--i:0" x1="200" x2="200" y1="200" y2="20"></line>
-<line class="signal" style="--i:1" x1="200" x2="380" y1="200" y2="200"></line>
-<line class="signal" style="--i:2" x1="200" x2="200" y1="200" y2="60"></line>
-<line class="signal" style="--i:3" x1="200" x2="340" y1="200" y2="200"></line>
-<line class="signal" style="--i:4" x1="200" x2="200" y1="200" y2="100"></line>
-<line class="signal" style="--i:5" x1="200" x2="300" y1="200" y2="200"></line>
-<line class="signal" style="--i:6" x1="200" x2="200" y1="200" y2="140"></line>
-<!-- 项目节点（呼吸闪烁，错开延迟） -->
-<circle class="dot" cx="200" cy="20" r="3" style="--i:0"></circle><text x="208" y="24">BlueTidy</text>
-<circle class="dot" cx="380" cy="200" r="3" style="--i:1"></circle><text text-anchor="end" x="345" y="195">LanNook</text>
-<circle class="dot" cx="200" cy="60" r="3" style="--i:2"></circle><text x="208" y="64">CTF乾坤袋</text>
-<circle class="dot" cx="340" cy="200" r="3" style="--i:3"></circle><text text-anchor="end" x="305" y="195">AutoPen</text>
-<circle class="dot" cx="200" cy="100" r="3" style="--i:4"></circle><text x="208" y="104">零号告警</text>
-<circle class="dot" cx="300" cy="200" r="3" style="--i:5"></circle><text text-anchor="end" x="265" y="195">CryptoVis</text>
-<circle class="dot" cx="200" cy="140" r="3" style="--i:6"></circle><text x="208" y="144">StructVis</text>
-<!-- 底部说明 -->
-<text style="font-size:8px" text-anchor="middle" x="200" y="385">— 四时同心 · 九项并作 —</text>
-</svg>
+<!-- 原创视觉：四季同心环 · 3D 真倾斜（Three.js + GSAP） -->
+<div id="globe3d" class="globe-3d">
+  <div class="globe-label label-spring">Spring</div>
+  <div class="globe-label label-summer">Summer</div>
+  <div class="globe-label label-autumn">Autumn</div>
+  <div class="globe-label label-winter">Winter</div>
+  <div class="globe-label label-footer">四时同心</div>
+</div>
 </div>
 </div>
 </div>
@@ -400,7 +373,164 @@
 <!-- 自定义鼠标元素 -->
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="cursor-dot" id="cursorDot"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="assets/js/mimo.js"></script>
+<script>
+/* ===== 四季同心环 · 3D 场景（OrbitControls + 标签跟随） ===== */
+(function() {
+  'use strict';
+  var container = document.getElementById('globe3d');
+  if (!container || typeof THREE === 'undefined' || typeof gsap === 'undefined') return;
+
+  var scene = new THREE.Scene();
+
+  var aspect = container.clientWidth / container.clientHeight;
+  var camera = new THREE.PerspectiveCamera(38, aspect, 0.1, 100);
+  camera.position.set(5, 3.5, 9);
+  camera.lookAt(0, 0, 0);
+
+  var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  container.appendChild(renderer.domElement);
+
+  /* OrbitControls */
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.autoRotate = false;
+  controls.minDistance = 3;
+  controls.maxDistance = 20;
+  controls.target.set(0, 0, 0);
+
+  function resize() {
+    var w = container.clientWidth;
+    var h = container.clientHeight;
+    if (w === 0 || h === 0) return;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  /* 辅助：生成圆环点 */
+  function circlePoints(radius, segs) {
+    var pts = [];
+    for (var i = 0; i <= segs; i++) {
+      var a = (i / segs) * Math.PI * 2;
+      pts.push(new THREE.Vector3(Math.cos(a) * radius, Math.sin(a) * radius, 0));
+    }
+    return pts;
+  }
+
+  /* 创建线环 */
+  function makeRing(radius, color, dash, segs, tiltX, tiltZ) {
+    segs = segs || 64;
+    var geo = new THREE.BufferGeometry().setFromPoints(circlePoints(radius, segs));
+    var mat;
+    if (dash) {
+      mat = new THREE.LineDashedMaterial({ color: color, dashSize: dash[0], gapSize: dash[1] });
+    } else {
+      mat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.6 });
+    }
+    var line = new THREE.Line(geo, mat);
+    if (dash) line.computeLineDistances();
+    line.rotation.x = tiltX;
+    line.rotation.z = tiltZ;
+    scene.add(line);
+    return line;
+  }
+
+  /* 四季环 — 墨色系，不同倾斜角度 */
+  var spring = makeRing(3.2, 0xC8C8C8, [0.12, 0.18], 72, 0.45, 0.2);
+  var summer = makeRing(2.4, 0x555555, null, 64, -0.35, 0.5);
+  var autumn = makeRing(1.6, 0x1A1A1A, null, 56, 0.55, -0.3);
+  var winter = makeRing(0.8, 0xC8C8C8, [0.06, 0.12], 48, -0.25, 0.4);
+
+  /* 装饰点：每个环四方位 */
+  function addOrbs(radius, color, count, tiltX, tiltZ) {
+    var group = new THREE.Group();
+    group.rotation.x = tiltX;
+    group.rotation.z = tiltZ;
+    var dotGeo = new THREE.SphereGeometry(0.06, 6, 6);
+    var dotMat = new THREE.MeshBasicMaterial({ color: color });
+    for (var i = 0; i < count; i++) {
+      var a = (i / count) * Math.PI * 2;
+      var dot = new THREE.Mesh(dotGeo, dotMat);
+      dot.position.set(Math.cos(a) * radius, Math.sin(a) * radius, 0);
+      group.add(dot);
+    }
+    scene.add(group);
+    return group;
+  }
+
+  var orbSpring = addOrbs(3.2, 0xC8C8C8, 4, 0.45, 0.2);
+  var orbSummer = addOrbs(2.4, 0x555555, 4, -0.35, 0.5);
+  var orbAutumn = addOrbs(1.6, 0x1A1A1A, 4, 0.55, -0.3);
+  var orbWinter = addOrbs(0.8, 0xC8C8C8, 4, -0.25, 0.4);
+
+  /* 中心点 */
+  var centerGeo = new THREE.SphereGeometry(0.1, 8, 8);
+  var centerMat = new THREE.MeshBasicMaterial({ color: 0x1A1A1A });
+  var centerDot = new THREE.Mesh(centerGeo, centerMat);
+  scene.add(centerDot);
+
+  /* GSAP 动画 */
+  gsap.to(spring.rotation, { y: Math.PI * 2, duration: 28, repeat: -1, ease: 'none' });
+  gsap.to(summer.rotation, { y: -Math.PI * 2, duration: 22, repeat: -1, ease: 'none' });
+  gsap.to(autumn.rotation, { y: Math.PI * 2, duration: 18, repeat: -1, ease: 'none' });
+  gsap.to(winter.rotation, { y: -Math.PI * 2, duration: 14, repeat: -1, ease: 'none' });
+
+  gsap.to(orbSpring.rotation, { y: Math.PI * 2, duration: 28, repeat: -1, ease: 'none' });
+  gsap.to(orbSummer.rotation, { y: -Math.PI * 2, duration: 22, repeat: -1, ease: 'none' });
+  gsap.to(orbAutumn.rotation, { y: Math.PI * 2, duration: 18, repeat: -1, ease: 'none' });
+  gsap.to(orbWinter.rotation, { y: -Math.PI * 2, duration: 14, repeat: -1, ease: 'none' });
+
+  gsap.to(centerDot.scale, {
+    x: 1.4, y: 1.4, z: 1.4,
+    duration: 1.8, repeat: -1, yoyo: true, ease: 'sine.inOut'
+  });
+
+  /* 四季标签——屏幕空间投影 */
+  var labelSpring = container.querySelector('.label-spring');
+  var labelSummer = container.querySelector('.label-summer');
+  var labelAutumn = container.querySelector('.label-autumn');
+  var labelWinter = container.querySelector('.label-winter');
+  var labelFooter = container.querySelector('.label-footer');
+
+  var labelPositions = [
+    { el: labelSpring, pos: new THREE.Vector3(0, 3.0, 0) },
+    { el: labelSummer, pos: new THREE.Vector3(3.5, 0, 0) },
+    { el: labelAutumn, pos: new THREE.Vector3(0, -3.5, 0) },
+    { el: labelWinter, pos: new THREE.Vector3(-3.5, 0, 0) },
+    { el: labelFooter, pos: new THREE.Vector3(0, -4.2, 0) }
+  ];
+
+  function updateLabels() {
+    var rect = container.getBoundingClientRect();
+    for (var i = 0; i < labelPositions.length; i++) {
+      var lp = labelPositions[i];
+      if (!lp.el) continue;
+      var vec = lp.pos.clone();
+      vec.project(camera);
+      var x = (vec.x * 0.5 + 0.5) * rect.width;
+      var y = (-vec.y * 0.5 + 0.5) * rect.height;
+      lp.el.style.left = x + 'px';
+      lp.el.style.top = y + 'px';
+    }
+  }
+
+  /* 渲染循环 */
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    updateLabels();
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+</script>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
