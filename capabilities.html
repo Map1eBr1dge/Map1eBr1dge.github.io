@@ -116,7 +116,12 @@
 <p class="sub">工坊覆盖六个技术方向，从桌面到 Web，从安全到教学，再到游戏和基础设施。每个方向都有对应的项目落地。</p>
 </div>
 <div class="hero-right">
-<div id="globe3d" class="globe-3d"></div>
+<div id="globe3d" class="globe-3d">
+  <div class="globe-label label-desk">Desktop</div>
+  <div class="globe-label label-web">Web</div>
+  <div class="globe-label label-sec">Security</div>
+  <div class="globe-label label-footer">六面蜂巢</div>
+</div>
 </div>
 </div>
 </div>
@@ -178,7 +183,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="assets/js/mimo.js"></script>
 <script>
-/* ===== 能力环 · 6个交错光环在3D空间中旋转（Three.js + GSAP） ===== */
+/* ===== 3D晶体 · 多面体结构（Three.js + GSAP） ===== */
 (function(){
   'use strict';
   var container = document.getElementById('globe3d');
@@ -187,7 +192,7 @@
   var scene = new THREE.Scene();
   var aspect = container.clientWidth / container.clientHeight;
   var camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 100);
-  camera.position.set(2, 3, 5);
+  camera.position.set(5, 3.5, 9);
   camera.lookAt(0, 0, 0);
 
   var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -199,8 +204,8 @@
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.autoRotate = false;
-  controls.minDistance = 3;
-  controls.maxDistance = 18;
+  controls.minDistance = 2;
+  controls.maxDistance = 25;
   controls.target.set(0, 0, 0);
 
   function resize() {
@@ -214,101 +219,163 @@
   resize();
   window.addEventListener('resize', resize);
 
-  /* 6个能力光环 */
-  var ringCount = 6;
-  var ringColors = [0x444444, 0x555555, 0x666666, 0x777777, 0x888888, 0x999999];
-  var ringRadii = [1.2, 1.6, 2.0, 2.4, 2.8, 3.2];
-  var rings = [];
-  var segs = 48;
+  /* 构建正二十面体顶点 */
+  var phi = (1 + Math.sqrt(5)) / 2;
+  var icoVerts = [
+    [-1, phi, 0], [1, phi, 0], [-1, -phi, 0], [1, -phi, 0],
+    [0, -1, phi], [0, 1, phi], [0, -1, -phi], [0, 1, -phi],
+    [phi, 0, -1], [phi, 0, 1], [-phi, 0, -1], [-phi, 0, 1]
+  ];
+  var icoRadius = 2.0;
+  var normalizedVerts = icoVerts.map(function(v) {
+    var len = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+    return new THREE.Vector3(v[0]/len * icoRadius, v[1]/len * icoRadius, v[2]/len * icoRadius);
+  });
 
-  for (var r = 0; r < ringCount; r++) {
-    var ringGroup = new THREE.Group();
-
-    /* 光环线 */
-    var pts = [];
-    for (var i = 0; i <= segs; i++) {
-      var a = (i / segs) * Math.PI * 2;
-      pts.push(new THREE.Vector3(Math.cos(a) * ringRadii[r], 0, Math.sin(a) * ringRadii[r]));
+  /* 二十面体边 */
+  function icoEdges() {
+    var edges = [];
+    for (var i = 0; i < normalizedVerts.length; i++) {
+      for (var j = i+1; j < normalizedVerts.length; j++) {
+        var dist = normalizedVerts[i].distanceTo(normalizedVerts[j]);
+        if (dist < 2.2) {
+          edges.push([i, j]);
+        }
+      }
     }
+    return edges;
+  }
+
+  var crystalGroup = new THREE.Group();
+  var edgeList = icoEdges();
+
+  /* 边线 */
+  edgeList.forEach(function(e) {
+    var pts = [normalizedVerts[e[0]], normalizedVerts[e[1]]];
     var geo = new THREE.BufferGeometry().setFromPoints(pts);
-    var mat = new THREE.LineBasicMaterial({
-      color: ringColors[r],
-      transparent: true,
-      opacity: 0.12 + r * 0.03
-    });
+    var mat = new THREE.LineBasicMaterial({ color: 0x666666, transparent: true, opacity: 0.25 });
     var line = new THREE.Line(geo, mat);
-    ringGroup.add(line);
+    crystalGroup.add(line);
+  });
 
-    /* 环上流动粒子 */
-    var dotCount = 12 + r * 2;
-    var dotGroup = new THREE.Group();
-    for (var d = 0; d < dotCount; d++) {
-      var angle = (d / dotCount) * Math.PI * 2;
-      var dotGeo = new THREE.SphereGeometry(0.025 + r * 0.005, 4, 4);
-      var dotMat = new THREE.MeshBasicMaterial({
-        color: ringColors[r],
-        transparent: true,
-        opacity: 0.5 + Math.random() * 0.3
-      });
-      var dot = new THREE.Mesh(dotGeo, dotMat);
-      dot.position.set(
-        Math.cos(angle) * ringRadii[r],
-        (Math.random() - 0.5) * 0.02,
-        Math.sin(angle) * ringRadii[r]
-      );
-      dotGroup.add(dot);
-    }
-    ringGroup.add(dotGroup);
+  /* 顶点 - 发光球体 */
+  var vertSpheres = [];
+  normalizedVerts.forEach(function(v) {
+    var geo = new THREE.SphereGeometry(0.08, 8, 8);
+    var mat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.7 });
+    var mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(v);
+    crystalGroup.add(mesh);
+    vertSpheres.push(mesh);
 
-    /* 每个环倾斜不同角度，真正3D交错 */
-    var tiltX = (r / ringCount) * Math.PI * 0.5 + 0.1;
-    var tiltZ = (r / ringCount) * Math.PI * 0.3;
-    ringGroup.rotation.x = tiltX;
-    ringGroup.rotation.z = tiltZ;
+    /* 每个顶点外围光晕 */
+    var glowGeo = new THREE.SphereGeometry(0.15, 6, 6);
+    var glowMat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.1 });
+    var glow = new THREE.Mesh(glowGeo, glowMat);
+    glow.position.copy(v);
+    crystalGroup.add(glow);
+  });
+  scene.add(crystalGroup);
 
-    scene.add(ringGroup);
-    rings.push({
-      group: ringGroup,
-      dotGroup: dotGroup,
-      rotSpeed: 0.5 + r * 0.15,
-      tiltX: tiltX,
-      tiltZ: tiltZ
+  /* 二十面体顶点光晕呼吸 */
+  vertSpheres.forEach(function(s, idx) {
+    gsap.to(s.material, {
+      opacity: 0.3,
+      duration: 1.5 + idx * 0.1,
+      repeat: -1, yoyo: true, ease: 'sine.inOut'
     });
+  });
+
+  /* 内层小二十面体（反向旋转） */
+  var innerVerts = normalizedVerts.map(function(v) { return v.clone().multiplyScalar(0.5); });
+  var innerGroup = new THREE.Group();
+  edgeList.forEach(function(e) {
+    var pts = [innerVerts[e[0]], innerVerts[e[1]]];
+    var geo = new THREE.BufferGeometry().setFromPoints(pts);
+    var mat = new THREE.LineBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.15 });
+    var line = new THREE.Line(geo, mat);
+    innerGroup.add(line);
+  });
+  /* 内层顶点 */
+  innerVerts.forEach(function(v) {
+    var geo = new THREE.SphereGeometry(0.04, 6, 6);
+    var mat = new THREE.MeshBasicMaterial({ color: 0xAAAAAA });
+    var mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(v);
+    innerGroup.add(mesh);
+  });
+  scene.add(innerGroup);
+
+  /* 立方体框架（最外层） */
+  var cubeSize = 2.5;
+  var cubeVerts = [
+    [-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],
+    [-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]
+  ].map(function(v) {
+    return new THREE.Vector3(v[0]*cubeSize/2, v[1]*cubeSize/2, v[2]*cubeSize/2);
+  });
+  var cubeEdges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  var cubeGroup = new THREE.Group();
+  cubeEdges.forEach(function(e) {
+    var pts = [cubeVerts[e[0]], cubeVerts[e[1]]];
+    var geo = new THREE.BufferGeometry().setFromPoints(pts);
+    var mat = new THREE.LineBasicMaterial({ color: 0x444444, transparent: true, opacity: 0.08 });
+    var line = new THREE.Line(geo, mat);
+    cubeGroup.add(line);
+  });
+  scene.add(cubeGroup);
+
+  /* 悬浮粒子 */
+  var pCount = 200;
+  var pGeo = new THREE.BufferGeometry();
+  var pPos = new Float32Array(pCount * 3);
+  for (var i = 0; i < pCount * 3; i++) {
+    pPos[i] = (Math.random() - 0.5) * 8;
   }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+  var pMat = new THREE.PointsMaterial({ color: 0x555555, size: 0.02, transparent: true, opacity: 0.2 });
+  var pMesh = new THREE.Points(pGeo, pMat);
+  scene.add(pMesh);
 
-  /* 中心光点 */
-  var centerGeo = new THREE.SphereGeometry(0.15, 12, 12);
-  var centerMat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.5 });
-  var center = new THREE.Mesh(centerGeo, centerMat);
-  scene.add(center);
-  gsap.to(center.scale, { x: 1.6, y: 1.6, z: 1.6, duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+  /* GSAP 3D旋转 - 不同轴不同速度 */
+  gsap.to(crystalGroup.rotation, { y: Math.PI * 2, duration: 30, repeat: -1, ease: 'none' });
+  gsap.to(crystalGroup.rotation, { x: Math.PI * 0.3, duration: 20, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+  gsap.to(innerGroup.rotation, { y: -Math.PI * 2, duration: 20, repeat: -1, ease: 'none' });
+  gsap.to(innerGroup.rotation, { x: -Math.PI * 0.2, duration: 15, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+  gsap.to(cubeGroup.rotation, { y: Math.PI * 2, duration: 40, repeat: -1, ease: 'none' });
+  gsap.to(pMesh.rotation, { y: Math.PI * 2, duration: 50, repeat: -1, ease: 'none' });
 
-  /* 背景星点 */
-  var bgCount = 300;
-  var bgGeo = new THREE.BufferGeometry();
-  var bgPos = new Float32Array(bgCount * 3);
-  for (var i = 0; i < bgCount * 3; i++) bgPos[i] = (Math.random() - 0.5) * 18;
-  bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
-  var bgMat = new THREE.PointsMaterial({ color: 0x444444, size: 0.015, transparent: true, opacity: 0.25 });
-  var bgPoints = new THREE.Points(bgGeo, bgMat);
-  scene.add(bgPoints);
+  /* 标签 */
+  var labelDesk = container.querySelector('.label-desk');
+  var labelWeb = container.querySelector('.label-web');
+  var labelSec = container.querySelector('.label-sec');
+  var labelFooter = container.querySelector('.label-footer');
 
-  /* 每个环各自旋转，不同速度 */
-  for (var r = 0; r < rings.length; r++) {
-    (function(ring) {
-      gsap.to(ring.group.rotation, {
-        y: Math.PI * 2,
-        duration: 20 + r * 5,
-        repeat: -1,
-        ease: 'none'
-      });
-    })(rings[r]);
+  var labelPositions = [
+    { el: labelDesk, pos: new THREE.Vector3(0, 2.2, 0) },
+    { el: labelWeb, pos: new THREE.Vector3(2.5, 0.5, 0) },
+    { el: labelSec, pos: new THREE.Vector3(-2.5, 0.5, 0) },
+    { el: labelFooter, pos: new THREE.Vector3(0, -3.2, 0) }
+  ];
+
+  function updateLabels() {
+    var rect = container.getBoundingClientRect();
+    for (var i = 0; i < labelPositions.length; i++) {
+      var lp = labelPositions[i];
+      if (!lp.el) continue;
+      var vec = lp.pos.clone();
+      vec.project(camera);
+      var x = (vec.x * 0.5 + 0.5) * rect.width;
+      var y = (-vec.y * 0.5 + 0.5) * rect.height;
+      lp.el.style.left = x + 'px';
+      lp.el.style.top = y + 'px';
+    }
   }
-  gsap.to(bgPoints.rotation, { y: -Math.PI * 2, duration: 60, repeat: -1, ease: 'none' });
 
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
+    updateLabels();
     renderer.render(scene, camera);
   }
   animate();

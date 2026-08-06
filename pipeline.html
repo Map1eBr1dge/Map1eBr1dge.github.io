@@ -121,7 +121,12 @@
 <p class="sub">九个项目的进度时间线。实色=做完了，斜纹=进行中，虚线=计划中。按季度保持一致，2024 起源，2026 多元化。</p>
 </div>
 <div class="hero-right">
-<div id="globe3d" class="globe-3d"></div>
+<div id="globe3d" class="globe-3d">
+  <div class="globe-label label-wave1">2024</div>
+  <div class="globe-label label-wave2">2025</div>
+  <div class="globe-label label-wave3">2026</div>
+  <div class="globe-label label-footer">波形管线</div>
+</div>
 </div>
 </div>
 </div>
@@ -212,7 +217,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="assets/js/mimo.js"></script>
 <script>
-/* ===== 时间线 · 3D蜿蜒路径+节点光流（Three.js + GSAP） ===== */
+/* ===== 管道流光 · 3D 管道粒子流（Three.js + GSAP） ===== */
 (function(){
   'use strict';
   var container = document.getElementById('globe3d');
@@ -221,7 +226,7 @@
   var scene = new THREE.Scene();
   var aspect = container.clientWidth / container.clientHeight;
   var camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 100);
-  camera.position.set(4, 2, 6);
+  camera.position.set(6, 3.5, 10);
   camera.lookAt(0, 0, 0);
 
   var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -233,8 +238,8 @@
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.autoRotate = false;
-  controls.minDistance = 3;
-  controls.maxDistance = 18;
+  controls.minDistance = 2;
+  controls.maxDistance = 25;
   controls.target.set(0, 0, 0);
 
   function resize() {
@@ -248,99 +253,190 @@
   resize();
   window.addEventListener('resize', resize);
 
-  /* 主容器，用于整体旋转 */
-  var mainGroup = new THREE.Group();
-  scene.add(mainGroup);
-
-  /* 蜿蜒路径控制点 */
-  var pathPoints = [
-    new THREE.Vector3(-2.5, -1.0, 0),
-    new THREE.Vector3(-1.5, 0.5, 1.0),
-    new THREE.Vector3(0, 1.5, 0),
-    new THREE.Vector3(1.5, 0.5, -1.0),
-    new THREE.Vector3(2.5, -1.0, 0)
-  ];
-  var curve = new THREE.CatmullRomCurve3(pathPoints);
-  var curvePoints = curve.getPoints(80);
-
-  /* 路径线 */
-  var pathGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
-  var pathMat = new THREE.LineBasicMaterial({ color: 0x666666, transparent: true, opacity: 0.15 });
-  var pathLine = new THREE.Line(pathGeo, pathMat);
-  mainGroup.add(pathLine);
-
-  /* 路径节点（8个里程碑） */
-  var nodeCount = 8;
-  var nodes = [];
-  for (var n = 0; n < nodeCount; n++) {
-    var t = n / (nodeCount - 1);
-    var pos = curve.getPoint(t);
-    var size = 0.06 + Math.random() * 0.04;
-    var geo = new THREE.SphereGeometry(size, 8, 8);
-    var mat = new THREE.MeshBasicMaterial({
-      color: 0x888888,
-      transparent: true,
-      opacity: 0.5 + Math.random() * 0.3
-    });
-    var mesh = new THREE.Mesh(geo, mat);
-    mesh.position.copy(pos);
-    mainGroup.add(mesh);
-    nodes.push(mesh);
-
-    /* 节点呼吸 */
-    gsap.to(mesh.scale, {
-      x: 1.5, y: 1.5, z: 1.5,
-      duration: 1 + Math.random() * 1.5,
-      repeat: -1, yoyo: true,
-      ease: 'sine.inOut',
-      delay: Math.random() * 2
-    });
+  /* 管道路径 - 3D 贝塞尔曲线 */
+  var pathPoints = [];
+  var numPathPts = 150;
+  for (var i = 0; i <= numPathPts; i++) {
+    var t = i / numPathPts;
+    /* 螺旋上升 + 波浪 */
+    var x = Math.sin(t * Math.PI * 3) * (2.0 - t * 0.5);
+    var y = -2.0 + t * 4.0;
+    var z = Math.cos(t * Math.PI * 3) * (2.0 - t * 0.5);
+    pathPoints.push(new THREE.Vector3(x, y, z));
   }
 
-  /* 流动粒子沿路径 */
-  var flowCount = 30;
-  var flowParticles = [];
-  var flowGeo = new THREE.SphereGeometry(0.03, 4, 4);
+  /* 管道主线 */
+  var pipeGeo = new THREE.BufferGeometry().setFromPoints(pathPoints);
+  var pipeMat = new THREE.LineBasicMaterial({ color: 0x666666, transparent: true, opacity: 0.2 });
+  var pipeLine = new THREE.Line(pipeGeo, pipeMat);
+  scene.add(pipeLine);
+
+  /* 管道内壁 - 半透明管 */
+  var tubePts = [];
+  for (var i = 0; i <= numPathPts; i += 2) {
+    var t = i / numPathPts;
+    var x = Math.sin(t * Math.PI * 3) * (2.0 - t * 0.5);
+    var y = -2.0 + t * 4.0;
+    var z = Math.cos(t * Math.PI * 3) * (2.0 - t * 0.5);
+    tubePts.push(new THREE.Vector3(x, y, z));
+  }
+  var tubeCurve = new THREE.CatmullRomCurve3(tubePts);
+  var tubeGeo2 = new THREE.TubeGeometry(tubeCurve, 60, 0.15, 6, false);
+  var tubeMat2 = new THREE.MeshBasicMaterial({
+    color: 0x555555,
+    transparent: true,
+    opacity: 0.04,
+    side: THREE.DoubleSide,
+    wireframe: true
+  });
+  var tubeMesh = new THREE.Mesh(tubeGeo2, tubeMat2);
+  scene.add(tubeMesh);
+
+  /* 管道外圈环 */
+  var ringGroup = new THREE.Group();
+  for (var r = 0; r < 8; r++) {
+    var t = (r + 1) / 9;
+    var idx = Math.floor(t * numPathPts);
+    var center = pathPoints[idx] || pathPoints[0];
+    var ringPts = [];
+    var ringRadius = 0.6;
+    for (var j = 0; j <= 16; j++) {
+      var a = (j / 16) * Math.PI * 2;
+      ringPts.push(new THREE.Vector3(
+        center.x + Math.cos(a) * ringRadius,
+        center.y + Math.sin(a) * ringRadius * 0.3,
+        center.z + Math.sin(a) * ringRadius * 0.5
+      ));
+    }
+    var ringGeo = new THREE.BufferGeometry().setFromPoints(ringPts);
+    var ringMat = new THREE.LineBasicMaterial({ color: 0x777777, transparent: true, opacity: 0.1 + r * 0.02 });
+    var ring = new THREE.Line(ringGeo, ringMat);
+    ringGroup.add(ring);
+  }
+  scene.add(ringGroup);
+
+  /* 流动粒子 */
+  var flowCount = 100;
+  var flowGroup = new THREE.Group();
+  var flowMeshes = [];
+  var flowGeo = new THREE.SphereGeometry(0.05, 6, 6);
   for (var i = 0; i < flowCount; i++) {
-    var mat = new THREE.MeshBasicMaterial({
-      color: 0x999999,
-      transparent: true,
-      opacity: 0.3 + Math.random() * 0.4
-    });
+    var mat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.5 + Math.random() * 0.3 });
     var mesh = new THREE.Mesh(flowGeo, mat);
     var t = i / flowCount;
-    var pos = curve.getPoint(t);
-    mesh.position.copy(pos);
-    mainGroup.add(mesh);
-    flowParticles.push({ mesh: mesh, t: t, speed: 0.001 + Math.random() * 0.001 });
+    var idx = Math.floor(t * numPathPts);
+    var p = pathPoints[idx] || pathPoints[0];
+    mesh.position.copy(p);
+    flowGroup.add(mesh);
+    flowMeshes.push(mesh);
   }
 
-  /* 背景星点 */
-  var bgCount = 250;
+  /* 大粒子（关键节点） */
+  var bigCount = 6;
+  var bigMeshes = [];
+  for (var i = 0; i < bigCount; i++) {
+    var t = (i + 1) / (bigCount + 1);
+    var idx = Math.floor(t * numPathPts);
+    var p = pathPoints[idx] || pathPoints[0];
+    var geo = new THREE.SphereGeometry(0.1, 8, 8);
+    var mat = new THREE.MeshBasicMaterial({ color: 0xAAAAAA });
+    var mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(p);
+    flowGroup.add(mesh);
+    bigMeshes.push(mesh);
+
+    /* 光晕 */
+    var glowGeo = new THREE.SphereGeometry(0.2, 8, 8);
+    var glowMat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.15 });
+    var glow = new THREE.Mesh(glowGeo, glowMat);
+    glow.position.copy(p);
+    flowGroup.add(glow);
+    gsap.to(glow.scale, {
+      x: 1.8, y: 1.8, z: 1.8,
+      duration: 1.5 + i * 0.2,
+      repeat: -1, yoyo: true, ease: 'sine.inOut'
+    });
+  }
+  scene.add(flowGroup);
+
+  /* 粒子流动 */
+  (function() {
+    var offset = 0;
+    setInterval(function() {
+      offset = (offset + 1) % flowCount;
+      for (var i = 0; i < flowCount; i++) {
+        var idx = (i + offset) % flowCount;
+        var t = idx / flowCount;
+        var pi = Math.floor(t * numPathPts);
+        var p = pathPoints[pi] || pathPoints[0];
+        flowMeshes[i].position.copy(p);
+      }
+    }, 80);
+  })();
+
+  /* 大粒子也流动 */
+  (function() {
+    var offsets = [0, 0.15, 0.3, 0.45, 0.6, 0.75];
+    setInterval(function() {
+      for (var i = 0; i < bigCount; i++) {
+        offsets[i] = (offsets[i] + 0.005) % 1;
+        var idx = Math.floor(offsets[i] * numPathPts);
+        var p = pathPoints[idx] || pathPoints[0];
+        bigMeshes[i].position.copy(p);
+      }
+    }, 50);
+  })();
+
+  /* 背景粒子 */
+  var bgCount = 80;
   var bgGeo = new THREE.BufferGeometry();
   var bgPos = new Float32Array(bgCount * 3);
-  for (var i = 0; i < bgCount * 3; i++) bgPos[i] = (Math.random() - 0.5) * 16;
+  for (var i = 0; i < bgCount * 3; i++) {
+    bgPos[i] = (Math.random() - 0.5) * 10;
+  }
   bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
-  var bgMat = new THREE.PointsMaterial({ color: 0x444444, size: 0.015, transparent: true, opacity: 0.2 });
-  var bgPoints = new THREE.Points(bgGeo, bgMat);
-  mainGroup.add(bgPoints);
+  var bgMat = new THREE.PointsMaterial({ color: 0x444444, size: 0.02, transparent: true, opacity: 0.2 });
+  var bgMesh = new THREE.Points(bgGeo, bgMat);
+  scene.add(bgMesh);
 
-  /* 整体缓慢旋转 */
-  gsap.to(mainGroup.rotation, { y: Math.PI * 2, duration: 50, repeat: -1, ease: 'none' });
+  /* GSAP 缓慢旋转 */
+  gsap.to(pipeLine.rotation, { y: Math.PI * 2, duration: 45, repeat: -1, ease: 'none' });
+  gsap.to(flowGroup.rotation, { y: Math.PI * 2, duration: 45, repeat: -1, ease: 'none' });
+  gsap.to(ringGroup.rotation, { y: Math.PI * 2, duration: 45, repeat: -1, ease: 'none' });
+  gsap.to(tubeMesh.rotation, { y: Math.PI * 2, duration: 45, repeat: -1, ease: 'none' });
+  gsap.to(bgMesh.rotation, { y: -Math.PI * 2, duration: 60, repeat: -1, ease: 'none' });
+
+  /* 标签 */
+  var labelW1 = container.querySelector('.label-wave1');
+  var labelW2 = container.querySelector('.label-wave2');
+  var labelW3 = container.querySelector('.label-wave3');
+  var labelFooter = container.querySelector('.label-footer');
+
+  var labelPositions = [
+    { el: labelW1, pos: new THREE.Vector3(-2.0, -1.5, 0) },
+    { el: labelW2, pos: new THREE.Vector3(0, 0, 0) },
+    { el: labelW3, pos: new THREE.Vector3(2.0, 1.5, 0) },
+    { el: labelFooter, pos: new THREE.Vector3(0, -3.2, 0) }
+  ];
+
+  function updateLabels() {
+    var rect = container.getBoundingClientRect();
+    for (var i = 0; i < labelPositions.length; i++) {
+      var lp = labelPositions[i];
+      if (!lp.el) continue;
+      var vec = lp.pos.clone();
+      vec.project(camera);
+      var x = (vec.x * 0.5 + 0.5) * rect.width;
+      var y = (-vec.y * 0.5 + 0.5) * rect.height;
+      lp.el.style.left = x + 'px';
+      lp.el.style.top = y + 'px';
+    }
+  }
 
   function animate() {
     requestAnimationFrame(animate);
-
-    /* 粒子沿路径流动 */
-    for (var i = 0; i < flowParticles.length; i++) {
-      var fp = flowParticles[i];
-      fp.t += fp.speed;
-      if (fp.t > 1) fp.t = 0;
-      var pos = curve.getPoint(fp.t);
-      fp.mesh.position.copy(pos);
-    }
-
     controls.update();
+    updateLabels();
     renderer.render(scene, camera);
   }
   animate();
