@@ -11,6 +11,8 @@
 <link href="assets/css/fonts.css" rel="stylesheet"/>
 <link href="assets/css/mimo.css" rel="stylesheet"/>
 <link href="assets/css/search.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <style>
   /* 筛选器 */
   .filter-bar {
@@ -107,10 +109,21 @@
 <section class="hero" style="padding: 72px 0 56px;">
 <div class="hero-watermark">PROJECTS</div>
 <div class="wrap">
+<div class="hero-inner">
 <div class="hero-left">
 <div class="kicker">PROJECTS · 项目清单</div>
 <h1>九个项目<span class="en">nine projects</span></h1>
 <p class="sub">桌面开发、安全工程、教学可视化、游戏化学习四个方向，九个项目，开源和商业并行。</p>
+</div>
+<div class="hero-right">
+<div id="globe3d" class="globe-3d">
+  <div class="globe-label label-proj1">项目</div>
+  <div class="globe-label label-proj2">项目</div>
+  <div class="globe-label label-proj3">项目</div>
+  <div class="globe-label label-proj4">项目</div>
+  <div class="globe-label label-footer">银河</div>
+</div>
+</div>
 </div>
 </div>
 </section>
@@ -210,6 +223,7 @@
 </footer>
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="cursor-dot" id="cursorDot"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="assets/js/mimo.js"></script>
 <script>
 // 筛选器交互
@@ -231,6 +245,199 @@
       });
     });
   });
+})();
+</script>
+<script>
+/* ===== 旋涡星系 · 真正的3D旋涡星系（Three.js + GSAP） ===== */
+(function(){
+  'use strict';
+  var container = document.getElementById('globe3d');
+  if (!container || typeof THREE === 'undefined' || typeof gsap === 'undefined') return;
+
+  var scene = new THREE.Scene();
+  var aspect = container.clientWidth / container.clientHeight;
+  var camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 100);
+  camera.position.set(3, 2, 6);
+  camera.lookAt(0, 0, 0);
+
+  var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  container.appendChild(renderer.domElement);
+
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.autoRotate = false;
+  controls.minDistance = 3;
+  controls.maxDistance = 18;
+  controls.target.set(0, 0, 0);
+
+  function resize() {
+    var w = container.clientWidth;
+    var h = container.clientHeight;
+    if (w === 0 || h === 0) return;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  /* 旋涡星系参数 */
+  var armCount = 3;          // 三条旋臂
+  var starCount = 1200;      // 恒星数量
+  var armSpread = 0.6;       // 旋臂散布宽度
+  var galaxyRadius = 3.5;    // 星系半径
+  var armTightness = 5;      // 旋臂缠绕度
+
+  /* 生成旋臂恒星 */
+  var galaxyGroup = new THREE.Group();
+  var posArray = [];
+  var colorArray = [];
+
+  for (var i = 0; i < starCount; i++) {
+    /* 选择旋臂 */
+    var arm = Math.floor(Math.random() * armCount);
+    var armAngle = (arm / armCount) * Math.PI * 2;
+    
+    /* 半径分布：中心密集，外围稀疏 */
+    var r = Math.pow(Math.random(), 0.5) * galaxyRadius;
+    
+    /* 旋臂角度：半径越大旋臂越卷 */
+    var spiralAngle = r * armTightness + armAngle;
+    
+    /* 随机散布 */
+    var scatter = (Math.random() - 0.5) * armSpread * (r / galaxyRadius + 0.3);
+    
+    var angle = spiralAngle + scatter;
+    
+    /* 扁平分布 + 少量厚度 */
+    var flatness = 0.2;
+    var y = (Math.random() - 0.5) * flatness * (1 - r / galaxyRadius * 0.5);
+    
+    var x = Math.cos(angle) * r;
+    var z = Math.sin(angle) * r;
+    
+    posArray.push(x, y, z);
+    
+    /* 颜色：中心暖色，外围冷色，灰度 */
+    var brightness = 0.2 + 0.6 * (1 - r / galaxyRadius * 0.7);
+    brightness += (Math.random() - 0.5) * 0.2;
+    colorArray.push(brightness, brightness, brightness);
+  }
+
+  /* 星系主体恒星 */
+  var starGeo = new THREE.BufferGeometry();
+  starGeo.setAttribute('position', new THREE.Float32BufferAttribute(posArray, 3));
+  starGeo.setAttribute('color', new THREE.Float32BufferAttribute(colorArray, 3));
+  var starMat = new THREE.PointsMaterial({
+    size: 0.04,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.9,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  var starPoints = new THREE.Points(starGeo, starMat);
+  galaxyGroup.add(starPoints);
+
+  /* 大恒星（亮星） */
+  var brightStarCount = 50;
+  var brightGeo = new THREE.BufferGeometry();
+  var brightPos = [];
+  var brightSizes = [];
+  for (var i = 0; i < brightStarCount; i++) {
+    var arm = Math.floor(Math.random() * armCount);
+    var armAngle = (arm / armCount) * Math.PI * 2;
+    var r = 0.3 + Math.random() * galaxyRadius * 0.8;
+    var spiralAngle = r * armTightness + armAngle;
+    var scatter = (Math.random() - 0.5) * armSpread * 0.5;
+    var angle = spiralAngle + scatter;
+    var y = (Math.random() - 0.5) * 0.15;
+    brightPos.push(Math.cos(angle) * r, y, Math.sin(angle) * r);
+    brightSizes.push(0.05 + Math.random() * 0.08);
+  }
+  brightGeo.setAttribute('position', new THREE.Float32BufferAttribute(brightPos, 3));
+  var brightMat = new THREE.PointsMaterial({
+    size: 0.08,
+    color: 0x888888,
+    transparent: true,
+    opacity: 0.7,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  var brightPoints = new THREE.Points(brightGeo, brightMat);
+  galaxyGroup.add(brightPoints);
+
+  /* 星系核 */
+  var coreGeo = new THREE.SphereGeometry(0.4, 12, 12);
+  var coreMat = new THREE.MeshBasicMaterial({ color: 0x999999, transparent: true, opacity: 0.6 });
+  var core = new THREE.Mesh(coreGeo, coreMat);
+  galaxyGroup.add(core);
+
+  /* 核光晕 */
+  var coreGlowGeo = new THREE.SphereGeometry(0.7, 12, 12);
+  var coreGlowMat = new THREE.MeshBasicMaterial({ color: 0x777777, transparent: true, opacity: 0.1 });
+  var coreGlow = new THREE.Mesh(coreGlowGeo, coreGlowMat);
+  galaxyGroup.add(coreGlow);
+  gsap.to(coreGlow.scale, { x: 1.5, y: 1.5, z: 1.5, duration: 2, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+
+  scene.add(galaxyGroup);
+
+  /* 背景深空星 */
+  var bgStarCount = 400;
+  var bgGeo = new THREE.BufferGeometry();
+  var bgPos = new Float32Array(bgStarCount * 3);
+  for (var i = 0; i < bgStarCount * 3; i++) {
+    bgPos[i] = (Math.random() - 0.5) * 20;
+  }
+  bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
+  var bgMat = new THREE.PointsMaterial({ color: 0x444444, size: 0.015, transparent: true, opacity: 0.3 });
+  var bgPoints = new THREE.Points(bgGeo, bgMat);
+  scene.add(bgPoints);
+
+  /* GSAP 旋转 */
+  gsap.to(galaxyGroup.rotation, { y: Math.PI * 2, duration: 60, repeat: -1, ease: 'none' });
+  gsap.to(bgPoints.rotation, { y: -Math.PI * 2, duration: 90, repeat: -1, ease: 'none' });
+
+  /* 标签 - 简化，只保留基础信息 */
+  var labels = [
+    container.querySelector('.label-proj1'),
+    container.querySelector('.label-proj2'),
+    container.querySelector('.label-proj3'),
+    container.querySelector('.label-proj4'),
+    container.querySelector('.label-footer')
+  ];
+  var labelPositions = [
+    { el: labels[0], pos: new THREE.Vector3(0, 1.5, 0) },
+    { el: labels[1], pos: new THREE.Vector3(1.5, 0.5, 0) },
+    { el: labels[2], pos: new THREE.Vector3(-1.5, 0.5, 0) },
+    { el: labels[3], pos: new THREE.Vector3(0, -1.0, 0) },
+    { el: labels[4], pos: new THREE.Vector3(0, -3.2, 0) }
+  ];
+
+  function updateLabels() {
+    var rect = container.getBoundingClientRect();
+    for (var i = 0; i < labelPositions.length; i++) {
+      var lp = labelPositions[i];
+      if (!lp.el) continue;
+      var vec = lp.pos.clone();
+      vec.project(camera);
+      var x = (vec.x * 0.5 + 0.5) * rect.width;
+      var y = (-vec.y * 0.5 + 0.5) * rect.height;
+      lp.el.style.left = x + 'px';
+      lp.el.style.top = y + 'px';
+    }
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    updateLabels();
+    renderer.render(scene, camera);
+  }
+  animate();
 })();
 </script>
 <script>
