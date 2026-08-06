@@ -116,12 +116,7 @@
 <p class="sub">工坊覆盖六个技术方向，从桌面到 Web，从安全到教学，再到游戏和基础设施。每个方向都有对应的项目落地。</p>
 </div>
 <div class="hero-right">
-<div id="globe3d" class="globe-3d">
-  <div class="globe-label label-desk">Desktop</div>
-  <div class="globe-label label-web">Web</div>
-  <div class="globe-label label-sec">Security</div>
-  <div class="globe-label label-footer">六面蜂巢</div>
-</div>
+<div id="globe3d" class="globe-3d"></div>
 </div>
 </div>
 </div>
@@ -183,7 +178,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="assets/js/mimo.js"></script>
 <script>
-/* ===== 六面棱体 · 3D 旋转棱柱（Three.js + GSAP） ===== */
+/* ===== 能力环 · 6个交错光环在3D空间中旋转（Three.js + GSAP） ===== */
 (function(){
   'use strict';
   var container = document.getElementById('globe3d');
@@ -219,163 +214,101 @@
   resize();
   window.addEventListener('resize', resize);
 
-  /* 六棱柱顶点 */
-  var hexRadius = 2.0;
-  var hexHeight = 1.6;
-  var hexColors = [0x444444, 0x555555, 0x666666, 0x777777, 0x888888, 0x999999];
+  /* 6个能力光环 */
+  var ringCount = 6;
+  var ringColors = [0x444444, 0x555555, 0x666666, 0x777777, 0x888888, 0x999999];
+  var ringRadii = [1.2, 1.6, 2.0, 2.4, 2.8, 3.2];
+  var rings = [];
+  var segs = 48;
 
-  /* 顶面六边形 */
-  var topPts = [];
-  for (var i = 0; i < 6; i++) {
-    var a = (i / 6) * Math.PI * 2;
-    topPts.push(new THREE.Vector3(Math.cos(a) * hexRadius, hexHeight/2, Math.sin(a) * hexRadius));
-  }
-  var bottomPts = [];
-  for (var i = 0; i < 6; i++) {
-    var a = (i / 6) * Math.PI * 2;
-    bottomPts.push(new THREE.Vector3(Math.cos(a) * hexRadius, -hexHeight/2, Math.sin(a) * hexRadius));
-  }
+  for (var r = 0; r < ringCount; r++) {
+    var ringGroup = new THREE.Group();
 
-  var prismGroup = new THREE.Group();
-
-  /* 六条棱柱边 */
-  for (var i = 0; i < 6; i++) {
-    var next = (i + 1) % 6;
-    /* 顶面边 */
-    var edgePts1 = [topPts[i], topPts[next]];
-    var edgeGeo1 = new THREE.BufferGeometry().setFromPoints(edgePts1);
-    var edgeMat1 = new THREE.LineBasicMaterial({ color: hexColors[i], transparent: true, opacity: 0.3 });
-    var edge1 = new THREE.Line(edgeGeo1, edgeMat1);
-    prismGroup.add(edge1);
-
-    /* 底面边 */
-    var edgePts2 = [bottomPts[i], bottomPts[next]];
-    var edgeGeo2 = new THREE.BufferGeometry().setFromPoints(edgePts2);
-    var edgeMat2 = new THREE.LineBasicMaterial({ color: hexColors[i], transparent: true, opacity: 0.3 });
-    var edge2 = new THREE.Line(edgeGeo2, edgeMat2);
-    prismGroup.add(edge2);
-
-    /* 垂直棱 */
-    var vertPts = [topPts[i], bottomPts[i]];
-    var vertGeo = new THREE.BufferGeometry().setFromPoints(vertPts);
-    var vertMat = new THREE.LineBasicMaterial({ color: hexColors[i], transparent: true, opacity: 0.3 });
-    var vert = new THREE.Line(vertGeo, vertMat);
-    prismGroup.add(vert);
-  }
-
-  /* 六个侧面面片 */
-  for (var i = 0; i < 6; i++) {
-    var next = (i + 1) % 6;
-    var facePts = [
-      topPts[i].x, topPts[i].y, topPts[i].z,
-      topPts[next].x, topPts[next].y, topPts[next].z,
-      bottomPts[next].x, bottomPts[next].y, bottomPts[next].z,
-      bottomPts[i].x, bottomPts[i].y, bottomPts[i].z
-    ];
-    var faceGeo = new THREE.BufferGeometry();
-    faceGeo.setAttribute('position', new THREE.Float32BufferAttribute(facePts, 3));
-    faceGeo.setIndex([0, 1, 2, 0, 2, 3]);
-    faceGeo.computeVertexNormals();
-    var faceMat = new THREE.MeshBasicMaterial({
-      color: hexColors[i],
-      transparent: true,
-      opacity: 0.04,
-      side: THREE.DoubleSide
-    });
-    var face = new THREE.Mesh(faceGeo, faceMat);
-    prismGroup.add(face);
-  }
-
-  /* 顶面和底面面片 */
-  var capPts = [];
-  for (var i = 0; i < 6; i++) {
-    capPts.push(topPts[i].x, topPts[i].y, topPts[i].z);
-  }
-  var capGeo = new THREE.BufferGeometry();
-  capGeo.setAttribute('position', new THREE.Float32BufferAttribute(capPts, 3));
-  capGeo.setIndex([0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5]);
-  capGeo.computeVertexNormals();
-  var capMat = new THREE.MeshBasicMaterial({ color: 0x666666, transparent: true, opacity: 0.03, side: THREE.DoubleSide });
-  var topCap = new THREE.Mesh(capGeo.clone(), capMat);
-  topCap.position.y = hexHeight/2;
-  prismGroup.add(topCap);
-  var bottomCap = new THREE.Mesh(capGeo.clone(), capMat);
-  bottomCap.position.y = -hexHeight/2;
-  bottomCap.rotation.x = Math.PI;
-  prismGroup.add(bottomCap);
-
-  scene.add(prismGroup);
-
-  /* 内发光粒子 */
-  var innerCount = 80;
-  var innerGeo = new THREE.BufferGeometry();
-  var innerPos = new Float32Array(innerCount * 3);
-  for (var i = 0; i < innerCount; i++) {
-    var a = Math.random() * Math.PI * 2;
-    var r = Math.random() * hexRadius * 0.8;
-    var y = (Math.random() - 0.5) * hexHeight;
-    innerPos[i*3] = Math.cos(a) * r;
-    innerPos[i*3+1] = y;
-    innerPos[i*3+2] = Math.sin(a) * r;
-  }
-  innerGeo.setAttribute('position', new THREE.BufferAttribute(innerPos, 3));
-  var innerMat = new THREE.PointsMaterial({ color: 0x888888, size: 0.03, transparent: true, opacity: 0.3 });
-  var innerPoints = new THREE.Points(innerGeo, innerMat);
-  scene.add(innerPoints);
-
-  /* 外圈轨道环 */
-  var orbitGroup = new THREE.Group();
-  for (var o = 0; o < 3; o++) {
-    var radius = 2.4 + o * 0.5;
+    /* 光环线 */
     var pts = [];
-    for (var i = 0; i <= 48; i++) {
-      var a = (i / 48) * Math.PI * 2;
-      pts.push(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius));
+    for (var i = 0; i <= segs; i++) {
+      var a = (i / segs) * Math.PI * 2;
+      pts.push(new THREE.Vector3(Math.cos(a) * ringRadii[r], 0, Math.sin(a) * ringRadii[r]));
     }
     var geo = new THREE.BufferGeometry().setFromPoints(pts);
-    var mat = new THREE.LineBasicMaterial({ color: 0x666666, transparent: true, opacity: 0.06 - o * 0.015 });
+    var mat = new THREE.LineBasicMaterial({
+      color: ringColors[r],
+      transparent: true,
+      opacity: 0.12 + r * 0.03
+    });
     var line = new THREE.Line(geo, mat);
-    orbitGroup.add(line);
-  }
-  scene.add(orbitGroup);
+    ringGroup.add(line);
 
-  /* GSAP 旋转 - 双轴旋转制造真正3D感 */
-  gsap.to(prismGroup.rotation, { y: Math.PI * 2, duration: 30, repeat: -1, ease: 'none' });
-  gsap.to(prismGroup.rotation, { x: 0.3, duration: 20, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-  gsap.to(orbitGroup.rotation, { y: -Math.PI * 2, duration: 20, repeat: -1, ease: 'none' });
-  gsap.to(innerPoints.rotation, { y: Math.PI * 2, duration: 40, repeat: -1, ease: 'none' });
-
-  /* 标签 */
-  var labelDesk = container.querySelector('.label-desk');
-  var labelWeb = container.querySelector('.label-web');
-  var labelSec = container.querySelector('.label-sec');
-  var labelFooter = container.querySelector('.label-footer');
-
-  var labelPositions = [
-    { el: labelDesk, pos: new THREE.Vector3(0, 2.0, 0) },
-    { el: labelWeb, pos: new THREE.Vector3(2.0, 0, 0) },
-    { el: labelSec, pos: new THREE.Vector3(-2.0, 0, 0) },
-    { el: labelFooter, pos: new THREE.Vector3(0, -3.2, 0) }
-  ];
-
-  function updateLabels() {
-    var rect = container.getBoundingClientRect();
-    for (var i = 0; i < labelPositions.length; i++) {
-      var lp = labelPositions[i];
-      if (!lp.el) continue;
-      var vec = lp.pos.clone();
-      vec.project(camera);
-      var x = (vec.x * 0.5 + 0.5) * rect.width;
-      var y = (-vec.y * 0.5 + 0.5) * rect.height;
-      lp.el.style.left = x + 'px';
-      lp.el.style.top = y + 'px';
+    /* 环上流动粒子 */
+    var dotCount = 12 + r * 2;
+    var dotGroup = new THREE.Group();
+    for (var d = 0; d < dotCount; d++) {
+      var angle = (d / dotCount) * Math.PI * 2;
+      var dotGeo = new THREE.SphereGeometry(0.025 + r * 0.005, 4, 4);
+      var dotMat = new THREE.MeshBasicMaterial({
+        color: ringColors[r],
+        transparent: true,
+        opacity: 0.5 + Math.random() * 0.3
+      });
+      var dot = new THREE.Mesh(dotGeo, dotMat);
+      dot.position.set(
+        Math.cos(angle) * ringRadii[r],
+        (Math.random() - 0.5) * 0.02,
+        Math.sin(angle) * ringRadii[r]
+      );
+      dotGroup.add(dot);
     }
+    ringGroup.add(dotGroup);
+
+    /* 每个环倾斜不同角度，真正3D交错 */
+    var tiltX = (r / ringCount) * Math.PI * 0.5 + 0.1;
+    var tiltZ = (r / ringCount) * Math.PI * 0.3;
+    ringGroup.rotation.x = tiltX;
+    ringGroup.rotation.z = tiltZ;
+
+    scene.add(ringGroup);
+    rings.push({
+      group: ringGroup,
+      dotGroup: dotGroup,
+      rotSpeed: 0.5 + r * 0.15,
+      tiltX: tiltX,
+      tiltZ: tiltZ
+    });
   }
+
+  /* 中心光点 */
+  var centerGeo = new THREE.SphereGeometry(0.15, 12, 12);
+  var centerMat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.5 });
+  var center = new THREE.Mesh(centerGeo, centerMat);
+  scene.add(center);
+  gsap.to(center.scale, { x: 1.6, y: 1.6, z: 1.6, duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+
+  /* 背景星点 */
+  var bgCount = 300;
+  var bgGeo = new THREE.BufferGeometry();
+  var bgPos = new Float32Array(bgCount * 3);
+  for (var i = 0; i < bgCount * 3; i++) bgPos[i] = (Math.random() - 0.5) * 18;
+  bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
+  var bgMat = new THREE.PointsMaterial({ color: 0x444444, size: 0.015, transparent: true, opacity: 0.25 });
+  var bgPoints = new THREE.Points(bgGeo, bgMat);
+  scene.add(bgPoints);
+
+  /* 每个环各自旋转，不同速度 */
+  for (var r = 0; r < rings.length; r++) {
+    (function(ring) {
+      gsap.to(ring.group.rotation, {
+        y: Math.PI * 2,
+        duration: 20 + r * 5,
+        repeat: -1,
+        ease: 'none'
+      });
+    })(rings[r]);
+  }
+  gsap.to(bgPoints.rotation, { y: -Math.PI * 2, duration: 60, repeat: -1, ease: 'none' });
 
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
-    updateLabels();
     renderer.render(scene, camera);
   }
   animate();
