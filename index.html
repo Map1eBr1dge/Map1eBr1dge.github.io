@@ -494,42 +494,9 @@ function toggleCard(index) {
   var cards = fan.querySelectorAll('.card-item');
 
   if (expandedIndex === index) {
-    var card = cards[index];
-    var total = cards.length;
-    var fanWidth = fan.offsetWidth || 880;
-    var pos = getArcPos(index, total, fanWidth);
-
-    var curRect = card.getBoundingClientRect();
-    var fanRect = fan.getBoundingClientRect();
-    var relX = curRect.left - fanRect.left;
-    var relY = curRect.top - fanRect.top;
-
-    card.style.position = '';
-    card.style.left = relX + 'px';
-    card.style.top = relY + 'px';
-    card.style.bottom = '';
-    card.style.transform = 'rotate(0deg)';
-
-    void card.offsetWidth;
-
-    expandedIndex = -1;
-    overlay.classList.remove('show');
-    card.style.left = '';
-    card.style.top = '';
-    card.style.transform = 'translate(' + pos.tx + 'px, ' + pos.ty + 'px) rotate(' + pos.rotation + 'deg)';
-    card.style.zIndex = pos.zIndex;
-    card.classList.remove('expanded');
-
-    for (var i = 0; i < total; i++) {
-      if (i === index) continue;
-      var c = cards[i];
-      var p = getArcPos(i, total, fanWidth);
-      c.style.transform = 'translate(' + p.tx + 'px, ' + p.ty + 'px) rotate(' + p.rotation + 'deg)';
-      c.style.zIndex = p.zIndex;
-      c.classList.remove('expanded');
-    }
-
-    setTimeout(function() { isAnimating = false; }, 500);
+    // 已展开 → 跳转项目页面
+    window.location.href = cards[index].href;
+    return;
   } else {
     expandedIndex = index;
     overlay.classList.add('show');
