@@ -121,12 +121,7 @@
 <p class="sub">九个项目的进度时间线。实色=做完了，斜纹=进行中，虚线=计划中。按季度保持一致，2024 起源，2026 多元化。</p>
 </div>
 <div class="hero-right">
-<div id="globe3d" class="globe-3d">
-  <div class="globe-label label-wave1">2024</div>
-  <div class="globe-label label-wave2">2025</div>
-  <div class="globe-label label-wave3">2026</div>
-  <div class="globe-label label-footer">波形管线</div>
-</div>
+<div id="globe3d" class="globe-3d"></div>
 </div>
 </div>
 </div>
@@ -217,7 +212,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="assets/js/mimo.js"></script>
 <script>
-/* ===== 数据流 · 3D 粒子流柱（Three.js + GSAP） ===== */
+/* ===== 时间线 · 3D蜿蜒路径+节点光流（Three.js + GSAP） ===== */
 (function(){
   'use strict';
   var container = document.getElementById('globe3d');
@@ -253,171 +248,99 @@
   resize();
   window.addEventListener('resize', resize);
 
-  /* 数据柱 - 三根垂直柱体 */
-  var pillarGroup = new THREE.Group();
-  var pillarCount = 3;
-  var pillars = [];
+  /* 主容器，用于整体旋转 */
+  var mainGroup = new THREE.Group();
+  scene.add(mainGroup);
 
-  for (var p = 0; p < pillarCount; p++) {
-    var xPos = (p - 1) * 1.8;
-    var group = new THREE.Group();
-    var height = 2.5 + p * 0.3;
-    var color = 0x666666 - p * 0x111111;
-
-    /* 柱体线框 */
-    var pts = [];
-    var segs = 12;
-    for (var i = 0; i <= segs; i++) {
-      var t = (i / segs) * Math.PI * 2;
-      var r = 0.25;
-      pts.push(new THREE.Vector3(Math.cos(t) * r, -height/2, Math.sin(t) * r));
-    }
-    for (var i = 0; i <= segs; i++) {
-      var t = (i / segs) * Math.PI * 2;
-      var r = 0.25;
-      pts.push(new THREE.Vector3(Math.cos(t) * r, height/2, Math.sin(t) * r));
-    }
-    /* 连接上下圈的线 */
-    for (var i = 0; i < 8; i++) {
-      var t = (i / 8) * Math.PI * 2;
-      var r = 0.25;
-      pts.push(new THREE.Vector3(Math.cos(t) * r, -height/2, Math.sin(t) * r));
-      pts.push(new THREE.Vector3(Math.cos(t) * r, height/2, Math.sin(t) * r));
-    }
-    var pillarGeo = new THREE.BufferGeometry().setFromPoints(pts);
-    var pillarMat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.15 });
-    var pillar = new THREE.LineSegments(pillarGeo, pillarMat);
-    pillar.position.x = xPos;
-    group.add(pillar);
-
-    /* 柱内流动粒子 */
-    var flowCount = 20;
-    var flowMeshes = [];
-    var flowGeo = new THREE.SphereGeometry(0.04, 6, 6);
-    for (var i = 0; i < flowCount; i++) {
-      var mat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.5 + Math.random() * 0.3 });
-      var mesh = new THREE.Mesh(flowGeo, mat);
-      var t = i / flowCount;
-      var a = Math.random() * Math.PI * 2;
-      var r = 0.1 + Math.random() * 0.12;
-      mesh.position.set(
-        xPos + Math.cos(a) * r,
-        -height/2 + t * height,
-        Math.sin(a) * r
-      );
-      group.add(mesh);
-      flowMeshes.push(mesh);
-    }
-
-    /* 柱顶发光 */
-    var topGeo = new THREE.SphereGeometry(0.08, 8, 8);
-    var topMat = new THREE.MeshBasicMaterial({ color: 0x999999 });
-    var topMesh = new THREE.Mesh(topGeo, topMat);
-    topMesh.position.set(xPos, height/2, 0);
-    group.add(topMesh);
-    gsap.to(topMesh.scale, { x: 1.5, y: 1.5, z: 1.5, duration: 1.2 + p * 0.3, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-
-    pillarGroup.add(group);
-    pillars.push({ group: group, height: height, xPos: xPos, flowMeshes: flowMeshes });
-
-    /* 粒子流动 */
-    (function(pp) {
-      var offset = 0;
-      setInterval(function() {
-        offset = (offset + 1) % pp.flowMeshes.length;
-        pp.flowMeshes.forEach(function(mesh, idx) {
-          var t = ((idx + offset) % pp.flowMeshes.length) / pp.flowMeshes.length;
-          var a = Math.random() * Math.PI * 2;
-          var r = 0.1 + Math.random() * 0.12;
-          mesh.position.set(
-            pp.xPos + Math.cos(a) * r,
-            -pp.height/2 + t * pp.height,
-            Math.sin(a) * r
-          );
-        });
-      }, 100);
-    })(pillars[p]);
-  }
-  scene.add(pillarGroup);
-
-  /* 连接线 - 柱与柱之间 */
-  var connGroup = new THREE.Group();
-  for (var p = 0; p < pillarCount - 1; p++) {
-    var x1 = (p - 1) * 1.8;
-    var x2 = p * 1.8;
-    for (var h = -1; h <= 1; h += 0.5) {
-      var pts = [
-        new THREE.Vector3(x1, h, 0),
-        new THREE.Vector3(x2, h, 0)
-      ];
-      var geo = new THREE.BufferGeometry().setFromPoints(pts);
-      var mat = new THREE.LineBasicMaterial({ color: 0x555555, transparent: true, opacity: 0.06 });
-      var line = new THREE.Line(geo, mat);
-      connGroup.add(line);
-    }
-  }
-  scene.add(connGroup);
-
-  /* 底部平台 */
-  var platformPts = [];
-  for (var i = 0; i <= 32; i++) {
-    var a = (i / 32) * Math.PI * 2;
-    platformPts.push(new THREE.Vector3(Math.cos(a) * 3.2, -2.0, Math.sin(a) * 3.2));
-  }
-  var platformGeo = new THREE.BufferGeometry().setFromPoints(platformPts);
-  var platformMat = new THREE.LineBasicMaterial({ color: 0x444444, transparent: true, opacity: 0.08 });
-  var platform = new THREE.Line(platformGeo, platformMat);
-  scene.add(platform);
-
-  /* 悬浮粒子 */
-  var pCount = 100;
-  var pGeo = new THREE.BufferGeometry();
-  var pPos = new Float32Array(pCount * 3);
-  for (var i = 0; i < pCount * 3; i++) {
-    pPos[i] = (Math.random() - 0.5) * 10;
-  }
-  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-  var pMat = new THREE.PointsMaterial({ color: 0x444444, size: 0.02, transparent: true, opacity: 0.2 });
-  var pMesh = new THREE.Points(pGeo, pMat);
-  scene.add(pMesh);
-
-  /* GSAP 旋转 */
-  gsap.to(pillarGroup.rotation, { y: Math.PI * 2, duration: 40, repeat: -1, ease: 'none' });
-  gsap.to(connGroup.rotation, { y: Math.PI * 2, duration: 40, repeat: -1, ease: 'none' });
-  gsap.to(platform.rotation, { y: Math.PI * 2, duration: 40, repeat: -1, ease: 'none' });
-  gsap.to(pMesh.rotation, { y: -Math.PI * 2, duration: 60, repeat: -1, ease: 'none' });
-
-  /* 标签 */
-  var labelW1 = container.querySelector('.label-wave1');
-  var labelW2 = container.querySelector('.label-wave2');
-  var labelW3 = container.querySelector('.label-wave3');
-  var labelFooter = container.querySelector('.label-footer');
-
-  var labelPositions = [
-    { el: labelW1, pos: new THREE.Vector3(-1.8, 2.0, 0) },
-    { el: labelW2, pos: new THREE.Vector3(0, 2.0, 0) },
-    { el: labelW3, pos: new THREE.Vector3(1.8, 2.0, 0) },
-    { el: labelFooter, pos: new THREE.Vector3(0, -3.2, 0) }
+  /* 蜿蜒路径控制点 */
+  var pathPoints = [
+    new THREE.Vector3(-2.5, -1.0, 0),
+    new THREE.Vector3(-1.5, 0.5, 1.0),
+    new THREE.Vector3(0, 1.5, 0),
+    new THREE.Vector3(1.5, 0.5, -1.0),
+    new THREE.Vector3(2.5, -1.0, 0)
   ];
+  var curve = new THREE.CatmullRomCurve3(pathPoints);
+  var curvePoints = curve.getPoints(80);
 
-  function updateLabels() {
-    var rect = container.getBoundingClientRect();
-    for (var i = 0; i < labelPositions.length; i++) {
-      var lp = labelPositions[i];
-      if (!lp.el) continue;
-      var vec = lp.pos.clone();
-      vec.project(camera);
-      var x = (vec.x * 0.5 + 0.5) * rect.width;
-      var y = (-vec.y * 0.5 + 0.5) * rect.height;
-      lp.el.style.left = x + 'px';
-      lp.el.style.top = y + 'px';
-    }
+  /* 路径线 */
+  var pathGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
+  var pathMat = new THREE.LineBasicMaterial({ color: 0x666666, transparent: true, opacity: 0.15 });
+  var pathLine = new THREE.Line(pathGeo, pathMat);
+  mainGroup.add(pathLine);
+
+  /* 路径节点（8个里程碑） */
+  var nodeCount = 8;
+  var nodes = [];
+  for (var n = 0; n < nodeCount; n++) {
+    var t = n / (nodeCount - 1);
+    var pos = curve.getPoint(t);
+    var size = 0.06 + Math.random() * 0.04;
+    var geo = new THREE.SphereGeometry(size, 8, 8);
+    var mat = new THREE.MeshBasicMaterial({
+      color: 0x888888,
+      transparent: true,
+      opacity: 0.5 + Math.random() * 0.3
+    });
+    var mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(pos);
+    mainGroup.add(mesh);
+    nodes.push(mesh);
+
+    /* 节点呼吸 */
+    gsap.to(mesh.scale, {
+      x: 1.5, y: 1.5, z: 1.5,
+      duration: 1 + Math.random() * 1.5,
+      repeat: -1, yoyo: true,
+      ease: 'sine.inOut',
+      delay: Math.random() * 2
+    });
   }
+
+  /* 流动粒子沿路径 */
+  var flowCount = 30;
+  var flowParticles = [];
+  var flowGeo = new THREE.SphereGeometry(0.03, 4, 4);
+  for (var i = 0; i < flowCount; i++) {
+    var mat = new THREE.MeshBasicMaterial({
+      color: 0x999999,
+      transparent: true,
+      opacity: 0.3 + Math.random() * 0.4
+    });
+    var mesh = new THREE.Mesh(flowGeo, mat);
+    var t = i / flowCount;
+    var pos = curve.getPoint(t);
+    mesh.position.copy(pos);
+    mainGroup.add(mesh);
+    flowParticles.push({ mesh: mesh, t: t, speed: 0.001 + Math.random() * 0.001 });
+  }
+
+  /* 背景星点 */
+  var bgCount = 250;
+  var bgGeo = new THREE.BufferGeometry();
+  var bgPos = new Float32Array(bgCount * 3);
+  for (var i = 0; i < bgCount * 3; i++) bgPos[i] = (Math.random() - 0.5) * 16;
+  bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
+  var bgMat = new THREE.PointsMaterial({ color: 0x444444, size: 0.015, transparent: true, opacity: 0.2 });
+  var bgPoints = new THREE.Points(bgGeo, bgMat);
+  mainGroup.add(bgPoints);
+
+  /* 整体缓慢旋转 */
+  gsap.to(mainGroup.rotation, { y: Math.PI * 2, duration: 50, repeat: -1, ease: 'none' });
 
   function animate() {
     requestAnimationFrame(animate);
+
+    /* 粒子沿路径流动 */
+    for (var i = 0; i < flowParticles.length; i++) {
+      var fp = flowParticles[i];
+      fp.t += fp.speed;
+      if (fp.t > 1) fp.t = 0;
+      var pos = curve.getPoint(fp.t);
+      fp.mesh.position.copy(pos);
+    }
+
     controls.update();
-    updateLabels();
     renderer.render(scene, camera);
   }
   animate();
