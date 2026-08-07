@@ -494,11 +494,13 @@ function layoutFan() {
 function closeCard() {
   if (isAnimating || expandedIndex < 0) return;
   isAnimating = true;
+  var idx = expandedIndex;
   var cards = fan.querySelectorAll('.card-item');
-  var prevCard = cards[expandedIndex];
+  var prevCard = cards[idx];
   if (prevCard) {
     var rect = prevCard.getBoundingClientRect();
     var fanRect = fan.getBoundingClientRect();
+    prevCard.style.transition = 'none';
     prevCard.style.position = 'absolute';
     prevCard.style.left = '0';
     prevCard.style.top = '0';
@@ -507,11 +509,16 @@ function closeCard() {
     prevCard.style.zIndex = '';
     prevCard.classList.remove('expanded');
     void prevCard.offsetHeight;
+    prevCard.style.transition = '';
   }
   expandedIndex = -1;
   document.getElementById('cardOverlay').classList.remove('show');
-  layoutFan();
-  setTimeout(function() { isAnimating = false; }, 500);
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      layoutFan();
+      setTimeout(function() { isAnimating = false; }, 500);
+    });
+  });
 }
 
 function toggleCard(index) {
