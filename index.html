@@ -487,6 +487,15 @@ function layoutFan() {
   }
 }
 
+function closeCard() {
+  if (isAnimating || expandedIndex < 0) return;
+  isAnimating = true;
+  expandedIndex = -1;
+  document.getElementById('cardOverlay').classList.remove('show');
+  layoutFan();
+  setTimeout(function() { isAnimating = false; }, 500);
+}
+
 function toggleCard(index) {
   if (isAnimating) return;
   isAnimating = true;
@@ -546,7 +555,7 @@ function shuffleCards() {
 }
 
 document.getElementById('cardOverlay').addEventListener('click', function() {
-  if (expandedIndex >= 0) toggleCard(expandedIndex);
+  closeCard();
 });
 
 document.addEventListener('keydown', function(e) {
