@@ -480,6 +480,10 @@ function layoutFan() {
       card.classList.add('expanded');
     } else {
       var pos = getArcPos(i, total, fanWidth);
+      card.style.position = 'absolute';
+      card.style.left = '0';
+      card.style.top = '0';
+      card.style.bottom = '';
       card.style.transform = 'translate(' + pos.tx + 'px, ' + pos.ty + 'px) rotate(' + pos.rotation + 'deg)';
       card.style.zIndex = pos.zIndex;
       card.classList.remove('expanded');
