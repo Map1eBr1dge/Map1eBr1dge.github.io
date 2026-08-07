@@ -494,6 +494,20 @@ function layoutFan() {
 function closeCard() {
   if (isAnimating || expandedIndex < 0) return;
   isAnimating = true;
+  var cards = fan.querySelectorAll('.card-item');
+  var prevCard = cards[expandedIndex];
+  if (prevCard) {
+    var rect = prevCard.getBoundingClientRect();
+    var fanRect = fan.getBoundingClientRect();
+    prevCard.style.position = 'absolute';
+    prevCard.style.left = '0';
+    prevCard.style.top = '0';
+    prevCard.style.bottom = '';
+    prevCard.style.transform = 'translate(' + (rect.left - fanRect.left) + 'px, ' + (rect.top - fanRect.top) + 'px) rotate(0deg)';
+    prevCard.style.zIndex = '';
+    prevCard.classList.remove('expanded');
+    void prevCard.offsetHeight;
+  }
   expandedIndex = -1;
   document.getElementById('cardOverlay').classList.remove('show');
   layoutFan();
@@ -563,7 +577,7 @@ document.getElementById('cardOverlay').addEventListener('click', function() {
 });
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && expandedIndex >= 0) toggleCard(expandedIndex);
+  if (e.key === 'Escape' && expandedIndex >= 0) closeCard();
 });
 
 document.getElementById('shuffleBtn').addEventListener('click', shuffleCards);
